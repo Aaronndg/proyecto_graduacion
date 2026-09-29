@@ -1,0 +1,68 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+@source '../../app/Models/*.php';
+
+@theme {
+    --font-sans: 'Segoe UI', ui-sans-serif, system-ui, -apple-system, Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --color-marca-50: #eef4ff;
+    --color-marca-100: #dbe6fe;
+    --color-marca-500: #3b6fd8;
+    --color-marca-600: #2557c2;
+    --color-marca-700: #1d449b;
+    --color-marca-900: #15294d;
+    --color-marca-950: #0f1d38;
+}
+
+@layer components {
+    .etiqueta {
+        @apply mb-1 block text-sm font-medium text-slate-700;
+    }
+
+    .campo {
+        @apply block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-marca-500 focus:ring-2 focus:ring-marca-500/30 focus:outline-none disabled:bg-slate-100;
+    }
+
+    .campo-error {
+        @apply border-red-400 focus:border-red-500 focus:ring-red-500/30;
+    }
+
+    .btn {
+        @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-60;
+    }
+
+    .btn-primario {
+        @apply bg-marca-600 text-white shadow-sm hover:bg-marca-700 focus-visible:outline-marca-600;
+    }
+
+    .btn-secundario {
+        @apply border border-slate-300 bg-white text-slate-700 shadow-sm hover:bg-slate-50 focus-visible:outline-slate-400;
+    }
+
+    .btn-peligro {
+        @apply border border-red-200 bg-white text-red-700 hover:bg-red-50 focus-visible:outline-red-500;
+    }
+
+    .tarjeta {
+        @apply rounded-xl border border-slate-200 bg-white shadow-sm;
+    }
+
+    .tabla {
+        @apply min-w-full divide-y divide-slate-200 text-sm;
+    }
+
+    .tabla th {
+        @apply bg-slate-50 px-4 py-3 text-left text-xs font-semibold tracking-wide text-slate-600 uppercase;
+    }
+
+    .tabla td {
+        @apply px-4 py-3 text-slate-700;
+    }
+
+    .insignia {
+        @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset;
+    }
+}

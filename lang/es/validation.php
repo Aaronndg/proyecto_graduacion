@@ -1,0 +1,77 @@
+<?php
+
+return [
+    'accepted' => 'El campo :attribute debe ser aceptado.',
+    'array' => 'El campo :attribute debe ser una lista.',
+    'boolean' => 'El campo :attribute debe ser verdadero o falso.',
+    'confirmed' => 'La confirmación de :attribute no coincide.',
+    'current_password' => 'La contraseña actual es incorrecta.',
+    'date' => 'El campo :attribute no es una fecha válida.',
+    'decimal' => 'El campo :attribute debe tener :decimal decimales.',
+    'different' => 'Los campos :attribute y :other deben ser diferentes.',
+    'digits' => 'El campo :attribute debe tener :digits dígitos.',
+    'distinct' => 'El campo :attribute tiene un valor duplicado.',
+    'email' => 'El campo :attribute debe ser un correo electrónico válido.',
+    'exists' => 'El :attribute seleccionado no es válido.',
+    'gt' => [
+        'numeric' => 'El campo :attribute debe ser mayor que :value.',
+    ],
+    'gte' => [
+        'numeric' => 'El campo :attribute debe ser mayor o igual que :value.',
+    ],
+    'in' => 'El :attribute seleccionado no es válido.',
+    'integer' => 'El campo :attribute debe ser un número entero.',
+    'lowercase' => 'El campo :attribute debe estar en minúsculas.',
+    'max' => [
+        'array' => 'El campo :attribute no debe tener más de :max elementos.',
+        'numeric' => 'El campo :attribute no debe ser mayor que :max.',
+        'string' => 'El campo :attribute no debe tener más de :max caracteres.',
+    ],
+    'min' => [
+        'array' => 'El campo :attribute debe tener al menos :min elementos.',
+        'numeric' => 'El campo :attribute debe ser al menos :min.',
+        'string' => 'El campo :attribute debe tener al menos :min caracteres.',
+    ],
+    'numeric' => 'El campo :attribute debe ser un número.',
+    'password' => [
+        'letters' => 'El campo :attribute debe contener al menos una letra.',
+        'mixed' => 'El campo :attribute debe contener al menos una mayúscula y una minúscula.',
+        'numbers' => 'El campo :attribute debe contener al menos un número.',
+        'symbols' => 'El campo :attribute debe contener al menos un símbolo.',
+        'uncompromised' => 'La :attribute indicada apareció en una filtración de datos. Elija otra.',
+    ],
+    'regex' => 'El formato del campo :attribute no es válido.',
+    'required' => 'El campo :attribute es obligatorio.',
+    'required_if' => 'El campo :attribute es obligatorio cuando :other es :value.',
+    'required_with' => 'El campo :attribute es obligatorio cuando :values está presente.',
+    'same' => 'Los campos :attribute y :other deben coincidir.',
+    'string' => 'El campo :attribute debe ser texto.',
+    'unique' => 'El :attribute ya está registrado.',
+
+    'values' => [
+        'tipo' => [
+            'emprendedor' => 'emprendedor',
+        ],
+    ],
+
+    'attributes' => [
+        'nombre' => 'nombre',
+        'correo' => 'correo electrónico',
+        'contrasena' => 'contraseña',
+        'contrasena_actual' => 'contraseña actual',
+        'id_rol' => 'rol',
+        'negocio' => 'nombre del negocio',
+        'tipo' => 'tipo de cuenta',
+        'telefono' => 'teléfono',
+        'direccion' => 'dirección',
+        'descripcion' => 'descripción',
+        'precio' => 'precio',
+        'estado' => 'estado',
+        'cantidad' => 'cantidad',
+        'id_cliente' => 'cliente',
+        'id_producto' => 'producto',
+        'id_estado' => 'estado',
+        'observacion' => 'observación',
+        'fecha' => 'fecha',
+    ],
+];
