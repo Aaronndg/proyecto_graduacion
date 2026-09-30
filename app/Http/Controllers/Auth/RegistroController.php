@@ -45,7 +45,7 @@ class RegistroController extends Controller
             'nombre' => ['required', 'string', 'max:100'],
             'negocio' => ['nullable', 'required_if:tipo,emprendedor', 'string', 'max:100'],
             'correo' => ['required', 'string', 'email', 'max:150', Rule::unique('usuarios', 'correo')],
-            'contrasena' => ['required', 'confirmed', Password::min(8)->letters()->numbers()],
+            'contrasena' => ['required', 'confirmed', Password::defaults()],
             'codigo' => ['nullable', 'string', 'max:20'],
         ]);
 

@@ -2,12 +2,37 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Pedido;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 /** RF-06 / RF-08 / RN-02: un pedido debe tener cliente, fecha y al menos un producto. */
 class PedidoRequest extends FormRequest
 {
+    /**
+     * Rango aceptado para la fecha del pedido, relativo a hoy: evita fechas escritas por error
+     * (p. ej. 1926 o 2062) y no queda desactualizado con el paso de los años.
+     */
+    public const MESES_ATRAS = 12;
+    public const MESES_A_FUTURO = 6;
+
+    /** Al editar, un pedido activo con fecha más antigua que el límite conserva su fecha. */
+    public static function fechaMinima(?Pedido $pedido = null): string
+    {
+        $minima = now()->subMonths(self::MESES_ATRAS)->startOfDay();
+
+        if ($pedido?->fecha && $pedido->fecha->lt($minima)) {
+            $minima = $pedido->fecha->copy()->startOfMinute();
+        }
+
+        return $minima->format('Y-m-d\TH:i');
+    }
+
+    public static function fechaMaxima(): string
+    {
+        return now()->addMonths(self::MESES_A_FUTURO)->endOfDay()->format('Y-m-d\TH:i');
+    }
+
     public function authorize(): bool
     {
         return true;
@@ -43,7 +68,7 @@ class PedidoRequest extends FormRequest
                 Rule::requiredIf(! $esNuevo), 'nullable', 'integer',
                 Rule::exists('clientes', 'id_cliente')->where('id_emprendedor', $idEmprendedor),
             ],
-            'fecha' => ['required', 'date'],
+            'fecha' => ['required', 'date', 'after_or_equal:'.self::fechaMinima($this->route('pedido')), 'before_or_equal:'.self::fechaMaxima()],
             'productos' => ['required', 'array', 'min:1', 'max:50'],
             'productos.*.id_producto' => [
                 'required', 'integer',
@@ -63,6 +88,8 @@ class PedidoRequest extends FormRequest
     {
         return [
             'id_cliente.required' => 'Seleccione el cliente del pedido.',
+            'fecha.after_or_equal' => 'La fecha del pedido no puede ser de hace más de un año.',
+            'fecha.before_or_equal' => 'La fecha del pedido no puede ser más de 6 meses en el futuro.',
             'productos.required' => 'Agregue al menos un producto al pedido.',
             'productos.min' => 'Agregue al menos un producto al pedido.',
             'productos.*.id_producto.exists' => 'Uno de los productos seleccionados no es válido.',

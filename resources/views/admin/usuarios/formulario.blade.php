@@ -14,8 +14,8 @@
             @if ($editando) @method('PUT') @endif
 
             <div class="grid gap-5 sm:grid-cols-2">
-                <x-campo nombre="nombre" etiqueta="Nombre completo" :valor="$usuario->nombre" requerido />
-                <x-campo nombre="correo" etiqueta="Correo electrónico" tipo="email" :valor="$usuario->correo" requerido />
+                <x-campo nombre="nombre" etiqueta="Nombre completo" :valor="$usuario->nombre" maxlength="100" requerido />
+                <x-campo nombre="correo" etiqueta="Correo electrónico" tipo="email" :valor="$usuario->correo" maxlength="150" requerido />
 
                 <div>
                     <label for="id_rol" class="etiqueta">Rol <span class="text-red-600" aria-hidden="true">*</span></label>
@@ -32,7 +32,7 @@
                 </div>
 
                 <div id="campo-negocio">
-                    <x-campo nombre="negocio" etiqueta="Nombre del negocio" :valor="$usuario->negocio" requerido />
+                    <x-campo nombre="negocio" etiqueta="Nombre del negocio" :valor="$usuario->negocio" maxlength="100" requerido />
                 </div>
 
                 <x-campo nombre="contrasena" :etiqueta="$editando ? 'Nueva contraseña' : 'Contraseña'" tipo="password" autocomplete="new-password"

@@ -75,8 +75,10 @@
         @apply rounded-2xl border border-stone-200/80 bg-white shadow-suave;
     }
 
+    /* relative: los textos sr-only de las celdas quedan dentro del contenedor desplazable
+       y no ensanchan la página en el teléfono (RNF-05). */
     .tabla {
-        @apply min-w-full text-sm;
+        @apply relative min-w-full text-sm;
     }
 
     .tabla thead th {

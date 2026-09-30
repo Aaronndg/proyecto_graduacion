@@ -108,7 +108,7 @@ class UsuarioController extends Controller
             'id_rol' => ['required', 'integer', Rule::exists('roles', 'id_rol')],
             'negocio' => ['nullable', Rule::requiredIf((int) $request->input('id_rol') === Rol::EMPRENDEDOR), 'string', 'max:100'],
             'activo' => ['boolean'],
-            'contrasena' => [$usuario ? 'nullable' : 'required', 'confirmed', Password::min(8)->letters()->numbers()],
+            'contrasena' => [$usuario ? 'nullable' : 'required', 'confirmed', Password::defaults()],
         ]);
 
         if ((int) $datos['id_rol'] !== Rol::EMPRENDEDOR) {

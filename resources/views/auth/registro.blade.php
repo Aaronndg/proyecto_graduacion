@@ -38,15 +38,15 @@
             </fieldset>
         @endif
 
-        <x-campo nombre="nombre" etiqueta="Su nombre" autocomplete="name" requerido />
+        <x-campo nombre="nombre" etiqueta="Su nombre" autocomplete="name" maxlength="100" requerido />
 
         @unless ($invitacion)
             <div id="campo-negocio">
-                <x-campo nombre="negocio" etiqueta="Nombre de su negocio" autocomplete="organization" requerido />
+                <x-campo nombre="negocio" etiqueta="Nombre de su negocio" autocomplete="organization" maxlength="100" requerido />
             </div>
         @endunless
 
-        <x-campo nombre="correo" etiqueta="Correo electrónico" tipo="email" autocomplete="email" placeholder="nombre@correo.com" requerido />
+        <x-campo nombre="correo" etiqueta="Correo electrónico" tipo="email" autocomplete="email" placeholder="nombre@correo.com" maxlength="150" requerido />
         <x-campo nombre="contrasena" etiqueta="Contraseña" tipo="password" autocomplete="new-password" requerido
                  ayuda="Al menos 8 caracteres, con letras y números." />
         <x-campo nombre="contrasena_confirmation" etiqueta="Repita la contraseña" tipo="password" autocomplete="new-password" requerido />

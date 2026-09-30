@@ -3,7 +3,7 @@
         <a href="{{ route('pedidos.create') }}" class="btn btn-primario"><x-icono nombre="mas" clase="size-4" /> Nuevo pedido</a>
     </x-slot:acciones>
 
-    <div class="grid gap-5 lg:grid-cols-3">
+    <div class="grid grid-cols-1 gap-5 lg:grid-cols-3">
         @foreach ($columnas as $columna)
             <section class="flex flex-col rounded-2xl bg-stone-100/80 p-3" aria-labelledby="columna-{{ $columna['estado']->id_estado }}">
                 <header class="mb-3 flex items-center justify-between px-2 pt-1">

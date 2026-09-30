@@ -27,7 +27,7 @@
         <x-progreso-pedido :pedido="$pedido" />
     </section>
 
-    <div class="grid gap-6 lg:grid-cols-5">
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-5">
         <div class="space-y-6 lg:col-span-3">
             {{-- Productos del pedido --}}
             <section class="tarjeta overflow-hidden">
@@ -35,21 +35,25 @@
                 <div class="overflow-x-auto">
                     <table class="tabla">
                         <thead>
-                            <tr><th>Producto</th><th class="text-center">Cantidad</th><th class="text-right">Precio</th><th class="text-right">Subtotal</th></tr>
+                            <tr><th>Producto</th><th class="hidden text-center sm:table-cell">Cantidad</th><th class="hidden text-right sm:table-cell">Precio</th><th class="text-right">Subtotal</th></tr>
                         </thead>
                         <tbody class="divide-y divide-stone-100">
                             @foreach ($pedido->detalles as $detalle)
                                 <tr>
-                                    <td class="font-medium text-stone-900">{{ $detalle->producto->nombre }}</td>
-                                    <td class="text-center tabular-nums">{{ $detalle->cantidad }}</td>
-                                    <td class="text-right text-stone-500"><x-moneda :valor="$detalle->precio_unitario" /></td>
+                                    <td>
+                                        <span class="font-medium text-stone-900">{{ $detalle->producto->nombre }}</span>
+                                        <span class="block text-xs text-stone-500 sm:hidden">{{ $detalle->cantidad }} × <x-moneda :valor="$detalle->precio_unitario" /></span>
+                                    </td>
+                                    <td class="hidden text-center tabular-nums sm:table-cell">{{ $detalle->cantidad }}</td>
+                                    <td class="hidden text-right text-stone-500 sm:table-cell"><x-moneda :valor="$detalle->precio_unitario" /></td>
                                     <td class="text-right font-medium"><x-moneda :valor="$detalle->subtotal" /></td>
                                 </tr>
                             @endforeach
                         </tbody>
                         <tfoot>
                             <tr class="bg-stone-50">
-                                <td colspan="3" class="text-right font-semibold text-stone-700">Total</td>
+                                <td class="hidden sm:table-cell" colspan="2"></td>
+                                <td class="text-right font-semibold text-stone-700">Total</td>
                                 <td class="text-right text-base font-bold text-stone-900"><x-moneda :valor="$pedido->total" /></td>
                             </tr>
                         </tfoot>

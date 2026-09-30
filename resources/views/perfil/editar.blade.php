@@ -1,5 +1,5 @@
 <x-layouts.app titulo="Mi perfil" :subtitulo="'Cuenta de '.mb_strtolower($usuario->rol->nombre).'.'">
-    <div class="grid max-w-5xl gap-6 lg:grid-cols-2">
+    <div class="grid max-w-5xl grid-cols-1 gap-6 lg:grid-cols-2">
         <section class="tarjeta p-6">
             <h2 class="font-semibold text-stone-900">Mis datos</h2>
             <p class="mb-5 text-sm text-stone-500">Así le verán en el sistema.</p>
@@ -7,11 +7,11 @@
             <form method="POST" action="{{ route('perfil.update') }}" class="space-y-4" novalidate data-envio-unico>
                 @csrf
                 @method('PUT')
-                <x-campo nombre="nombre" etiqueta="Nombre" :valor="$usuario->nombre" requerido />
+                <x-campo nombre="nombre" etiqueta="Nombre" :valor="$usuario->nombre" maxlength="100" requerido />
                 @if ($usuario->esEmprendedor())
-                    <x-campo nombre="negocio" etiqueta="Nombre del negocio" :valor="$usuario->negocio" requerido />
+                    <x-campo nombre="negocio" etiqueta="Nombre del negocio" :valor="$usuario->negocio" maxlength="100" requerido />
                 @endif
-                <x-campo nombre="correo" etiqueta="Correo electrónico" tipo="email" :valor="$usuario->correo" requerido />
+                <x-campo nombre="correo" etiqueta="Correo electrónico" tipo="email" :valor="$usuario->correo" maxlength="150" requerido />
                 <button type="submit" class="btn btn-primario">Guardar cambios</button>
             </form>
         </section>

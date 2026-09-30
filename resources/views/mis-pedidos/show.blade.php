@@ -8,7 +8,7 @@
         <x-progreso-pedido :pedido="$pedido" />
     </section>
 
-    <div class="grid gap-6 lg:grid-cols-5">
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-5">
         <section class="tarjeta overflow-hidden lg:col-span-3">
             <h2 class="px-5 pt-5 pb-3 font-semibold text-stone-900">Lo que pidió</h2>
             <ul class="divide-y divide-stone-100">

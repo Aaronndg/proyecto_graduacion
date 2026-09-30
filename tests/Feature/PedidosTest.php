@@ -20,9 +20,13 @@ class PedidosTest extends TestCase
     private Producto $pastel;
     private Producto $galletas;
 
+    /** Fecha del pedido de ejemplo: ayer a las 10:30 (relativa, para que la prueba no caduque). */
+    private \Illuminate\Support\Carbon $fecha;
+
     protected function setUp(): void
     {
         parent::setUp();
+        $this->fecha = today()->subDay()->setTime(10, 30);
         $this->emprendedor = Usuario::factory()->emprendedor()->create();
         $propio = ['id_emprendedor' => $this->emprendedor->id_usuario];
         $this->cliente = Cliente::factory()->create($propio + ['nombre' => 'Ana García']);
@@ -36,7 +40,7 @@ class PedidosTest extends TestCase
         return $extra + [
             'modo_cliente' => 'existente',
             'id_cliente' => $this->cliente->id_cliente,
-            'fecha' => '2026-09-29T10:30',
+            'fecha' => $this->fecha->format('Y-m-d\TH:i'),
             'productos' => $productos,
         ];
     }
@@ -55,7 +59,7 @@ class PedidosTest extends TestCase
         $this->assertSame($this->cliente->id_cliente, $pedido->id_cliente);
         $this->assertSame($this->emprendedor->id_usuario, $pedido->id_emprendedor);
         $this->assertSame(EstadoPedido::NUEVO, $pedido->id_estado);
-        $this->assertSame('2026-09-29 10:30', $pedido->fecha->format('Y-m-d H:i'));
+        $this->assertSame($this->fecha->format('Y-m-d H:i'), $pedido->fecha->format('Y-m-d H:i'));
         $this->assertCount(2, $pedido->detalles);
         $this->assertSame('170.00', $pedido->detalles->firstWhere('id_producto', $this->pastel->id_producto)->subtotal);
 
@@ -90,7 +94,7 @@ class PedidosTest extends TestCase
 
     public function test_valida_cliente_y_productos_obligatorios(): void
     {
-        $this->post('/pedidos', ['modo_cliente' => 'existente', 'fecha' => '2026-09-29T10:30', 'productos' => []])
+        $this->post('/pedidos', ['modo_cliente' => 'existente', 'fecha' => $this->fecha->format('Y-m-d\TH:i'), 'productos' => []])
             ->assertSessionHasErrors(['id_cliente', 'productos']);
 
         $this->post('/pedidos', $this->datos([['id_producto' => $this->pastel->id_producto, 'cantidad' => 0]]))
@@ -169,8 +173,8 @@ class PedidosTest extends TestCase
         $this->get('/pedidos?buscar=%23'.$pedido->numero())->assertSee('Ana García');
         $this->get('/pedidos?buscar=Ana')->assertSee('Ana García');
         $this->get('/pedidos?estado='.EstadoPedido::ENTREGADO)->assertDontSee('Ana García');
-        $this->get('/pedidos?desde=2026-09-30')->assertDontSee('Ana García');
-        $this->get('/pedidos?desde=2026-09-29&hasta=2026-09-29')->assertSee('Ana García');
+        $this->get('/pedidos?desde='.today()->toDateString())->assertDontSee('Ana García');
+        $this->get('/pedidos?desde='.$this->fecha->toDateString().'&hasta='.$this->fecha->toDateString())->assertSee('Ana García');
 
         $this->get("/pedidos/{$pedido->id_pedido}")->assertOk()
             ->assertSee('Pastel')
@@ -203,5 +207,27 @@ class PedidosTest extends TestCase
         $this->actingAs(Usuario::factory()->emprendedor()->create())
             ->get("/pedidos/{$pedido->id_pedido}")
             ->assertNotFound();
+    }
+
+    public function test_rechaza_fechas_fuera_del_rango_permitido(): void
+    {
+        $linea = [['id_producto' => $this->pastel->id_producto, 'cantidad' => 1]];
+
+        $this->post('/pedidos', $this->datos($linea, ['fecha' => '1926-09-29T10:30']))->assertSessionHasErrors('fecha');
+        $this->post('/pedidos', $this->datos($linea, ['fecha' => now()->subMonths(13)->format('Y-m-d\TH:i')]))->assertSessionHasErrors('fecha');
+        $this->post('/pedidos', $this->datos($linea, ['fecha' => now()->addYears(2)->format('Y-m-d\TH:i')]))->assertSessionHasErrors('fecha');
+        $this->post('/pedidos', $this->datos($linea, ['fecha' => 'mañana']))->assertSessionHasErrors('fecha');
+
+        $this->assertSame(0, Pedido::count());
+    }
+
+    public function test_rechaza_textos_mas_largos_que_el_diccionario_de_datos(): void
+    {
+        $this->post('/pedidos', $this->datos([['id_producto' => $this->pastel->id_producto, 'cantidad' => 1]], [
+            'modo_cliente' => 'nuevo',
+            'nuevo_cliente' => ['nombre' => str_repeat('a', 101), 'direccion' => str_repeat('b', 256)],
+        ]))->assertSessionHasErrors(['nuevo_cliente.nombre', 'nuevo_cliente.direccion']);
+
+        $this->assertSame(0, Pedido::count());
     }
 }

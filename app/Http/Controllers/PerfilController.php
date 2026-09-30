@@ -40,7 +40,7 @@ class PerfilController extends Controller
     {
         $datos = $request->validateWithBag('contrasena', [
             'contrasena_actual' => ['required', 'current_password'],
-            'contrasena' => ['required', 'confirmed', Password::min(8)->letters()->numbers()],
+            'contrasena' => ['required', 'confirmed', Password::defaults()],
         ]);
 
         $request->user()->update(['contrasena' => $datos['contrasena']]);

@@ -200,4 +200,19 @@ class AutenticacionTest extends TestCase
         $this->assertGuest();
         $this->assertDatabaseMissing('usuarios', ['correo' => 'pedro@correo.com']);
     }
+
+    public function test_rechaza_contrasenas_de_mas_de_72_caracteres(): void
+    {
+        $larga = 'Abc1'.str_repeat('x', 69); // 73 caracteres
+
+        $this->post('/registro', [
+            'tipo' => 'cliente',
+            'nombre' => 'Ana',
+            'correo' => 'ana@correo.com',
+            'contrasena' => $larga,
+            'contrasena_confirmation' => $larga,
+        ])->assertSessionHasErrors('contrasena');
+
+        $this->assertGuest();
+    }
 }

@@ -10,7 +10,7 @@
             @csrf
             @if ($editando) @method('PUT') @endif
 
-            <x-campo nombre="nombre" etiqueta="Nombre" :valor="$producto->nombre" requerido autofocus />
+            <x-campo nombre="nombre" etiqueta="Nombre" :valor="$producto->nombre" maxlength="100" requerido autofocus />
 
             <div>
                 <label for="descripcion" class="etiqueta">Descripción</label>
@@ -23,7 +23,7 @@
                     <label for="precio" class="etiqueta">Precio <span class="text-red-600" aria-hidden="true">*</span></label>
                     <div class="relative">
                         <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm text-stone-500">Q</span>
-                        <input id="precio" name="precio" type="number" step="0.01" min="0.01" inputmode="decimal" required
+                        <input id="precio" name="precio" type="number" step="0.01" min="0.01" max="99999999.99" inputmode="decimal" required
                                value="{{ old('precio', $producto->precio) }}" @class(['campo pl-8', 'campo-error' => $errors->has('precio')])>
                     </div>
                     @error('precio')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror

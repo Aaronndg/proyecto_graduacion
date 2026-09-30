@@ -77,7 +77,7 @@
         · Solo los pedidos entregados cuentan como venta.
     </p>
 
-    <div class="mt-6 grid gap-6 lg:grid-cols-[2fr_1fr]">
+    <div class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[2fr_1fr]">
         {{-- Ventas por período (una sola serie: monto vendido) --}}
         <section class="tarjeta p-5 break-inside-avoid" aria-labelledby="titulo-ventas">
             <h2 id="titulo-ventas" class="font-semibold text-stone-900">Ventas por {{ $porMes ? 'mes' : 'día' }}</h2>

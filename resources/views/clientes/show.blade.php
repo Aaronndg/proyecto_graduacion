@@ -5,7 +5,7 @@
         <a href="{{ route('pedidos.create', ['cliente' => $cliente->id_cliente]) }}" class="btn btn-primario"><x-icono nombre="mas" clase="size-4" /> Nuevo pedido</a>
     </x-slot:acciones>
 
-    <div class="grid gap-6 lg:grid-cols-3">
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div class="space-y-6">
             <section class="tarjeta p-5">
                 <h2 class="font-semibold text-stone-900">Datos de contacto</h2>

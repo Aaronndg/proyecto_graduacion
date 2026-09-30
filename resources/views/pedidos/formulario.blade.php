@@ -54,15 +54,16 @@
                 </div>
 
                 <div data-seccion-cliente="nuevo" @class(['grid gap-4 sm:grid-cols-2', 'hidden' => $modoCliente !== 'nuevo'])>
-                    <x-campo nombre="nuevo_cliente[nombre]" id="nuevo_nombre" etiqueta="Nombre del cliente" requerido />
-                    <x-campo nombre="nuevo_cliente[telefono]" id="nuevo_telefono" etiqueta="Teléfono" tipo="tel" placeholder="5555-5555" />
-                    <x-campo nombre="nuevo_cliente[correo]" id="nuevo_correo" etiqueta="Correo electrónico" tipo="email" />
-                    <x-campo nombre="nuevo_cliente[direccion]" id="nuevo_direccion" etiqueta="Dirección" />
+                    <x-campo nombre="nuevo_cliente[nombre]" id="nuevo_nombre" etiqueta="Nombre del cliente" maxlength="100" requerido />
+                    <x-campo nombre="nuevo_cliente[telefono]" id="nuevo_telefono" etiqueta="Teléfono" tipo="tel" placeholder="5555-5555" inputmode="tel" maxlength="20" />
+                    <x-campo nombre="nuevo_cliente[correo]" id="nuevo_correo" etiqueta="Correo electrónico" tipo="email" maxlength="150" />
+                    <x-campo nombre="nuevo_cliente[direccion]" id="nuevo_direccion" etiqueta="Dirección" maxlength="255" />
                 </div>
 
                 <div class="grid gap-5 sm:grid-cols-2">
                     <x-campo nombre="fecha" etiqueta="Fecha y hora del pedido" tipo="datetime-local" requerido
-                             :valor="$pedido->fecha?->format('Y-m-d\TH:i')" />
+                             :valor="$pedido->fecha?->format('Y-m-d\TH:i')"
+                             min="{{ \App\Http\Requests\PedidoRequest::fechaMinima($pedido->exists ? $pedido : null) }}" max="{{ \App\Http\Requests\PedidoRequest::fechaMaxima() }}" />
                     <div>
                         <span class="etiqueta">Estado</span>
                         <p class="flex h-[38px] items-center">
@@ -94,9 +95,9 @@
                         <p role="alert" class="mx-5 mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{{ $errorProductos }}</p>
                     @endif
 
-                    <div class="overflow-x-auto">
-                        <table class="tabla">
-                            <thead>
+                    <div class="sm:overflow-x-auto">
+                        <table class="tabla block sm:table">
+                            <thead class="hidden sm:table-header-group">
                                 <tr>
                                     <th class="min-w-48">Producto</th>
                                     <th class="w-28">Cantidad</th>
@@ -105,16 +106,16 @@
                                     <th class="w-12"><span class="sr-only">Quitar</span></th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-stone-100" data-lineas>
+                            <tbody class="block divide-y divide-stone-100 sm:table-row-group" data-lineas>
                                 @foreach ($lineas as $i => $linea)
                                     @include('pedidos.partials.linea', ['indice' => $i, 'linea' => $linea])
                                 @endforeach
                             </tbody>
-                            <tfoot>
-                                <tr class="bg-stone-50">
+                            <tfoot class="block sm:table-footer-group">
+                                <tr class="flex items-center justify-between bg-stone-50 sm:table-row">
                                     <td colspan="3" class="text-right text-sm font-semibold text-stone-700 uppercase">Total</td>
                                     <td class="text-right text-lg font-bold text-stone-900 tabular-nums" data-total>Q 0.00</td>
-                                    <td></td>
+                                    <td class="hidden sm:table-cell"></td>
                                 </tr>
                             </tfoot>
                         </table>
