@@ -17,7 +17,7 @@ class VinculacionController extends Controller
         $cliente = $vinculacion->vincular($request->user(), $datos['codigo']);
         $negocio = $cliente->emprendedor->negocio ?? $cliente->emprendedor->nombre;
 
-        return redirect()->route('panel')->with('exito', "Listo. Ahora puede consultar sus pedidos de {$negocio}.");
+        return redirect()->route('panel')->with('exito', "¡Listo! Ya puede ver sus pedidos de {$negocio}.");
     }
 
     /** El emprendedor desvincula la cuenta actual (si la hay) y genera un código nuevo. */
@@ -27,7 +27,7 @@ class VinculacionController extends Controller
         $cliente->regenerarCodigo();
 
         return back()->with('exito', $teniaCuenta
-            ? 'Se desvinculó la cuenta y se generó un código nuevo.'
-            : 'Se generó un código nuevo. El anterior ya no es válido.');
+            ? 'Cuenta desconectada. Si el cliente quiere volver a ver sus pedidos, envíele la nueva invitación.'
+            : 'Código nuevo creado. El anterior ya no funciona.');
     }
 }

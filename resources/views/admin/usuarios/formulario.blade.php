@@ -3,8 +3,11 @@
     $esPropio = $editando && $usuario->is(auth()->user());
 @endphp
 <x-layouts.app :titulo="$editando ? 'Editar usuario' : 'Nuevo usuario'">
-    <div class="mx-auto max-w-2xl">
-        <a href="{{ route('admin.usuarios.index') }}" class="mb-4 inline-block text-sm font-medium text-marca-600 hover:underline">&larr; Volver a usuarios</a>
+
+    <x-slot:acciones>
+        <a href="{{ route('admin.usuarios.index') }}" class="btn btn-secundario">&larr; Usuarios</a>
+    </x-slot:acciones>
+    <div class="max-w-2xl">
 
         <form method="POST" action="{{ $editando ? route('admin.usuarios.update', $usuario) : route('admin.usuarios.store') }}" class="tarjeta space-y-5 p-6" novalidate>
             @csrf
@@ -23,7 +26,7 @@
                     </select>
                     @if ($esPropio)
                         <input type="hidden" name="id_rol" value="{{ $usuario->id_rol }}">
-                        <p class="mt-1 text-xs text-slate-500">No puede cambiar su propio rol.</p>
+                        <p class="mt-1 text-xs text-stone-500">No puede cambiar su propio rol.</p>
                     @endif
                     @error('id_rol')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
                 </div>
@@ -37,14 +40,14 @@
                 <x-campo nombre="contrasena_confirmation" etiqueta="Confirmar contraseña" tipo="password" autocomplete="new-password" :requerido="! $editando" />
             </div>
 
-            <label class="flex items-center gap-3 text-sm text-slate-700">
+            <label class="flex items-center gap-3 text-sm text-stone-700">
                 <input type="hidden" name="activo" value="0">
                 <input type="checkbox" name="activo" value="1" class="size-4 accent-marca-600" @checked(old('activo', $usuario->activo)) @disabled($esPropio)>
                 Cuenta activa (puede iniciar sesión)
                 @if ($esPropio)<input type="hidden" name="activo" value="1">@endif
             </label>
 
-            <div class="flex justify-end gap-3 border-t border-slate-200 pt-5">
+            <div class="flex justify-end gap-3 border-t border-stone-200 pt-5">
                 <a href="{{ route('admin.usuarios.index') }}" class="btn btn-secundario">Cancelar</a>
                 <button type="submit" class="btn btn-primario">{{ $editando ? 'Guardar cambios' : 'Registrar usuario' }}</button>
             </div>

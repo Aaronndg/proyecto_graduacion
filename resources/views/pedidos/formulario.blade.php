@@ -9,8 +9,11 @@
         ->filter(fn ($m, $clave) => str_starts_with($clave, 'productos.'))->flatten()->first();
 @endphp
 <x-layouts.app :titulo="$editando ? 'Editar pedido #'.$pedido->numero() : 'Nuevo pedido'">
-    <div class="mx-auto max-w-4xl">
-        <a href="{{ $editando ? route('pedidos.show', $pedido) : route('pedidos.index') }}" class="mb-4 inline-block text-sm font-medium text-marca-600 hover:underline">&larr; Volver</a>
+
+    <x-slot:acciones>
+        <a href="{{ $editando ? route('pedidos.show', $pedido) : route('pedidos.index') }}" class="btn btn-secundario">&larr; Volver</a>
+    </x-slot:acciones>
+    <div class="max-w-4xl">
 
         @if ($errors->has('pedido'))
             <div role="alert" class="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{{ $errors->first('pedido') }}</div>
@@ -23,11 +26,11 @@
 
             {{-- Cliente y fecha --}}
             <section class="tarjeta space-y-5 p-6">
-                <h2 class="text-base font-semibold text-slate-900">Datos del pedido</h2>
+                <h2 class="text-base font-semibold text-stone-900">Datos del pedido</h2>
 
-                <div class="flex gap-2 rounded-lg bg-slate-100 p-1 text-sm font-medium" role="radiogroup" aria-label="Cliente">
+                <div class="flex gap-2 rounded-lg bg-stone-100 p-1 text-sm font-medium" role="radiogroup" aria-label="Cliente">
                     @foreach (['existente' => 'Cliente registrado', 'nuevo' => 'Cliente nuevo'] as $valor => $texto)
-                        <label class="flex-1 cursor-pointer rounded-md px-3 py-2 text-center text-slate-600 has-checked:bg-white has-checked:text-marca-700 has-checked:shadow-sm">
+                        <label class="flex-1 cursor-pointer rounded-md px-3 py-2 text-center text-stone-600 has-checked:bg-white has-checked:text-marca-700 has-checked:shadow-sm">
                             <input type="radio" name="modo_cliente" value="{{ $valor }}" class="sr-only" @checked($modoCliente === $valor) data-modo-cliente>
                             {{ $texto }}
                         </label>
@@ -46,7 +49,7 @@
                     </select>
                     @error('id_cliente')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
                     @if ($clientes->isEmpty())
-                        <p class="mt-1 text-xs text-slate-500">Aún no tiene clientes. Elija «Cliente nuevo» para registrarlo junto con el pedido.</p>
+                        <p class="mt-1 text-xs text-stone-500">Aún no tiene clientes. Elija «Cliente nuevo» para registrarlo junto con el pedido.</p>
                     @endif
                 </div>
 
@@ -66,7 +69,7 @@
                             @if ($editando)
                                 <x-estado-pedido :estado="$pedido->estado" />
                             @else
-                                <span class="text-sm text-slate-600">Se registrará como <strong>Nuevo</strong></span>
+                                <span class="text-sm text-stone-600">Se registrará como <strong>Nuevo</strong></span>
                             @endif
                         </p>
                     </div>
@@ -75,8 +78,8 @@
 
             {{-- Productos --}}
             <section class="tarjeta">
-                <div class="flex items-center justify-between border-b border-slate-200 px-5 py-4">
-                    <h2 class="text-base font-semibold text-slate-900">Productos</h2>
+                <div class="flex items-center justify-between border-b border-stone-200 px-5 py-4">
+                    <h2 class="text-base font-semibold text-stone-900">Productos</h2>
                     <button type="button" class="btn btn-secundario px-3 py-1.5" data-agregar-linea @disabled($productos->isEmpty())>
                         <x-icono nombre="mas" clase="size-4" /> Agregar producto
                     </button>
@@ -102,21 +105,21 @@
                                     <th class="w-12"><span class="sr-only">Quitar</span></th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-slate-100" data-lineas>
+                            <tbody class="divide-y divide-stone-100" data-lineas>
                                 @foreach ($lineas as $i => $linea)
                                     @include('pedidos.partials.linea', ['indice' => $i, 'linea' => $linea])
                                 @endforeach
                             </tbody>
                             <tfoot>
-                                <tr class="bg-slate-50">
-                                    <td colspan="3" class="text-right text-sm font-semibold text-slate-700 uppercase">Total</td>
-                                    <td class="text-right text-lg font-bold text-slate-900 tabular-nums" data-total>Q 0.00</td>
+                                <tr class="bg-stone-50">
+                                    <td colspan="3" class="text-right text-sm font-semibold text-stone-700 uppercase">Total</td>
+                                    <td class="text-right text-lg font-bold text-stone-900 tabular-nums" data-total>Q 0.00</td>
                                     <td></td>
                                 </tr>
                             </tfoot>
                         </table>
                     </div>
-                    <p class="px-5 py-3 text-xs text-slate-500">
+                    <p class="px-5 py-3 text-xs text-stone-500">
                         El total se calcula con los precios del catálogo y se verifica al guardar.
                         @if ($editando) Los productos que ya estaban en el pedido conservan el precio con el que se registraron. @endif
                     </p>

@@ -1,42 +1,41 @@
-<x-layouts.app titulo="Panel principal">
-    <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p class="text-slate-500">¡Bienvenido de nuevo, <span class="font-medium text-slate-700">{{ auth()->user()->nombre }}</span>! Aquí tiene un resumen de su negocio.</p>
-        <a href="{{ route('pedidos.create') }}" class="btn btn-primario self-start"><x-icono nombre="mas" clase="size-4" /> Nuevo pedido</a>
-    </div>
+<x-layouts.app :titulo="'Hola, '.strtok(auth()->user()->nombre, ' ')" subtitulo="Así va su negocio hoy.">
+    <x-slot:acciones>
+        <a href="{{ route('pedidos.create') }}" class="btn btn-primario"><x-icono nombre="mas" clase="size-4" /> Nuevo pedido</a>
+    </x-slot:acciones>
 
     <div class="grid gap-4 sm:grid-cols-3">
-        <x-estadistica titulo="Clientes" :valor="$totalClientes" icono="usuarios" />
-        <x-estadistica titulo="Pedidos pendientes" :valor="$pedidosPendientes" icono="pedido" color="bg-amber-50 text-amber-600" />
-        <x-estadistica titulo="Productos activos" :valor="$totalProductos" icono="producto" color="bg-emerald-50 text-emerald-600" />
+        <x-estadistica titulo="Pedidos por atender" :valor="$pedidosPendientes" icono="reloj" color="bg-amber-50 text-amber-600" :enlace="route('seguimiento')" />
+        <x-estadistica titulo="Clientes" :valor="$totalClientes" icono="usuarios" :enlace="route('clientes.index')" />
+        <x-estadistica titulo="Productos activos" :valor="$totalProductos" icono="producto" color="bg-violet-50 text-violet-600" :enlace="route('productos.index')" />
     </div>
 
-    <section class="tarjeta mt-6">
-        <div class="flex items-center justify-between border-b border-slate-200 px-5 py-4">
-            <h2 class="font-semibold text-slate-900">Pedidos recientes</h2>
-            <a href="{{ route('pedidos.index') }}" class="text-sm font-medium text-marca-600 hover:underline">Ver todos</a>
+    <section class="tarjeta mt-6 overflow-hidden">
+        <div class="flex items-center justify-between px-5 pt-5 pb-3">
+            <h2 class="font-semibold text-stone-900">Pedidos recientes</h2>
+            <a href="{{ route('pedidos.index') }}" class="enlace text-sm">Ver todos</a>
         </div>
 
         @if ($pedidosRecientes->isEmpty())
-            <x-vacio titulo="Aún no hay pedidos registrados"
-                     :texto="$totalProductos ? 'Registre su primer pedido para verlo aquí.' : 'Empiece registrando sus productos; luego podrá crear pedidos.'">
+            <x-vacio titulo="Aún no hay pedidos"
+                     :texto="$totalProductos ? 'Registre su primer pedido y aparecerá aquí.' : 'Empiece agregando sus productos; luego podrá registrar pedidos.'">
                 <a href="{{ $totalProductos ? route('pedidos.create') : route('productos.create') }}" class="btn btn-primario">
-                    {{ $totalProductos ? 'Registrar pedido' : 'Registrar productos' }}
+                    {{ $totalProductos ? 'Registrar pedido' : 'Agregar productos' }}
                 </a>
             </x-vacio>
         @else
             <div class="overflow-x-auto">
                 <table class="tabla">
                     <thead>
-                        <tr><th>No.</th><th>Cliente</th><th>Fecha</th><th>Estado</th><th class="text-right">Total</th></tr>
+                        <tr><th>Pedido</th><th>Cliente</th><th>Fecha</th><th>Estado</th><th class="text-right">Total</th></tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-100">
+                    <tbody class="divide-y divide-stone-100">
                         @foreach ($pedidosRecientes as $pedido)
                             <tr>
-                                <td><a href="{{ route('pedidos.show', $pedido) }}" class="font-medium text-marca-600 hover:underline">#{{ $pedido->numero() }}</a></td>
-                                <td>{{ $pedido->cliente->nombre }}</td>
-                                <td class="whitespace-nowrap">{{ $pedido->fecha->format('d/m/Y') }}</td>
+                                <td><a href="{{ route('pedidos.show', $pedido) }}" class="enlace">#{{ $pedido->numero() }}</a></td>
+                                <td class="font-medium text-stone-900">{{ $pedido->cliente->nombre }}</td>
+                                <td class="whitespace-nowrap text-stone-500">{{ $pedido->fecha->format('d/m/Y') }}</td>
                                 <td><x-estado-pedido :estado="$pedido->estado" /></td>
-                                <td class="text-right"><x-moneda :valor="$pedido->total" /></td>
+                                <td class="text-right font-medium"><x-moneda :valor="$pedido->total" /></td>
                             </tr>
                         @endforeach
                     </tbody>

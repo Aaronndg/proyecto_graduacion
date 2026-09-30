@@ -36,7 +36,7 @@ class VinculacionClientes
             $minutos = (int) ceil(RateLimiter::availableIn($claveLimite) / 60);
 
             throw ValidationException::withMessages([
-                $campo => "Demasiados intentos con códigos incorrectos. Intente de nuevo en {$minutos} minuto(s).",
+                $campo => "Por seguridad, espere {$minutos} minuto(s) antes de intentar otra vez.",
             ]);
         }
 
@@ -50,7 +50,7 @@ class VinculacionClientes
             RateLimiter::hit($claveLimite, self::BLOQUEO_SEGUNDOS);
 
             throw ValidationException::withMessages([
-                $campo => 'El código no es válido o ya fue utilizado. Verifíquelo con el negocio que se lo envió.',
+                $campo => 'No encontramos ese código. Revise que esté bien escrito o pídale uno nuevo al negocio.',
             ]);
         }
 

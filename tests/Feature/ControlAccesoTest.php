@@ -18,7 +18,7 @@ class ControlAccesoTest extends TestCase
     public function test_cada_rol_ve_su_propio_panel(): void
     {
         $this->actingAs(Usuario::factory()->administrador()->create())->get('/panel')->assertOk()->assertSee('Emprendedores');
-        $this->actingAs(Usuario::factory()->emprendedor()->create())->get('/panel')->assertOk()->assertSee('Pedidos pendientes');
+        $this->actingAs(Usuario::factory()->emprendedor()->create())->get('/panel')->assertOk()->assertSee('Pedidos por atender');
         $this->actingAs(Usuario::factory()->cliente()->create())->get('/panel')->assertOk()->assertSee('Mis pedidos');
     }
 

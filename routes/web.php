@@ -18,7 +18,7 @@ Route::redirect('/', '/panel');
 Route::middleware('guest')->group(function () {
     Route::get('login', [SesionController::class, 'create'])->name('login');
     Route::post('login', [SesionController::class, 'store'])->name('login.store');
-    Route::get('registro', [RegistroController::class, 'create'])->name('registro');
+    Route::get('registro', [RegistroController::class, 'create'])->middleware('throttle:30,1')->name('registro');
     Route::post('registro', [RegistroController::class, 'store'])->middleware('throttle:10,1')->name('registro.store');
 });
 

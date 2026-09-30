@@ -1,60 +1,58 @@
-<x-layouts.app titulo="Mis pedidos">
-    <div class="mb-6">
-        <p class="text-slate-500">Hola, <span class="font-medium text-slate-700">{{ auth()->user()->nombre }}</span>. Consulte aquí el estado de sus pedidos.</p>
-    </div>
-
-    <div class="grid gap-4 lg:grid-cols-3">
-        <x-estadistica titulo="Pedidos en curso" :valor="$enCurso" icono="reloj" color="bg-amber-50 text-amber-600" />
-        <x-estadistica titulo="Total de pedidos" :valor="$pedidos->count()" icono="pedido" />
-
-        {{-- Vinculación con el código entregado por el negocio (RN-06) --}}
-        <form method="POST" action="{{ route('vincular') }}" class="tarjeta p-4" novalidate data-envio-unico>
-            @csrf
-            <label for="codigo" class="etiqueta">¿Tiene un código de un negocio?</label>
-            <div class="flex gap-2">
-                <input id="codigo" name="codigo" value="{{ old('codigo') }}" placeholder="K7QM-4XPA" autocomplete="off" maxlength="20"
-                       @class(['campo uppercase', 'campo-error' => $errors->has('codigo')])
-                       @error('codigo') aria-invalid="true" aria-describedby="codigo-error" @enderror>
-                <button type="submit" class="btn btn-primario shrink-0">Vincular</button>
+<x-layouts.app titulo="Mis pedidos" :subtitulo="'Hola, '.strtok(auth()->user()->nombre, ' ').'. Aquí puede ver cómo van sus pedidos.'">
+    @if ($pedidos->isEmpty())
+        {{-- Primera vez: explicar en 3 pasos cómo ver sus pedidos. --}}
+        <section class="tarjeta mx-auto max-w-2xl p-6 sm:p-10">
+            <div class="text-center">
+                <span class="mx-auto flex size-14 items-center justify-center rounded-2xl bg-marca-50 text-marca-600">
+                    <x-icono nombre="pedido" clase="size-7" />
+                </span>
+                <h2 class="mt-4 text-xl font-bold text-stone-900">Conecte su cuenta con el negocio</h2>
+                <p class="mt-1 text-stone-500">Así podrá ver sus pedidos. Solo toma un momento.</p>
             </div>
-            @error('codigo')
-                <p id="codigo-error" class="mt-1 text-sm text-red-600">{{ $message }}</p>
-            @else
-                <p class="mt-1 text-xs text-slate-500">Ingréselo para ver sus pedidos de ese negocio.</p>
-            @enderror
-        </form>
-    </div>
 
-    <section class="tarjeta mt-6">
-        <div class="border-b border-slate-200 px-5 py-4">
-            <h2 class="font-semibold text-slate-900">Mis pedidos</h2>
+            <ol class="mt-8 grid gap-4 sm:grid-cols-3">
+                @foreach ([
+                    ['Pida su código', 'El negocio donde compró se lo envía, por ejemplo por WhatsApp.'],
+                    ['Escríbalo abajo', new \Illuminate\Support\HtmlString('Son 8 letras y números, como <span class="whitespace-nowrap font-mono">K7QM-4XPA</span>.')],
+                    ['¡Listo!', 'Verá sus pedidos y en qué etapa van.'],
+                ] as $i => [$paso, $detalle])
+                    <li class="rounded-2xl bg-stone-50 p-4 text-center sm:text-left">
+                        <span class="inline-flex size-7 items-center justify-center rounded-full bg-marca-600 text-sm font-bold text-white">{{ $i + 1 }}</span>
+                        <p class="mt-2 font-semibold text-stone-900">{{ $paso }}</p>
+                        <p class="mt-0.5 text-sm text-stone-500">{{ $detalle }}</p>
+                    </li>
+                @endforeach
+            </ol>
+
+            <x-formulario-codigo grande class="mt-8" />
+        </section>
+    @else
+        <div class="grid gap-4 md:grid-cols-2">
+            @foreach ($pedidos as $pedido)
+                <a href="{{ route('mis-pedidos.show', $pedido) }}"
+                   class="tarjeta group flex flex-col gap-4 p-5 transition hover:-translate-y-0.5 hover:border-marca-200 hover:shadow-md">
+                    <div class="flex items-start justify-between gap-3">
+                        <div class="min-w-0">
+                            <p class="truncate text-sm font-medium text-stone-500">{{ $pedido->emprendedor->negocio ?? $pedido->emprendedor->nombre }}</p>
+                            <p class="text-lg font-bold text-stone-900">{{ $pedido->estado->mensajeCliente() }}</p>
+                        </div>
+                        <x-estado-pedido :estado="$pedido->estado" />
+                    </div>
+                    <div class="flex items-end justify-between border-t border-stone-100 pt-4 text-sm">
+                        <span class="text-stone-500">Pedido #{{ $pedido->numero() }} · {{ $pedido->fecha->translatedFormat('d M Y') }}</span>
+                        <span class="flex items-center gap-2 font-semibold text-stone-900">
+                            <x-moneda :valor="$pedido->total" />
+                            <span class="text-marca-600 transition group-hover:translate-x-0.5" aria-hidden="true">&rarr;</span>
+                        </span>
+                    </div>
+                </a>
+            @endforeach
         </div>
 
-        @if ($pedidos->isEmpty())
-            <div class="px-5 py-12 text-center">
-                <x-icono nombre="pedido" clase="mx-auto size-10 text-slate-300" />
-                <p class="mt-3 font-medium text-slate-700">Todavía no tiene pedidos asociados</p>
-                <p class="mt-1 text-sm text-slate-500">Pida su código de vinculación al negocio donde hizo su pedido e ingréselo arriba.</p>
-            </div>
-        @else
-            <div class="overflow-x-auto">
-                <table class="tabla">
-                    <thead>
-                        <tr><th>No.</th><th>Negocio</th><th>Fecha</th><th>Estado</th><th class="text-right">Total</th></tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-100">
-                        @foreach ($pedidos as $pedido)
-                            <tr>
-                                <td><a href="{{ route('mis-pedidos.show', $pedido) }}" class="font-medium text-marca-600 hover:underline">#{{ $pedido->numero() }}</a></td>
-                                <td>{{ $pedido->emprendedor->negocio ?? $pedido->emprendedor->nombre }}</td>
-                                <td class="whitespace-nowrap">{{ $pedido->fecha->format('d/m/Y') }}</td>
-                                <td><x-estado-pedido :estado="$pedido->estado" /></td>
-                                <td class="text-right"><x-moneda :valor="$pedido->total" /></td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        @endif
-    </section>
+        <details class="tarjeta mt-6 p-5" @if ($errors->has('codigo')) open @endif>
+            <summary class="cursor-pointer font-medium text-stone-700 marker:text-stone-400">¿Compró en otro negocio? Agregue su código</summary>
+            <p class="mt-2 mb-4 text-sm text-stone-500">Escriba el código de cliente que le envió ese negocio.</p>
+            <x-formulario-codigo class="max-w-md" />
+        </details>
+    @endif
 </x-layouts.app>

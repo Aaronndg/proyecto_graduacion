@@ -1,58 +1,42 @@
-<x-layouts.app :titulo="'Pedido #'.$pedido->numero()">
-    <a href="{{ route('panel') }}" class="mb-4 inline-block text-sm font-medium text-marca-600 hover:underline">&larr; Volver a mis pedidos</a>
+<x-layouts.app :titulo="$pedido->estado->mensajeCliente()"
+                :subtitulo="'Pedido #'.$pedido->numero().' en '.($pedido->emprendedor->negocio ?? $pedido->emprendedor->nombre).' · '.$pedido->fecha->translatedFormat('d \d\e F, H:i')">
+    <x-slot:acciones>
+        <a href="{{ route('panel') }}" class="btn btn-secundario">&larr; Mis pedidos</a>
+    </x-slot:acciones>
 
-    <section class="tarjeta mb-6 p-5">
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-            <div>
-                <h2 class="text-lg font-semibold text-slate-900">Pedido #{{ $pedido->numero() }}</h2>
-                <p class="text-sm text-slate-500">
-                    {{ $pedido->emprendedor->negocio ?? $pedido->emprendedor->nombre }} ·
-                    {{ $pedido->fecha->translatedFormat('d \d\e F \d\e Y, H:i') }}
-                </p>
-            </div>
-            <x-estado-pedido :estado="$pedido->estado" />
-        </div>
-
-        <x-progreso-pedido :pedido="$pedido" class="mt-6 border-t border-slate-200 pt-5" />
+    <section class="tarjeta mb-6 p-5 sm:p-8">
+        <x-progreso-pedido :pedido="$pedido" />
     </section>
 
     <div class="grid gap-6 lg:grid-cols-5">
-        <section class="tarjeta lg:col-span-3">
-            <h2 class="border-b border-slate-200 px-5 py-4 font-semibold text-slate-900">Productos</h2>
-            <div class="overflow-x-auto">
-                <table class="tabla">
-                    <thead><tr><th>Producto</th><th class="text-center">Cantidad</th><th class="text-right">Subtotal</th></tr></thead>
-                    <tbody class="divide-y divide-slate-100">
-                        @foreach ($pedido->detalles as $detalle)
-                            <tr>
-                                <td class="font-medium text-slate-900">{{ $detalle->producto->nombre }}</td>
-                                <td class="text-center tabular-nums">{{ $detalle->cantidad }}</td>
-                                <td class="text-right"><x-moneda :valor="$detalle->subtotal" /></td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                    <tfoot>
-                        <tr class="bg-slate-50">
-                            <td colspan="2" class="text-right text-sm font-semibold text-slate-700 uppercase">Total</td>
-                            <td class="text-right font-bold text-slate-900"><x-moneda :valor="$pedido->total" /></td>
-                        </tr>
-                    </tfoot>
-                </table>
+        <section class="tarjeta overflow-hidden lg:col-span-3">
+            <h2 class="px-5 pt-5 pb-3 font-semibold text-stone-900">Lo que pidió</h2>
+            <ul class="divide-y divide-stone-100">
+                @foreach ($pedido->detalles as $detalle)
+                    <li class="flex items-center justify-between gap-4 px-5 py-3.5">
+                        <span class="text-stone-800">
+                            <span class="mr-2 inline-flex min-w-7 justify-center rounded-lg bg-stone-100 px-1.5 py-0.5 text-sm font-semibold text-stone-600">{{ $detalle->cantidad }}×</span>
+                            {{ $detalle->producto->nombre }}
+                        </span>
+                        <x-moneda :valor="$detalle->subtotal" class="text-stone-700" />
+                    </li>
+                @endforeach
+            </ul>
+            <div class="flex items-center justify-between bg-stone-50 px-5 py-4">
+                <span class="font-semibold text-stone-700">Total</span>
+                <x-moneda :valor="$pedido->total" class="text-lg font-bold text-stone-900" />
             </div>
         </section>
 
         <section class="tarjeta lg:col-span-2">
-            <h2 class="border-b border-slate-200 px-5 py-4 font-semibold text-slate-900">Historial del pedido</h2>
-            <ol class="space-y-4 p-5">
+            <h2 class="px-5 pt-5 pb-1 font-semibold text-stone-900">Novedades</h2>
+            <ol class="relative space-y-5 p-5">
                 @foreach ($pedido->historial->reverse() as $registro)
                     <li class="flex gap-3">
-                        <span class="mt-1.5 size-2.5 shrink-0 rounded-full bg-marca-500" aria-hidden="true"></span>
+                        <span @class(['mt-1.5 size-2.5 shrink-0 rounded-full', 'bg-marca-500 ring-4 ring-marca-100' => $loop->first, 'bg-stone-300' => ! $loop->first]) aria-hidden="true"></span>
                         <div>
-                            <div class="flex flex-wrap items-center gap-2">
-                                <x-estado-pedido :estado="$registro->estado" />
-                                <span class="text-xs text-slate-500">{{ $registro->fecha_hora->format('d/m/Y H:i') }}</span>
-                            </div>
-                            @if ($registro->observacion)<p class="mt-1 text-sm text-slate-700">{{ $registro->observacion }}</p>@endif
+                            <p class="font-medium text-stone-900">{{ $registro->observacion ?: $registro->estado->nombre }}</p>
+                            <p class="text-xs text-stone-500">{{ $registro->fecha_hora->translatedFormat('d M, H:i') }} · {{ $registro->estado->nombre }}</p>
                         </div>
                     </li>
                 @endforeach

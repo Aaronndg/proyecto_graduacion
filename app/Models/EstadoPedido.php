@@ -54,16 +54,29 @@ class EstadoPedido extends Model
         };
     }
 
+    /** Frase en lenguaje sencillo que ve el cliente sobre su pedido. */
+    public function mensajeCliente(): string
+    {
+        return match ($this->id_estado) {
+            self::NUEVO => 'Recibimos su pedido',
+            self::EN_PROCESO => 'Su pedido se está preparando',
+            self::LISTO => 'Su pedido está listo',
+            self::ENTREGADO => 'Su pedido fue entregado',
+            self::CANCELADO => 'Este pedido fue cancelado',
+            default => $this->nombre,
+        };
+    }
+
     /** Clase de color para la etiqueta del estado (siempre acompañada del nombre, 5.5.4). */
     public function color(): string
     {
         return match ($this->id_estado) {
-            self::NUEVO => 'bg-blue-50 text-blue-700 ring-blue-600/20',
+            self::NUEVO => 'bg-sky-50 text-sky-700 ring-sky-600/20',
             self::EN_PROCESO => 'bg-amber-50 text-amber-700 ring-amber-600/20',
             self::LISTO => 'bg-violet-50 text-violet-700 ring-violet-600/20',
             self::ENTREGADO => 'bg-emerald-50 text-emerald-700 ring-emerald-600/20',
-            self::CANCELADO => 'bg-slate-100 text-slate-600 ring-slate-500/20',
-            default => 'bg-slate-100 text-slate-600 ring-slate-500/20',
+            self::CANCELADO => 'bg-stone-100 text-stone-600 ring-stone-500/20',
+            default => 'bg-stone-100 text-stone-600 ring-stone-500/20',
         };
     }
 }

@@ -33,25 +33,55 @@ document.addEventListener('submit', (evento) => {
             return;
         }
         formulario.dataset.enviando = '1';
-        formulario.querySelectorAll('button[type="submit"]').forEach((b) => {
-            b.disabled = true;
-            b.textContent = 'Guardando…';
-        });
+        // Se deshabilitan después de iniciar el envío para que viaje el valor del botón pulsado.
+        setTimeout(() => {
+            formulario.querySelectorAll('button[type="submit"]').forEach((b) => (b.disabled = true));
+            if (evento.submitter) evento.submitter.textContent = 'Guardando…';
+        }, 0);
     }
 });
 
 document.querySelectorAll('[data-formulario-pedido]').forEach(iniciarFormularioPedido);
 
-// Actualización de estado: cancelar exige motivo y confirmación.
-document.querySelectorAll('[data-formulario-estado]').forEach((formulario) => {
-    const estado = formulario.querySelector('[name="id_estado"]');
-    const ayuda = formulario.querySelector('[data-observacion-ayuda]');
-    const esCancelacion = () => estado.selectedOptions[0]?.textContent.trim() === 'Cancelado';
+// Código de cliente: mayúsculas, solo caracteres válidos y guion automático (XXXX-XXXX).
+document.addEventListener('input', (evento) => {
+    const campo = evento.target.closest('[data-codigo]');
+    if (!campo) return;
 
-    const actualizar = () => {
-        ayuda.textContent = esCancelacion() ? '(obligatoria: indique el motivo)' : '(opcional)';
-        formulario.dataset.confirmar = esCancelacion() ? '¿Cancelar este pedido? Esta acción no se puede deshacer.' : '';
-    };
-    estado.addEventListener('change', actualizar);
-    actualizar();
+    const limpio = campo.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
+    campo.value = limpio.length > 4 ? `${limpio.slice(0, 4)}-${limpio.slice(4)}` : limpio;
+});
+
+// Botón "Copiar" (código de cliente).
+document.addEventListener('click', async (evento) => {
+    const boton = evento.target.closest('[data-copiar]');
+    if (!boton) return;
+
+    try {
+        await navigator.clipboard.writeText(boton.dataset.copiar);
+        const texto = boton.textContent;
+        boton.textContent = '¡Copiado!';
+        setTimeout(() => (boton.textContent = texto), 1800);
+    } catch {
+        window.prompt('Copie el código:', boton.dataset.copiar);
+    }
+});
+
+// Actualización de estado: cancelar exige escribir el motivo y confirmar.
+document.addEventListener('click', (evento) => {
+    const boton = evento.target.closest('[data-cancelar]');
+    if (!boton) return;
+
+    const nota = boton.form.querySelector('[name="observacion"]');
+    if (!nota.value.trim()) {
+        evento.preventDefault();
+        nota.placeholder = 'Escriba aquí el motivo de la cancelación';
+        nota.classList.add('campo-error');
+        nota.focus();
+        return;
+    }
+
+    if (!window.confirm('¿Cancelar este pedido? Esta acción no se puede deshacer.')) {
+        evento.preventDefault();
+    }
 });

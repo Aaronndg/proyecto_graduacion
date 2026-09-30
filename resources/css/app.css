@@ -1,3 +1,4 @@
+@import '@fontsource-variable/inter';
 @import 'tailwindcss';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
@@ -6,63 +7,99 @@
 @source '../**/*.js';
 @source '../../app/Models/*.php';
 
+/*
+ * Paleta: verde azulado (marca) sobre grises cálidos (stone).
+ * Transmite confianza y orden, y contrasta bien con los colores de los estados del pedido.
+ */
 @theme {
-    --font-sans: 'Segoe UI', ui-sans-serif, system-ui, -apple-system, Roboto, 'Helvetica Neue', Arial, sans-serif;
-    --color-marca-50: #eef4ff;
-    --color-marca-100: #dbe6fe;
-    --color-marca-500: #3b6fd8;
-    --color-marca-600: #2557c2;
-    --color-marca-700: #1d449b;
-    --color-marca-900: #15294d;
-    --color-marca-950: #0f1d38;
+    --font-sans: 'Inter Variable', ui-sans-serif, system-ui, 'Segoe UI', Roboto, sans-serif;
+    --color-marca-50: #effcf9;
+    --color-marca-100: #c8f5ec;
+    --color-marca-200: #93eadb;
+    --color-marca-300: #57d7c4;
+    --color-marca-400: #27bba9;
+    --color-marca-500: #0f9f90;
+    --color-marca-600: #0a8076;
+    --color-marca-700: #0d665f;
+    --color-marca-800: #10524d;
+    --color-marca-900: #124441;
+    --color-marca-950: #032827;
+    --shadow-suave: 0 1px 2px rgb(28 25 23 / 0.04), 0 4px 16px -4px rgb(28 25 23 / 0.08);
+}
+
+@layer base {
+    html {
+        -webkit-tap-highlight-color: transparent;
+        font-feature-settings: 'cv11', 'ss01';
+    }
+
+    ::selection {
+        background: var(--color-marca-100);
+    }
 }
 
 @layer components {
     .etiqueta {
-        @apply mb-1 block text-sm font-medium text-slate-700;
+        @apply mb-1.5 block text-sm font-medium text-stone-700;
     }
 
     .campo {
-        @apply block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-marca-500 focus:ring-2 focus:ring-marca-500/30 focus:outline-none disabled:bg-slate-100;
+        @apply block w-full rounded-xl border border-stone-300 bg-white px-3.5 py-2.5 text-sm text-stone-900 shadow-xs transition placeholder:text-stone-400 hover:border-stone-400 focus:border-marca-500 focus:ring-4 focus:ring-marca-500/15 focus:outline-none disabled:bg-stone-100;
     }
 
     .campo-error {
-        @apply border-red-400 focus:border-red-500 focus:ring-red-500/30;
+        @apply border-red-400 hover:border-red-400 focus:border-red-500 focus:ring-red-500/15;
     }
 
     .btn {
-        @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-60;
+        @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold whitespace-nowrap transition focus-visible:outline-2 focus-visible:outline-offset-2 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60;
     }
 
     .btn-primario {
-        @apply bg-marca-600 text-white shadow-sm hover:bg-marca-700 focus-visible:outline-marca-600;
+        @apply bg-marca-600 text-white shadow-sm shadow-marca-900/20 hover:bg-marca-700 focus-visible:outline-marca-600;
     }
 
     .btn-secundario {
-        @apply border border-slate-300 bg-white text-slate-700 shadow-sm hover:bg-slate-50 focus-visible:outline-slate-400;
+        @apply border border-stone-300 bg-white text-stone-700 shadow-xs hover:border-stone-400 hover:bg-stone-50 focus-visible:outline-stone-400;
     }
 
     .btn-peligro {
         @apply border border-red-200 bg-white text-red-700 hover:bg-red-50 focus-visible:outline-red-500;
     }
 
+    .btn-whatsapp {
+        @apply bg-[#1faa59] text-white shadow-sm hover:bg-[#188a48] focus-visible:outline-[#1faa59];
+    }
+
     .tarjeta {
-        @apply rounded-xl border border-slate-200 bg-white shadow-sm;
+        @apply rounded-2xl border border-stone-200/80 bg-white shadow-suave;
     }
 
     .tabla {
-        @apply min-w-full divide-y divide-slate-200 text-sm;
+        @apply min-w-full text-sm;
     }
 
-    .tabla th {
-        @apply bg-slate-50 px-4 py-3 text-left text-xs font-semibold tracking-wide text-slate-600 uppercase;
+    .tabla thead th {
+        @apply border-b border-stone-200 bg-stone-50/70 px-4 py-3 text-left text-xs font-semibold tracking-wide text-stone-500 uppercase;
     }
 
     .tabla td {
-        @apply px-4 py-3 text-slate-700;
+        @apply px-4 py-3.5 text-stone-700;
+    }
+
+    .tabla tbody tr {
+        @apply transition-colors hover:bg-stone-50/70;
+    }
+
+    .tabla tfoot td {
+        @apply border-t border-stone-200;
     }
 
     .insignia {
-        @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset;
+        @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium whitespace-nowrap ring-1 ring-inset;
+    }
+
+    .enlace {
+        @apply font-medium text-marca-700 underline-offset-4 hover:underline;
     }
 }

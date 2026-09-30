@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cliente;
 use App\Models\Rol;
 use App\Models\Usuario;
 use App\Servicios\VinculacionClientes;
@@ -21,9 +22,18 @@ class RegistroController extends Controller
     {
     }
 
-    public function create(): View
+    public function create(Request $request): View
     {
-        return view('auth.registro');
+        // Si el cliente llega con el enlace de invitación, se muestra el nombre del negocio que lo invitó.
+        $codigo = Cliente::normalizarCodigo((string) $request->query('codigo'));
+        $invitacion = strlen($codigo) === 8
+            ? Cliente::withoutGlobalScopes()->with('emprendedor')->where('codigo_vinculacion', $codigo)->whereNull('id_usuario')->first()
+            : null;
+
+        return view('auth.registro', [
+            'invitacion' => $invitacion,
+            'negocioInvita' => $invitacion ? ($invitacion->emprendedor->negocio ?? $invitacion->emprendedor->nombre) : null,
+        ]);
     }
 
     public function store(Request $request): RedirectResponse

@@ -76,7 +76,7 @@ class VinculacionTest extends TestCase
 
         // Aun con el código correcto, queda bloqueado temporalmente.
         $this->post('/vincular', ['codigo' => $this->cliente->codigo_vinculacion])
-            ->assertSessionHasErrors(['codigo' => 'Demasiados intentos con códigos incorrectos. Intente de nuevo en 10 minuto(s).']);
+            ->assertSessionHasErrors(['codigo' => 'Por seguridad, espere 10 minuto(s) antes de intentar otra vez.']);
 
         $this->assertNull($this->cliente->fresh()->id_usuario);
     }
@@ -91,7 +91,7 @@ class VinculacionTest extends TestCase
         $this->assertNull($this->cliente->id_usuario);
         $this->assertNotNull($this->cliente->codigo_vinculacion);
 
-        $this->actingAs($this->cuenta)->get('/panel')->assertSee('Todavía no tiene pedidos asociados');
+        $this->actingAs($this->cuenta)->get('/panel')->assertSee('Conecte su cuenta con el negocio');
     }
 
     public function test_solo_los_roles_correctos_usan_la_vinculacion(): void
