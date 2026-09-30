@@ -8,7 +8,9 @@
     'bolsa' => 'default',
 ])
 @php
-    $error = $errors->getBag($bolsa)->first($nombre);
+    // Admite nombres de arreglo, p. ej. nuevo_cliente[nombre] → nuevo_cliente.nombre
+    $clave = str_replace(['[', ']'], ['.', ''], $nombre);
+    $error = $errors->getBag($bolsa)->first($clave);
     $id = $attributes->get('id', $nombre);
 @endphp
 {{-- Campo de formulario con etiqueta, marca de obligatorio y mensaje de validación (5.5.4). --}}
@@ -21,7 +23,7 @@
         id="{{ $id }}"
         name="{{ $nombre }}"
         type="{{ $tipo }}"
-        @if ($tipo !== 'password') value="{{ old($nombre, $valor) }}" @endif
+        @if ($tipo !== 'password') value="{{ old($clave, $valor) }}" @endif
         @required($requerido)
         @if ($error) aria-invalid="true" aria-describedby="{{ $id }}-error" @endif
         {{ $attributes->except('id')->class(['campo', 'campo-error' => $error]) }}

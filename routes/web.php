@@ -3,8 +3,11 @@
 use App\Http\Controllers\Admin\UsuarioController;
 use App\Http\Controllers\Auth\RegistroController;
 use App\Http\Controllers\Auth\SesionController;
+use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\PanelController;
+use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\PerfilController;
+use App\Http\Controllers\ProductoController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/panel');
@@ -24,6 +27,14 @@ Route::middleware('auth')->group(function () {
     Route::get('perfil', [PerfilController::class, 'edit'])->name('perfil.edit');
     Route::put('perfil', [PerfilController::class, 'update'])->name('perfil.update');
     Route::put('perfil/contrasena', [PerfilController::class, 'actualizarContrasena'])->name('perfil.contrasena');
+
+    // Módulos de clientes, productos y pedidos (MOD-02, MOD-03) — solo emprendedor.
+    // El trait PerteneceAEmprendedor garantiza que cada uno opere únicamente sobre sus datos.
+    Route::middleware('rol:emprendedor')->group(function () {
+        Route::resource('clientes', ClienteController::class);
+        Route::resource('productos', ProductoController::class)->except('show');
+        Route::resource('pedidos', PedidoController::class)->except('destroy');
+    });
 
     // Módulo de usuarios y acceso (MOD-01) — solo administrador.
     Route::middleware('rol:administrador')->prefix('admin')->name('admin.')->group(function () {

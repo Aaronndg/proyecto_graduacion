@@ -5,6 +5,9 @@
     // Navegación basada en roles (Figura 42): cada usuario ve solo las opciones autorizadas.
     $menu = collect([
         ['ruta' => 'panel', 'activa' => 'panel', 'texto' => $usuario->esCliente() ? 'Mis pedidos' : 'Inicio', 'icono' => 'inicio', 'roles' => ['administrador', 'emprendedor', 'cliente']],
+        ['ruta' => 'clientes.index', 'activa' => 'clientes.*', 'texto' => 'Clientes', 'icono' => 'usuarios', 'roles' => ['emprendedor']],
+        ['ruta' => 'productos.index', 'activa' => 'productos.*', 'texto' => 'Productos', 'icono' => 'producto', 'roles' => ['emprendedor']],
+        ['ruta' => 'pedidos.index', 'activa' => 'pedidos.*', 'texto' => 'Pedidos', 'icono' => 'pedido', 'roles' => ['emprendedor']],
         ['ruta' => 'admin.usuarios.index', 'activa' => 'admin.usuarios.*', 'texto' => 'Usuarios', 'icono' => 'usuarios', 'roles' => ['administrador']],
     ])->filter(fn ($item) => $usuario->tieneRol(...$item['roles']) && Route::has($item['ruta']));
 @endphp

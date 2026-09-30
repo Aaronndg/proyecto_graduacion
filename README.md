@@ -56,7 +56,7 @@ php artisan test
 | Sprint | Contenido | Estado |
 |--------|-----------|--------|
 | 1 | Autenticación, registro, roles, gestión de usuarios, panel principal, perfil, esquema completo de base de datos | ✅ Completado |
-| 2 | Gestión de clientes, productos y pedidos | Pendiente |
+| 2 | Gestión de clientes, productos y pedidos (con registro rápido de cliente y datos de demostración) | ✅ Completado |
 | 3 | Estados, seguimiento e historial de pedidos | Pendiente |
 | 4 | Ventas, reportes, validaciones generales y pruebas | Pendiente |
 
@@ -72,3 +72,8 @@ Se agregaron campos necesarios para cumplir las reglas de negocio:
 - `historial_estado.id_usuario`: registra quién realizó cada cambio de estado (Figura 40).
 - `estados_pedido.orden`: orden de los estados Nuevo → En proceso → Listo → Entregado (y Cancelado).
 - `created_at` / `updated_at` en usuarios, clientes, productos y pedidos (auditoría).
+
+## Datos de demostración
+
+En el entorno local, `php artisan migrate:fresh --seed` carga un catálogo de 8 productos, 6 clientes y 13 pedidos
+en distintos estados para la cuenta del emprendedor. El cliente demo (cliente@pedidos.test) queda vinculado a sus pedidos.

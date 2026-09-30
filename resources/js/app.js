@@ -1,4 +1,5 @@
 import './bootstrap';
+import { iniciarFormularioPedido } from './pedido';
 
 // Menú lateral en pantallas pequeñas (RNF-05: diseño adaptable).
 document.addEventListener('click', (evento) => {
@@ -16,9 +17,27 @@ document.addEventListener('click', (evento) => {
 });
 
 // Confirmación antes de acciones sensibles: <form data-confirmar="¿Seguro?">
+// y bloqueo del doble envío para evitar registros duplicados: <form data-envio-unico>
 document.addEventListener('submit', (evento) => {
-    const mensaje = evento.target.dataset.confirmar;
+    const formulario = evento.target;
+    const mensaje = formulario.dataset.confirmar;
+
     if (mensaje && !window.confirm(mensaje)) {
         evento.preventDefault();
+        return;
+    }
+
+    if ('envioUnico' in formulario.dataset) {
+        if (formulario.dataset.enviando) {
+            evento.preventDefault();
+            return;
+        }
+        formulario.dataset.enviando = '1';
+        formulario.querySelectorAll('button[type="submit"]').forEach((b) => {
+            b.disabled = true;
+            b.textContent = 'Guardando…';
+        });
     }
 });
+
+document.querySelectorAll('[data-formulario-pedido]').forEach(iniciarFormularioPedido);

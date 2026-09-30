@@ -25,5 +25,9 @@ class DatabaseSeeder extends Seeder
                 ['nombre' => $nombre, 'contrasena' => 'Password123', 'id_rol' => $rol, 'negocio' => $negocio, 'activo' => true],
             );
         }
+
+        if (app()->isLocal()) {
+            $this->call(DemoSeeder::class);
+        }
     }
 }
