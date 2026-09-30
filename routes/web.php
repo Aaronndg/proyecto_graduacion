@@ -11,6 +11,7 @@ use App\Http\Controllers\PanelController;
 use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\ProductoController;
+use App\Http\Controllers\ReporteController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/panel');
@@ -39,6 +40,8 @@ Route::middleware('auth')->group(function () {
         Route::resource('pedidos', PedidoController::class)->except('destroy');
         Route::post('pedidos/{pedido}/estado', [PedidoController::class, 'cambiarEstado'])->name('pedidos.estado');
         Route::get('seguimiento', SeguimientoController::class)->name('seguimiento');
+        Route::get('reportes', [ReporteController::class, 'index'])->name('reportes');
+        Route::get('reportes/exportar', [ReporteController::class, 'exportar'])->name('reportes.exportar');
         Route::post('clientes/{cliente}/codigo', [VinculacionController::class, 'regenerar'])->name('clientes.codigo');
     });
 

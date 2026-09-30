@@ -79,4 +79,16 @@ class EstadoPedido extends Model
             default => 'bg-stone-100 text-stone-600 ring-stone-500/20',
         };
     }
+
+    /** Relleno de la barra del estado en los reportes (mismo tono que su etiqueta). */
+    public function colorBarra(): string
+    {
+        return match ($this->id_estado) {
+            self::NUEVO => 'bg-sky-500',
+            self::EN_PROCESO => 'bg-amber-500',
+            self::LISTO => 'bg-violet-500',
+            self::ENTREGADO => 'bg-emerald-500',
+            default => 'bg-stone-400',
+        };
+    }
 }

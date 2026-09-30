@@ -9,6 +9,7 @@
         ['ruta' => 'seguimiento', 'activa' => 'seguimiento', 'texto' => 'Seguimiento', 'icono' => 'seguimiento', 'roles' => ['emprendedor']],
         ['ruta' => 'clientes.index', 'activa' => 'clientes.*', 'texto' => 'Clientes', 'icono' => 'usuarios', 'roles' => ['emprendedor']],
         ['ruta' => 'productos.index', 'activa' => 'productos.*', 'texto' => 'Productos', 'icono' => 'producto', 'roles' => ['emprendedor']],
+        ['ruta' => 'reportes', 'activa' => 'reportes*', 'texto' => 'Reportes', 'icono' => 'reportes', 'roles' => ['emprendedor']],
         ['ruta' => 'admin.usuarios.index', 'activa' => 'admin.usuarios.*', 'texto' => 'Usuarios', 'icono' => 'usuarios', 'roles' => ['administrador']],
     ])->filter(fn ($item) => $usuario->tieneRol(...$item['roles']) && Route::has($item['ruta']));
 @endphp
@@ -25,10 +26,10 @@
     <a href="#contenido" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-lg focus:bg-white focus:px-3 focus:py-2 focus:shadow">Saltar al contenido</a>
 
     {{-- Fondo del menú en móvil --}}
-    <div id="menu-fondo" class="fixed inset-0 z-30 hidden bg-stone-900/40 backdrop-blur-sm lg:hidden"></div>
+    <div id="menu-fondo" class="print:hidden fixed inset-0 z-30 hidden bg-stone-900/40 backdrop-blur-sm lg:hidden"></div>
 
     {{-- Menú lateral --}}
-    <aside id="menu-lateral" class="fixed inset-y-0 left-0 z-40 flex w-68 -translate-x-full flex-col border-r border-stone-200 bg-white transition-transform duration-200 lg:translate-x-0">
+    <aside id="menu-lateral" class="print:hidden fixed inset-y-0 left-0 z-40 flex w-68 -translate-x-full flex-col border-r border-stone-200 bg-white transition-transform duration-200 lg:translate-x-0">
         <div class="flex h-18 items-center px-5">
             <a href="{{ route('panel') }}"><x-marca /></a>
         </div>
@@ -66,9 +67,9 @@
         </div>
     </aside>
 
-    <div class="flex min-h-full flex-col lg:pl-68">
+    <div class="flex min-h-full flex-col lg:pl-68 print:pl-0">
         {{-- Barra superior en móvil --}}
-        <header class="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-stone-200 bg-white/90 px-4 backdrop-blur lg:hidden">
+        <header class="print:hidden sticky top-0 z-20 flex h-16 items-center justify-between border-b border-stone-200 bg-white/90 px-4 backdrop-blur lg:hidden">
             <a href="{{ route('panel') }}"><x-marca /></a>
             <button type="button" data-menu-toggle aria-controls="menu-lateral" aria-expanded="false" class="rounded-xl p-2 text-stone-600 hover:bg-stone-100">
                 <x-icono nombre="menu" clase="size-6" />

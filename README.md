@@ -58,7 +58,7 @@ php artisan test
 | 1 | Autenticación, registro, roles, gestión de usuarios, panel principal, perfil, esquema completo de base de datos | ✅ Completado |
 | 2 | Gestión de clientes, productos y pedidos (con registro rápido de cliente y datos de demostración) | ✅ Completado |
 | 3 | Estados (avance y cancelación con motivo), tablero de seguimiento, barra de progreso, historial y vista del cliente | ✅ Completado |
-| 4 | Ventas, reportes, validaciones generales y pruebas | Pendiente |
+| 4 | Ventas y reportes (resumen, ventas por día/mes, pedidos por estado, productos más vendidos, detalle), exportación a Excel (CSV), impresión/PDF, validación de filtros y pruebas | 🔄 En curso |
 
 ## Ajustes al modelo de datos respecto al documento (5.4.3)
 
@@ -84,6 +84,17 @@ No se vincula por correo, porque el sistema no puede comprobar que el correo per
 3. El cliente ingresa el código al crear su cuenta o después, en **Mis pedidos**.
 4. El código es de uso único; tras 5 intentos incorrectos se bloquea la vinculación por 10 minutos.
 5. El emprendedor puede desvincular una cuenta y generar un código nuevo.
+
+## Reportes y ventas (Sprint 4)
+
+Menú **Reportes** (solo emprendedor, Figura 41):
+
+- **Venta** = pedido en estado *Entregado*. Se ubica en el período por la fecha del pedido.
+- Sin fechas, muestra los últimos 30 días; hay accesos rápidos (7 días, 30 días, este mes, mes anterior). Período máximo: un año.
+- Resumen: pedidos del período, ventas, en curso, cancelados, monto vendido y venta promedio.
+- Ventas por día (o por mes si el período supera 62 días), incluyendo los días sin ventas; también se puede ver como tabla.
+- Pedidos por estado, productos más vendidos y detalle de pedidos (el filtro de estado aplica al detalle).
+- **Descargar Excel (CSV)** con el detalle del período, y **Imprimir** (o guardar como PDF desde el navegador).
 
 ## Datos de demostración
 

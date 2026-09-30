@@ -85,3 +85,8 @@ document.addEventListener('click', (evento) => {
         evento.preventDefault();
     }
 });
+
+// Reportes: imprimir o guardar como PDF desde el navegador.
+document.addEventListener('click', (evento) => {
+    if (evento.target.closest('[data-imprimir]')) window.print();
+});
