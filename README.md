@@ -51,6 +51,9 @@ Usan la base de datos `pedidos_jutiapa_test` (debe existir):
 php artisan test
 ```
 
+La matriz de pruebas funcionales (82 casos, PB-16) para el documento de tesis está en
+[docs/Matriz_de_pruebas_Sprint4.docx](docs/Matriz_de_pruebas_Sprint4.docx).
+
 ## Avance por Sprint (4.7.8)
 
 | Sprint | Contenido | Estado |
@@ -58,7 +61,7 @@ php artisan test
 | 1 | Autenticación, registro, roles, gestión de usuarios, panel principal, perfil, esquema completo de base de datos | ✅ Completado |
 | 2 | Gestión de clientes, productos y pedidos (con registro rápido de cliente y datos de demostración) | ✅ Completado |
 | 3 | Estados (avance y cancelación con motivo), tablero de seguimiento, barra de progreso, historial y vista del cliente | ✅ Completado |
-| 4 | Ventas y reportes (resumen, ventas por día/mes, pedidos por estado, productos más vendidos, detalle), exportación a Excel (CSV), impresión/PDF, validación de filtros y pruebas | 🔄 En curso |
+| 4 | Ventas y reportes (resumen, ventas por día/mes, pedidos por estado, productos más vendidos, detalle), exportación a Excel (CSV), impresión/PDF, validaciones generales, adaptación móvil y pruebas | ✅ Completado |
 
 ## Ajustes al modelo de datos respecto al documento (5.4.3)
 
