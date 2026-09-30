@@ -4,6 +4,9 @@ use App\Http\Controllers\Admin\UsuarioController;
 use App\Http\Controllers\Auth\RegistroController;
 use App\Http\Controllers\Auth\SesionController;
 use App\Http\Controllers\ClienteController;
+use App\Http\Controllers\MiPedidoController;
+use App\Http\Controllers\SeguimientoController;
+use App\Http\Controllers\VinculacionController;
 use App\Http\Controllers\PanelController;
 use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\PerfilController;
@@ -16,7 +19,7 @@ Route::middleware('guest')->group(function () {
     Route::get('login', [SesionController::class, 'create'])->name('login');
     Route::post('login', [SesionController::class, 'store'])->name('login.store');
     Route::get('registro', [RegistroController::class, 'create'])->name('registro');
-    Route::post('registro', [RegistroController::class, 'store'])->name('registro.store');
+    Route::post('registro', [RegistroController::class, 'store'])->middleware('throttle:10,1')->name('registro.store');
 });
 
 Route::middleware('auth')->group(function () {
@@ -34,6 +37,15 @@ Route::middleware('auth')->group(function () {
         Route::resource('clientes', ClienteController::class);
         Route::resource('productos', ProductoController::class)->except('show');
         Route::resource('pedidos', PedidoController::class)->except('destroy');
+        Route::post('pedidos/{pedido}/estado', [PedidoController::class, 'cambiarEstado'])->name('pedidos.estado');
+        Route::get('seguimiento', SeguimientoController::class)->name('seguimiento');
+        Route::post('clientes/{cliente}/codigo', [VinculacionController::class, 'regenerar'])->name('clientes.codigo');
+    });
+
+    // Seguimiento de pedidos por parte del cliente (RF-10) — solo lectura.
+    Route::middleware('rol:cliente')->group(function () {
+        Route::get('mis-pedidos/{pedido}', [MiPedidoController::class, 'show'])->name('mis-pedidos.show');
+        Route::post('vincular', [VinculacionController::class, 'store'])->name('vincular');
     });
 
     // Módulo de usuarios y acceso (MOD-01) — solo administrador.

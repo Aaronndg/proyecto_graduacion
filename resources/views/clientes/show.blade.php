@@ -17,13 +17,43 @@
                 <div><dt class="text-slate-500">Teléfono</dt><dd class="font-medium text-slate-800">{{ $cliente->telefono ?? 'No registrado' }}</dd></div>
                 <div><dt class="text-slate-500">Correo</dt><dd class="font-medium break-all text-slate-800">{{ $cliente->correo ?? 'No registrado' }}</dd></div>
                 <div><dt class="text-slate-500">Dirección</dt><dd class="font-medium text-slate-800">{{ $cliente->direccion ?? 'No registrada' }}</dd></div>
-                <div>
-                    <dt class="text-slate-500">Seguimiento en línea</dt>
-                    <dd class="font-medium text-slate-800">
-                        {{ $cliente->usuario ? 'Tiene cuenta y puede consultar sus pedidos' : 'Sin cuenta vinculada' }}
-                    </dd>
-                </div>
             </dl>
+
+            {{-- Seguimiento en línea: vinculación de la cuenta del cliente con el código (RN-06) --}}
+            <div class="mt-6 rounded-lg border border-slate-200 bg-slate-50 p-4">
+                <h3 class="text-sm font-semibold text-slate-900">Seguimiento en línea</h3>
+
+                @if ($cliente->usuario)
+                    <p class="mt-1 flex items-center gap-1.5 text-sm text-emerald-700">
+                        <x-icono nombre="ok" clase="size-4" /> Vinculado con la cuenta {{ $cliente->usuario->correo }}
+                    </p>
+                    <p class="mt-1 text-xs text-slate-500">El cliente puede consultar el estado de sus pedidos.</p>
+                    <form method="POST" action="{{ route('clientes.codigo', $cliente) }}" class="mt-3"
+                          data-confirmar="¿Desvincular la cuenta {{ $cliente->usuario->correo }}? Dejará de ver sus pedidos hasta que use un código nuevo.">
+                        @csrf
+                        <button type="submit" class="text-xs font-medium text-red-600 hover:underline">Desvincular y generar código nuevo</button>
+                    </form>
+                @else
+                    <p class="mt-1 text-xs text-slate-500">Entregue este código al cliente para que vea sus pedidos al crear su cuenta.</p>
+                    <p class="mt-3 text-center font-mono text-2xl font-bold tracking-widest text-marca-700 select-all">{{ $cliente->codigoFormateado() }}</p>
+
+                    @php $whatsapp = $cliente->enlaceWhatsApp(auth()->user()->negocio ?? auth()->user()->nombre); @endphp
+                    <div class="mt-3 flex flex-col gap-2">
+                        @if ($whatsapp)
+                            <a href="{{ $whatsapp }}" target="_blank" rel="noopener" class="btn w-full bg-emerald-600 text-white hover:bg-emerald-700">
+                                Enviar por WhatsApp
+                            </a>
+                        @else
+                            <p class="text-xs text-slate-500">Registre el teléfono del cliente para enviarle el código por WhatsApp.</p>
+                        @endif
+                        <form method="POST" action="{{ route('clientes.codigo', $cliente) }}" class="text-center"
+                              data-confirmar="¿Generar un código nuevo? El código actual dejará de funcionar.">
+                            @csrf
+                            <button type="submit" class="text-xs font-medium text-slate-600 hover:text-slate-900 hover:underline">Generar un código nuevo</button>
+                        </form>
+                    </div>
+                @endif
+            </div>
 
             <div class="mt-6 flex flex-wrap gap-2 border-t border-slate-200 pt-5">
                 <a href="{{ route('clientes.edit', $cliente) }}" class="btn btn-secundario"><x-icono nombre="editar" clase="size-4" /> Editar</a>

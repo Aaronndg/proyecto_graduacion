@@ -150,10 +150,27 @@ class AutenticacionTest extends TestCase
         ])->assertSessionHasErrors('correo');
     }
 
-    public function test_al_registrarse_un_cliente_se_vincula_con_sus_registros_por_correo(): void
+    public function test_registrarse_con_el_mismo_correo_no_da_acceso_a_los_pedidos(): void
     {
         $cliente = Cliente::factory()->create(['correo' => 'pedro@correo.com']);
-        $this->assertNull($cliente->id_usuario);
+
+        $this->post('/registro', [
+            'tipo' => 'cliente',
+            'nombre' => 'Impostor',
+            'correo' => 'pedro@correo.com',
+            'contrasena' => 'Secreta123',
+            'contrasena_confirmation' => 'Secreta123',
+        ])->assertRedirect('/panel');
+
+        $this->assertNull($cliente->fresh()->id_usuario);
+    }
+
+    public function test_el_cliente_se_vincula_al_registrarse_con_su_codigo(): void
+    {
+        $cliente = Cliente::factory()->create();
+        $codigo = $cliente->codigoFormateado();
+
+        $this->get('/registro?codigo='.$codigo)->assertOk()->assertSee($codigo);
 
         $this->post('/registro', [
             'tipo' => 'cliente',
@@ -161,8 +178,26 @@ class AutenticacionTest extends TestCase
             'correo' => 'pedro@correo.com',
             'contrasena' => 'Secreta123',
             'contrasena_confirmation' => 'Secreta123',
+            'codigo' => strtolower($codigo),
         ])->assertRedirect('/panel');
 
-        $this->assertSame(Usuario::where('correo', 'pedro@correo.com')->value('id_usuario'), $cliente->fresh()->id_usuario);
+        $cliente->refresh();
+        $this->assertSame(Usuario::where('correo', 'pedro@correo.com')->value('id_usuario'), $cliente->id_usuario);
+        $this->assertNull($cliente->codigo_vinculacion);
+    }
+
+    public function test_un_codigo_invalido_impide_crear_la_cuenta(): void
+    {
+        $this->post('/registro', [
+            'tipo' => 'cliente',
+            'nombre' => 'Pedro',
+            'correo' => 'pedro@correo.com',
+            'contrasena' => 'Secreta123',
+            'contrasena_confirmation' => 'Secreta123',
+            'codigo' => 'ZZZZ-ZZZZ',
+        ])->assertSessionHasErrors('codigo');
+
+        $this->assertGuest();
+        $this->assertDatabaseMissing('usuarios', ['correo' => 'pedro@correo.com']);
     }
 }

@@ -10,8 +10,7 @@
             <x-campo nombre="nombre" etiqueta="Nombre" :valor="$cliente->nombre" autocomplete="off" requerido autofocus />
             <div class="grid gap-5 sm:grid-cols-2">
                 <x-campo nombre="telefono" etiqueta="Teléfono" tipo="tel" :valor="$cliente->telefono" placeholder="5555-5555" inputmode="tel" />
-                <x-campo nombre="correo" etiqueta="Correo electrónico" tipo="email" :valor="$cliente->correo"
-                         ayuda="Con este correo el cliente podrá crear su cuenta y dar seguimiento a sus pedidos." />
+                <x-campo nombre="correo" etiqueta="Correo electrónico" tipo="email" :valor="$cliente->correo" />
             </div>
             <x-campo nombre="direccion" etiqueta="Dirección" :valor="$cliente->direccion" placeholder="Barrio, zona o referencia en Jutiapa" />
 

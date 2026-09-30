@@ -4,10 +4,11 @@
 
     // Navegación basada en roles (Figura 42): cada usuario ve solo las opciones autorizadas.
     $menu = collect([
-        ['ruta' => 'panel', 'activa' => 'panel', 'texto' => $usuario->esCliente() ? 'Mis pedidos' : 'Inicio', 'icono' => 'inicio', 'roles' => ['administrador', 'emprendedor', 'cliente']],
+        ['ruta' => 'panel', 'activa' => $usuario->esCliente() ? ['panel', 'mis-pedidos.*'] : 'panel', 'texto' => $usuario->esCliente() ? 'Mis pedidos' : 'Inicio', 'icono' => 'inicio', 'roles' => ['administrador', 'emprendedor', 'cliente']],
         ['ruta' => 'clientes.index', 'activa' => 'clientes.*', 'texto' => 'Clientes', 'icono' => 'usuarios', 'roles' => ['emprendedor']],
         ['ruta' => 'productos.index', 'activa' => 'productos.*', 'texto' => 'Productos', 'icono' => 'producto', 'roles' => ['emprendedor']],
         ['ruta' => 'pedidos.index', 'activa' => 'pedidos.*', 'texto' => 'Pedidos', 'icono' => 'pedido', 'roles' => ['emprendedor']],
+        ['ruta' => 'seguimiento', 'activa' => 'seguimiento', 'texto' => 'Seguimiento', 'icono' => 'seguimiento', 'roles' => ['emprendedor']],
         ['ruta' => 'admin.usuarios.index', 'activa' => 'admin.usuarios.*', 'texto' => 'Usuarios', 'icono' => 'usuarios', 'roles' => ['administrador']],
     ])->filter(fn ($item) => $usuario->tieneRol(...$item['roles']) && Route::has($item['ruta']));
 @endphp
@@ -39,7 +40,7 @@
 
         <nav class="flex-1 space-y-1 overflow-y-auto p-3" aria-label="Menú principal">
             @foreach ($menu as $item)
-                @php $activa = request()->routeIs($item['activa']); @endphp
+                @php $activa = request()->routeIs(...(array) $item['activa']); @endphp
                 <a href="{{ route($item['ruta']) }}" @if ($activa) aria-current="page" @endif
                    @class([
                        'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition',

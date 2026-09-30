@@ -36,7 +36,7 @@ class GestorPedidos
                 'id_estado' => EstadoPedido::NUEVO,
                 'id_usuario' => $usuario->id_usuario,
                 'fecha_hora' => now(),
-                'observacion' => 'Pedido registrado en el sistema.',
+                'observacion' => EstadoPedido::find(EstadoPedido::NUEVO)->observacionPredeterminada(),
             ]);
 
             return $pedido;
@@ -72,6 +72,59 @@ class GestorPedidos
     public function esEditable(Pedido $pedido): bool
     {
         return ! in_array($pedido->id_estado, EstadoPedido::FINALES, true);
+    }
+
+    /**
+     * RN-04: el pedido solo avanza (puede saltar etapas) o se cancela; nunca retrocede
+     * y los estados finales (Entregado, Cancelado) no cambian.
+     *
+     * @return Collection<int, EstadoPedido>
+     */
+    public function estadosSiguientes(Pedido $pedido): Collection
+    {
+        if (! $this->esEditable($pedido)) {
+            return collect();
+        }
+
+        $ordenActual = EstadoPedido::whereKey($pedido->id_estado)->value('orden');
+
+        return EstadoPedido::where(fn ($q) => $q
+                ->where('orden', '>', $ordenActual)
+                ->where('id_estado', '!=', EstadoPedido::CANCELADO))
+            ->orWhere('id_estado', EstadoPedido::CANCELADO)
+            ->orderBy('orden')
+            ->get();
+    }
+
+    /** RF-09: actualiza el estado y deja constancia en el historial (quién, cuándo y por qué). */
+    public function cambiarEstado(Pedido $pedido, int $idEstado, ?string $observacion, Usuario $usuario): Pedido
+    {
+        return DB::transaction(function () use ($pedido, $idEstado, $observacion, $usuario) {
+            // Bloquea el registro para que dos cambios simultáneos no se pisen.
+            $pedido = Pedido::whereKey($pedido->getKey())->lockForUpdate()->firstOrFail();
+            $nuevo = $this->estadosSiguientes($pedido)->firstWhere('id_estado', $idEstado);
+
+            if (! $nuevo) {
+                throw ValidationException::withMessages([
+                    'id_estado' => 'Ese cambio de estado no es válido para el estado actual del pedido.',
+                ]);
+            }
+
+            if ($idEstado === EstadoPedido::CANCELADO && blank($observacion)) {
+                throw ValidationException::withMessages(['observacion' => 'Indique el motivo de la cancelación.']);
+            }
+
+            $pedido->update(['id_estado' => $idEstado]);
+
+            $pedido->historial()->create([
+                'id_estado' => $idEstado,
+                'id_usuario' => $usuario->id_usuario,
+                'fecha_hora' => now(),
+                'observacion' => filled($observacion) ? trim($observacion) : $nuevo->observacionPredeterminada(),
+            ]);
+
+            return $pedido;
+        });
     }
 
     /** RN-01: el pedido siempre queda asociado a un cliente existente o registrado en el momento. */

@@ -57,7 +57,7 @@ php artisan test
 |--------|-----------|--------|
 | 1 | Autenticación, registro, roles, gestión de usuarios, panel principal, perfil, esquema completo de base de datos | ✅ Completado |
 | 2 | Gestión de clientes, productos y pedidos (con registro rápido de cliente y datos de demostración) | ✅ Completado |
-| 3 | Estados, seguimiento e historial de pedidos | Pendiente |
+| 3 | Estados (avance y cancelación con motivo), tablero de seguimiento, barra de progreso, historial y vista del cliente | ✅ Completado |
 | 4 | Ventas, reportes, validaciones generales y pruebas | Pendiente |
 
 ## Ajustes al modelo de datos respecto al documento (5.4.3)
@@ -68,10 +68,22 @@ Se agregaron campos necesarios para cumplir las reglas de negocio:
 - `clientes.id_emprendedor`, `productos.id_emprendedor`, `pedidos.id_emprendedor`: cada emprendedor
   tiene su propio espacio de datos (RN-10).
 - `clientes.id_usuario`: vincula el registro del cliente con su cuenta para que consulte sus pedidos (RN-06).
-  La vinculación es automática por correo electrónico.
+  La vinculación se hace con un código (ver abajo), no por correo.
+- `clientes.codigo_vinculacion`: código de uso único que el emprendedor entrega al cliente.
 - `historial_estado.id_usuario`: registra quién realizó cada cambio de estado (Figura 40).
 - `estados_pedido.orden`: orden de los estados Nuevo → En proceso → Listo → Entregado (y Cancelado).
 - `created_at` / `updated_at` en usuarios, clientes, productos y pedidos (auditoría).
+
+## Vinculación de clientes con código
+
+Para que un cliente vea sus pedidos, su cuenta debe estar vinculada con el registro que creó el emprendedor.
+No se vincula por correo, porque el sistema no puede comprobar que el correo pertenezca a quien se registra.
+
+1. Cada cliente registrado recibe un código de 8 caracteres (p. ej. `K7QM-4XPA`), visible en su ficha.
+2. El emprendedor se lo envía con el botón **Enviar por WhatsApp**, que incluye un enlace al registro con el código ya escrito.
+3. El cliente ingresa el código al crear su cuenta o después, en **Mis pedidos**.
+4. El código es de uso único; tras 5 intentos incorrectos se bloquea la vinculación por 10 minutos.
+5. El emprendedor puede desvincular una cuenta y generar un código nuevo.
 
 ## Datos de demostración
 

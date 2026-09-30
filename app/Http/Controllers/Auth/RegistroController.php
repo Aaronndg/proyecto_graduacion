@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\Rol;
 use App\Models\Usuario;
+use App\Servicios\VinculacionClientes;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
@@ -15,6 +17,10 @@ use Illuminate\View\View;
 /** RF-01: registro de usuarios. Solo se pueden autoregistrar emprendedores y clientes. */
 class RegistroController extends Controller
 {
+    public function __construct(private readonly VinculacionClientes $vinculacion)
+    {
+    }
+
     public function create(): View
     {
         return view('auth.registro');
@@ -30,21 +36,36 @@ class RegistroController extends Controller
             'negocio' => ['nullable', 'required_if:tipo,emprendedor', 'string', 'max:100'],
             'correo' => ['required', 'string', 'email', 'max:150', Rule::unique('usuarios', 'correo')],
             'contrasena' => ['required', 'confirmed', Password::min(8)->letters()->numbers()],
+            'codigo' => ['nullable', 'string', 'max:20'],
         ]);
 
         $esEmprendedor = $datos['tipo'] === 'emprendedor';
+        $codigo = $esEmprendedor ? null : ($datos['codigo'] ?? null);
 
-        $usuario = Usuario::create([
-            'nombre' => $datos['nombre'],
-            'correo' => $datos['correo'],
-            'contrasena' => $datos['contrasena'],
-            'id_rol' => $esEmprendedor ? Rol::EMPRENDEDOR : Rol::CLIENTE,
-            'negocio' => $esEmprendedor ? $datos['negocio'] : null,
-        ]);
+        // El código se verifica antes de crear la cuenta: si es inválido, el cliente puede corregirlo.
+        $cliente = $codigo ? $this->vinculacion->buscar($codigo, 'vincular-registro:'.$request->ip()) : null;
+
+        $usuario = DB::transaction(function () use ($datos, $esEmprendedor, $cliente) {
+            $usuario = Usuario::create([
+                'nombre' => $datos['nombre'],
+                'correo' => $datos['correo'],
+                'contrasena' => $datos['contrasena'],
+                'id_rol' => $esEmprendedor ? Rol::EMPRENDEDOR : Rol::CLIENTE,
+                'negocio' => $esEmprendedor ? $datos['negocio'] : null,
+            ]);
+
+            $cliente?->vincularCon($usuario);
+
+            return $usuario;
+        });
 
         Auth::login($usuario);
         $request->session()->regenerate();
 
-        return redirect()->route('panel')->with('exito', '¡Bienvenido! Su cuenta fue creada correctamente.');
+        $mensaje = $codigo
+            ? '¡Bienvenido! Su cuenta fue creada y vinculada con sus pedidos.'
+            : '¡Bienvenido! Su cuenta fue creada correctamente.';
+
+        return redirect()->route('panel')->with('exito', $mensaje);
     }
 }

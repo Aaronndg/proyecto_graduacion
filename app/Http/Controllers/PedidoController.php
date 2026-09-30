@@ -74,7 +74,23 @@ class PedidoController extends Controller
         return view('pedidos.show', [
             'pedido' => $pedido,
             'editable' => $this->gestor->esEditable($pedido),
+            'estadosSiguientes' => $this->gestor->estadosSiguientes($pedido),
         ]);
+    }
+
+    /** RF-09 / HU-04: actualización del estado del pedido. */
+    public function cambiarEstado(Request $request, Pedido $pedido): RedirectResponse
+    {
+        $datos = $request->validate([
+            'id_estado' => ['required', 'integer'],
+            'observacion' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $this->gestor->cambiarEstado($pedido, (int) $datos['id_estado'], $datos['observacion'] ?? null, $request->user());
+
+        $estado = EstadoPedido::find($datos['id_estado']);
+
+        return back()->with('exito', "Pedido #{$pedido->numero()} actualizado a «{$estado->nombre}».");
     }
 
     public function edit(Pedido $pedido): View|RedirectResponse

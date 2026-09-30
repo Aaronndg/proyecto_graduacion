@@ -38,6 +38,8 @@
                 <dd class="text-xs text-slate-500">{{ $pedido->detalles->sum('cantidad') }} producto(s)</dd>
             </div>
         </dl>
+
+        <x-progreso-pedido :pedido="$pedido" class="mt-6 border-t border-slate-200 pt-5" />
     </section>
 
     <div class="grid gap-6 lg:grid-cols-5">
@@ -69,8 +71,40 @@
             </div>
         </section>
 
+        <div class="space-y-6 lg:col-span-2">
+        {{-- Actualizar estado (RF-09) --}}
+        @if ($estadosSiguientes->isNotEmpty())
+            @php $sugerido = old('id_estado', $estadosSiguientes->firstWhere('id_estado', '!=', \App\Models\EstadoPedido::CANCELADO)?->id_estado); @endphp
+            <section class="tarjeta p-5">
+                <h2 class="font-semibold text-slate-900">Actualizar estado</h2>
+                <p class="mb-4 text-sm text-slate-500">Registre un nuevo estado para este pedido.</p>
+
+                <form method="POST" action="{{ route('pedidos.estado', $pedido) }}" class="space-y-4" novalidate data-envio-unico data-formulario-estado>
+                    @csrf
+                    <div>
+                        <label for="id_estado" class="etiqueta">Nuevo estado <span class="text-red-600" aria-hidden="true">*</span></label>
+                        <select id="id_estado" name="id_estado" @class(['campo', 'campo-error' => $errors->has('id_estado')])>
+                            @foreach ($estadosSiguientes as $estado)
+                                <option value="{{ $estado->id_estado }}" @selected((int) $sugerido === $estado->id_estado)>{{ $estado->nombre }}</option>
+                            @endforeach
+                        </select>
+                        @error('id_estado')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
+                    </div>
+                    <div>
+                        <label for="observacion" class="etiqueta">
+                            Observación <span class="font-normal text-slate-500" data-observacion-ayuda>(opcional)</span>
+                        </label>
+                        <textarea id="observacion" name="observacion" rows="3" maxlength="255" placeholder="Ej.: Pedido en ruta de entrega"
+                                  @class(['campo', 'campo-error' => $errors->has('observacion')])>{{ old('observacion') }}</textarea>
+                        @error('observacion')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
+                    </div>
+                    <button type="submit" class="btn btn-primario w-full">Actualizar estado</button>
+                </form>
+            </section>
+        @endif
+
         {{-- Historial de estados (RF-11) --}}
-        <section class="tarjeta lg:col-span-2">
+        <section class="tarjeta">
             <h2 class="border-b border-slate-200 px-5 py-4 font-semibold text-slate-900">Historial de estados</h2>
             <ol class="space-y-4 p-5">
                 @foreach ($pedido->historial as $registro)
@@ -88,5 +122,6 @@
                 @endforeach
             </ol>
         </section>
+        </div>
     </div>
 </x-layouts.app>

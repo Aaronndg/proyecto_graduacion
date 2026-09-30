@@ -59,6 +59,7 @@ class ControlAccesoTest extends TestCase
         $cuenta = Usuario::factory()->cliente()->create(['correo' => 'pedro@correo.com']);
         $suyo = Cliente::factory()->create(['id_emprendedor' => $emprendedor->id_usuario, 'correo' => 'pedro@correo.com']);
         $ajeno = Cliente::factory()->create(['id_emprendedor' => $emprendedor->id_usuario]);
+        $suyo->vincularCon($cuenta);
 
         $crear = fn (Cliente $cliente, float $total) => Pedido::withoutGlobalScopes()->forceCreate([
             'id_emprendedor' => $emprendedor->id_usuario,

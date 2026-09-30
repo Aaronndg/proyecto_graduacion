@@ -41,3 +41,17 @@ document.addEventListener('submit', (evento) => {
 });
 
 document.querySelectorAll('[data-formulario-pedido]').forEach(iniciarFormularioPedido);
+
+// Actualización de estado: cancelar exige motivo y confirmación.
+document.querySelectorAll('[data-formulario-estado]').forEach((formulario) => {
+    const estado = formulario.querySelector('[name="id_estado"]');
+    const ayuda = formulario.querySelector('[data-observacion-ayuda]');
+    const esCancelacion = () => estado.selectedOptions[0]?.textContent.trim() === 'Cancelado';
+
+    const actualizar = () => {
+        ayuda.textContent = esCancelacion() ? '(obligatoria: indique el motivo)' : '(opcional)';
+        formulario.dataset.confirmar = esCancelacion() ? '¿Cancelar este pedido? Esta acción no se puede deshacer.' : '';
+    };
+    estado.addEventListener('change', actualizar);
+    actualizar();
+});

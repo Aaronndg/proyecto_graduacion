@@ -49,7 +49,12 @@ class DemoSeeder extends Seeder
         ])->map(function ($c) use ($id) {
             $cliente = new Cliente(['nombre' => $c[0], 'telefono' => $c[1], 'correo' => $c[2], 'direccion' => $c[3]]);
             $cliente->id_emprendedor = $id;
-            $cliente->save(); // se vincula solo con la cuenta cliente@pedidos.test
+            $cliente->save();
+
+            // La cuenta demo del cliente queda vinculada, como si hubiera usado su código.
+            if ($cuenta = Usuario::where('correo', $c[2] ?? '')->where('id_rol', \App\Models\Rol::CLIENTE)->first()) {
+                $cliente->vincularCon($cuenta);
+            }
 
             return $cliente;
         });

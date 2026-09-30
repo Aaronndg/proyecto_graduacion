@@ -21,6 +21,39 @@ class EstadoPedido extends Model
 
     protected $fillable = ['id_estado', 'nombre', 'descripcion', 'orden'];
 
+    /** Estados que forman el avance normal del pedido (la barra de progreso). */
+    public const FLUJO = [self::NUEVO, self::EN_PROCESO, self::LISTO, self::ENTREGADO];
+
+    public function esFinal(): bool
+    {
+        return in_array($this->id_estado, self::FINALES, true);
+    }
+
+    /** Texto que se guarda en el historial cuando no se escribe una observación. */
+    public function observacionPredeterminada(): string
+    {
+        return match ($this->id_estado) {
+            self::NUEVO => 'Pedido registrado en el sistema.',
+            self::EN_PROCESO => 'Pedido en preparación.',
+            self::LISTO => 'Pedido listo para entrega.',
+            self::ENTREGADO => 'Pedido entregado al cliente.',
+            self::CANCELADO => 'Pedido cancelado.',
+            default => 'Cambio de estado.',
+        };
+    }
+
+    /** Texto del botón para avanzar a este estado. */
+    public function accion(): string
+    {
+        return match ($this->id_estado) {
+            self::EN_PROCESO => 'Iniciar preparación',
+            self::LISTO => 'Marcar como listo',
+            self::ENTREGADO => 'Marcar como entregado',
+            self::CANCELADO => 'Cancelar pedido',
+            default => $this->nombre,
+        };
+    }
+
     /** Clase de color para la etiqueta del estado (siempre acompañada del nombre, 5.5.4). */
     public function color(): string
     {

@@ -30,20 +30,6 @@ class Usuario extends Authenticatable
         ];
     }
 
-    protected static function booted(): void
-    {
-        // Al crear una cuenta de cliente, se vincula con los registros de cliente que
-        // los emprendedores hayan creado con el mismo correo (RN-06: consulta de sus pedidos).
-        static::created(function (Usuario $usuario) {
-            if ($usuario->esCliente()) {
-                Cliente::withoutGlobalScopes()
-                    ->whereNull('id_usuario')
-                    ->where('correo', $usuario->correo)
-                    ->update(['id_usuario' => $usuario->id_usuario]);
-            }
-        });
-    }
-
     public function getAuthPasswordName(): string
     {
         return 'contrasena';
