@@ -1,4 +1,6 @@
 @php
+    use App\Http\Requests\PedidoRequest;
+
     $editando = $pedido->exists;
     $modoCliente = old('modo_cliente', 'existente');
     $catalogo = $productos->mapWithKeys(fn ($p) => [$p->id_producto => [
@@ -7,30 +9,56 @@
     ]]);
     $errorProductos = $errors->first('productos') ?: collect($errors->getMessages())
         ->filter(fn ($m, $clave) => str_starts_with($clave, 'productos.'))->flatten()->first();
+    $volver = $editando ? route('pedidos.show', $pedido) : route('pedidos.index');
+    $ruta = $editando ? ['Pedidos' => route('pedidos.index'), '#'.$pedido->numero() => route('pedidos.show', $pedido)] : ['Pedidos' => route('pedidos.index')];
+
+    // Correo y dirección del cliente nuevo son opcionales: se muestran abiertos solo si ya traen algo.
+    $extrasCliente = old('nuevo_cliente.correo') || old('nuevo_cliente.direccion')
+        || $errors->has('nuevo_cliente.correo') || $errors->has('nuevo_cliente.direccion');
+
+    // Fecha: casi siempre es «ahora»; el campo aparece al pedir cambiarla (o si trae un error).
+    $fecha = (old('fecha') ? rescue(fn () => \Illuminate\Support\Carbon::parse(old('fecha')), null, false) : null) ?? $pedido->fecha;
+    $fechaAbierta = $errors->has('fecha');
+    $textoFecha = match (true) {
+        $fecha->isToday() => 'hoy a las '.$fecha->format('H:i'),
+        $fecha->isYesterday() => 'ayer a las '.$fecha->format('H:i'),
+        default => 'el '.$fecha->translatedFormat('j \d\e F \d\e Y').' a las '.$fecha->format('H:i'),
+    };
 @endphp
-<x-layouts.app :titulo="$editando ? 'Editar pedido #'.$pedido->numero() : 'Nuevo pedido'">
+<x-layouts.app :titulo="$editando ? 'Editar pedido' : 'Nuevo pedido'" :ruta="$ruta">
+    @if ($editando)
+        <x-slot:acciones>
+            <x-estado-pedido :estado="$pedido->estado" />
+        </x-slot:acciones>
+    @endif
 
-    <x-slot:acciones>
-        <a href="{{ $editando ? route('pedidos.show', $pedido) : route('pedidos.index') }}" class="btn btn-secundario">&larr; Volver</a>
-    </x-slot:acciones>
-    <div class="max-w-4xl">
+    @if ($errors->any())
+        <div role="alert" class="mb-6 flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+            <x-icono nombre="alerta" clase="size-5 shrink-0 text-red-600" />
+            <span>
+                @if ($errors->has('pedido'))
+                    {{ $errors->first('pedido') }}
+                @else
+                    No pudimos guardar el pedido. Revise los campos marcados.
+                @endif
+            </span>
+        </div>
+    @endif
 
-        @if ($errors->has('pedido'))
-            <div role="alert" class="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{{ $errors->first('pedido') }}</div>
-        @endif
+    <form method="POST" action="{{ $editando ? route('pedidos.update', $pedido) : route('pedidos.store') }}"
+          class="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start"
+          novalidate data-envio-unico data-formulario-pedido data-catalogo="{{ json_encode($catalogo) }}">
+        @csrf
+        @if ($editando) @method('PUT') @endif
 
-        <form method="POST" action="{{ $editando ? route('pedidos.update', $pedido) : route('pedidos.store') }}"
-              class="space-y-6" novalidate data-envio-unico data-formulario-pedido data-catalogo="{{ json_encode($catalogo) }}">
-            @csrf
-            @if ($editando) @method('PUT') @endif
+        <div class="space-y-6">
+            {{-- 1. ¿Para quién es? --}}
+            <section class="panel space-y-4 p-5" aria-labelledby="titulo-cliente">
+                <h2 id="titulo-cliente" class="titulo-seccion">Cliente</h2>
 
-            {{-- Cliente y fecha --}}
-            <section class="tarjeta space-y-5 p-6">
-                <h2 class="text-base font-semibold text-stone-900">Datos del pedido</h2>
-
-                <div class="flex gap-2 rounded-lg bg-stone-100 p-1 text-sm font-medium" role="radiogroup" aria-label="Cliente">
+                <div class="flex gap-1 rounded-lg bg-superficie-2 p-1 text-sm font-medium" role="radiogroup" aria-label="Tipo de cliente">
                     @foreach (['existente' => 'Cliente registrado', 'nuevo' => 'Cliente nuevo'] as $valor => $texto)
-                        <label class="flex-1 cursor-pointer rounded-md px-3 py-2 text-center text-stone-600 has-checked:bg-white has-checked:text-marca-700 has-checked:shadow-sm">
+                        <label class="flex min-h-10 flex-1 cursor-pointer items-center justify-center rounded-md px-3 text-center text-texto-2 has-checked:bg-superficie has-checked:text-texto has-checked:shadow-sm has-focus-visible:outline-2 has-focus-visible:outline-marca">
                             <input type="radio" name="modo_cliente" value="{{ $valor }}" class="sr-only" @checked($modoCliente === $valor) data-modo-cliente>
                             {{ $texto }}
                         </label>
@@ -38,92 +66,69 @@
                 </div>
 
                 <div data-seccion-cliente="existente" @class(['hidden' => $modoCliente !== 'existente'])>
-                    <label for="id_cliente" class="etiqueta">Cliente <span class="text-red-600" aria-hidden="true">*</span></label>
-                    <select id="id_cliente" name="id_cliente" @class(['campo', 'campo-error' => $errors->has('id_cliente')])>
-                        <option value="">Seleccione un cliente…</option>
+                    <label for="id_cliente" class="etiqueta">¿Para quién es el pedido?</label>
+                    <select id="id_cliente" name="id_cliente" data-cliente
+                            @class(['campo', 'campo-error' => $errors->has('id_cliente')])
+                            @error('id_cliente') aria-invalid="true" aria-describedby="id_cliente-error" @enderror>
+                        <option value="">Elija un cliente…</option>
                         @foreach ($clientes as $cliente)
                             <option value="{{ $cliente->id_cliente }}" @selected((int) old('id_cliente', $pedido->id_cliente) === $cliente->id_cliente)>
                                 {{ $cliente->nombre }}{{ $cliente->telefono ? ' · '.$cliente->telefono : '' }}
                             </option>
                         @endforeach
                     </select>
-                    @error('id_cliente')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
+                    @error('id_cliente')<p id="id_cliente-error" class="error-campo">{{ $message }}</p>@enderror
                     @if ($clientes->isEmpty())
-                        <p class="mt-1 text-xs text-stone-500">Aún no tiene clientes. Elija «Cliente nuevo» para registrarlo junto con el pedido.</p>
+                        <p class="ayuda">Aún no tiene clientes. Elija «Cliente nuevo» para registrarlo junto con el pedido.</p>
                     @endif
                 </div>
 
-                <div data-seccion-cliente="nuevo" @class(['grid gap-4 sm:grid-cols-2', 'hidden' => $modoCliente !== 'nuevo'])>
-                    <x-campo nombre="nuevo_cliente[nombre]" id="nuevo_nombre" etiqueta="Nombre del cliente" maxlength="100" requerido />
-                    <x-campo nombre="nuevo_cliente[telefono]" id="nuevo_telefono" etiqueta="Teléfono" tipo="tel" placeholder="5555-5555" inputmode="tel" maxlength="20" />
-                    <x-campo nombre="nuevo_cliente[correo]" id="nuevo_correo" etiqueta="Correo electrónico" tipo="email" maxlength="150" />
-                    <x-campo nombre="nuevo_cliente[direccion]" id="nuevo_direccion" etiqueta="Dirección" maxlength="255" />
-                </div>
-
-                <div class="grid gap-5 sm:grid-cols-2">
-                    <x-campo nombre="fecha" etiqueta="Fecha y hora del pedido" tipo="datetime-local" requerido
-                             :valor="$pedido->fecha?->format('Y-m-d\TH:i')"
-                             min="{{ \App\Http\Requests\PedidoRequest::fechaMinima($pedido->exists ? $pedido : null) }}" max="{{ \App\Http\Requests\PedidoRequest::fechaMaxima() }}" />
-                    <div>
-                        <span class="etiqueta">Estado</span>
-                        <p class="flex h-[38px] items-center">
-                            @if ($editando)
-                                <x-estado-pedido :estado="$pedido->estado" />
-                            @else
-                                <span class="text-sm text-stone-600">Se registrará como <strong>Nuevo</strong></span>
-                            @endif
-                        </p>
+                <div data-seccion-cliente="nuevo" @class(['space-y-4', 'hidden' => $modoCliente !== 'nuevo'])>
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <x-campo nombre="nuevo_cliente[nombre]" id="nuevo_nombre" etiqueta="Nombre del cliente" maxlength="100" requerido autocomplete="off" data-nombre-nuevo />
+                        <x-campo nombre="nuevo_cliente[telefono]" id="nuevo_telefono" etiqueta="Teléfono" tipo="tel" placeholder="5555-5555" inputmode="tel" maxlength="20" autocomplete="off" />
                     </div>
+                    <details class="group" @if ($extrasCliente) open @endif>
+                        <summary class="inline-flex min-h-9 cursor-pointer list-none items-center gap-1.5 text-sm text-texto-2 hover:text-texto [&::-webkit-details-marker]:hidden">
+                            <x-icono nombre="flecha-derecha" clase="size-4 transition-transform group-open:rotate-90" />
+                            Agregar correo y dirección (opcional)
+                        </summary>
+                        <div class="mt-3 grid gap-4 sm:grid-cols-2">
+                            <x-campo nombre="nuevo_cliente[correo]" id="nuevo_correo" etiqueta="Correo electrónico" tipo="email" maxlength="150" autocomplete="off" />
+                            <x-campo nombre="nuevo_cliente[direccion]" id="nuevo_direccion" etiqueta="Dirección" maxlength="255" autocomplete="off" />
+                        </div>
+                    </details>
                 </div>
             </section>
 
-            {{-- Productos --}}
-            <section class="tarjeta">
-                <div class="flex items-center justify-between border-b border-stone-200 px-5 py-4">
-                    <h2 class="text-base font-semibold text-stone-900">Productos</h2>
-                    <button type="button" class="btn btn-secundario px-3 py-1.5" data-agregar-linea @disabled($productos->isEmpty())>
-                        <x-icono nombre="mas" clase="size-4" /> Agregar producto
-                    </button>
-                </div>
+            {{-- 2. ¿Qué pidió? --}}
+            <section class="panel overflow-hidden" aria-labelledby="titulo-productos">
+                <h2 id="titulo-productos" class="titulo-seccion px-5 pt-4 pb-2">Productos</h2>
 
                 @if ($productos->isEmpty())
-                    <x-vacio icono="producto" titulo="No tiene productos activos" texto="Registre productos en su catálogo para poder crear pedidos.">
+                    <x-vacio icono="producto" titulo="No tiene productos activos" texto="Registre lo que vende en su catálogo para poder crear pedidos.">
                         <a href="{{ route('productos.create') }}" class="btn btn-primario">Registrar producto</a>
                     </x-vacio>
                 @else
                     @if ($errorProductos)
-                        <p role="alert" class="mx-5 mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{{ $errorProductos }}</p>
+                        <p role="alert" class="error-campo mx-5 mb-2">{{ $errorProductos }}</p>
                     @endif
 
-                    <div class="sm:overflow-x-auto">
-                        <table class="tabla block sm:table">
-                            <thead class="hidden sm:table-header-group">
-                                <tr>
-                                    <th class="min-w-48">Producto</th>
-                                    <th class="w-28">Cantidad</th>
-                                    <th class="w-28 text-right">Precio</th>
-                                    <th class="w-32 text-right">Subtotal</th>
-                                    <th class="w-12"><span class="sr-only">Quitar</span></th>
-                                </tr>
-                            </thead>
-                            <tbody class="block divide-y divide-stone-100 sm:table-row-group" data-lineas>
-                                @foreach ($lineas as $i => $linea)
-                                    @include('pedidos.partials.linea', ['indice' => $i, 'linea' => $linea])
-                                @endforeach
-                            </tbody>
-                            <tfoot class="block sm:table-footer-group">
-                                <tr class="flex items-center justify-between bg-stone-50 sm:table-row">
-                                    <td colspan="3" class="text-right text-sm font-semibold text-stone-700 uppercase">Total</td>
-                                    <td class="text-right text-lg font-bold text-stone-900 tabular-nums" data-total>Q 0.00</td>
-                                    <td class="hidden sm:table-cell"></td>
-                                </tr>
-                            </tfoot>
-                        </table>
+                    <div class="hidden grid-cols-[minmax(0,1fr)_8.5rem_6rem_6.5rem_2.5rem] gap-x-4 border-y border-borde bg-superficie-2 px-5 py-2 text-[13px] font-medium text-texto-2 md:grid" aria-hidden="true">
+                        <span>Producto</span><span>Cantidad</span><span class="text-right">Precio</span><span class="text-right">Subtotal</span><span></span>
                     </div>
-                    <p class="px-5 py-3 text-xs text-stone-500">
-                        El total se calcula con los precios del catálogo y se verifica al guardar.
-                        @if ($editando) Los productos que ya estaban en el pedido conservan el precio con el que se registraron. @endif
-                    </p>
+
+                    <ul class="border-t border-borde md:border-t-0" data-lineas>
+                        @foreach ($lineas as $i => $linea)
+                            @include('pedidos.partials.linea', ['indice' => $i, 'linea' => $linea])
+                        @endforeach
+                    </ul>
+
+                    <div class="px-5 py-3">
+                        <button type="button" class="btn btn-terciario -ml-2.5" data-agregar-linea>
+                            <x-icono nombre="mas" clase="size-4" /> Agregar otro producto
+                        </button>
+                    </div>
 
                     <template data-plantilla-linea>
                         @include('pedidos.partials.linea', ['indice' => '__INDICE__', 'linea' => ['id_producto' => '', 'cantidad' => 1]])
@@ -131,10 +136,44 @@
                 @endif
             </section>
 
-            <div class="flex justify-end gap-3">
-                <a href="{{ $editando ? route('pedidos.show', $pedido) : route('pedidos.index') }}" class="btn btn-secundario">Cancelar</a>
-                <button type="submit" class="btn btn-primario" @disabled($productos->isEmpty())>{{ $editando ? 'Guardar cambios' : 'Guardar pedido' }}</button>
+            {{-- 3. ¿Cuándo? Normalmente ahora mismo --}}
+            <section class="panel p-5" aria-labelledby="titulo-fecha">
+                <h2 id="titulo-fecha" class="sr-only">Fecha del pedido</h2>
+                <details class="group" @if ($fechaAbierta) open @endif>
+                    <summary class="flex cursor-pointer list-none flex-wrap items-center gap-x-2 text-sm [&::-webkit-details-marker]:hidden">
+                        <x-icono nombre="reloj" clase="size-5 text-texto-2" />
+                        <span>{{ $editando ? 'Registrado' : 'Se registra' }} {{ $textoFecha }}</span>
+                        <span class="enlace group-open:hidden">Cambiar</span>
+                    </summary>
+                    <div class="mt-4 max-w-xs">
+                        <x-campo nombre="fecha" etiqueta="Fecha y hora del pedido" tipo="datetime-local" requerido
+                                 :valor="$pedido->fecha?->format('Y-m-d\TH:i')"
+                                 min="{{ PedidoRequest::fechaMinima($editando ? $pedido : null) }}" max="{{ PedidoRequest::fechaMaxima() }}" />
+                    </div>
+                </details>
+            </section>
+        </div>
+
+        {{-- Resumen: panel que acompaña en escritorio; barra fija sobre la navegación en el teléfono --}}
+        <aside class="sticky bottom-[calc(4rem+1px+env(safe-area-inset-bottom))] z-20 -mx-4 border-t border-borde bg-superficie px-4 py-3 sm:-mx-6 sm:px-6
+                      lg:top-8 lg:bottom-auto lg:mx-0 lg:rounded-2xl lg:border lg:p-5" aria-label="Resumen del pedido">
+            <dl class="hidden space-y-2 border-b border-borde pb-4 text-sm lg:block">
+                <div class="flex justify-between gap-3"><dt class="text-texto-2">Cliente</dt><dd class="truncate text-right font-medium" data-resumen-cliente>—</dd></div>
+                <div class="flex justify-between gap-3"><dt class="text-texto-2">Productos</dt><dd class="font-medium tabular-nums" data-resumen-productos>—</dd></div>
+            </dl>
+            <div class="flex items-center justify-between gap-4 lg:mt-4 lg:block">
+                <div class="lg:flex lg:items-baseline lg:justify-between">
+                    <span class="block text-[13px] text-texto-2 lg:text-sm lg:font-medium lg:text-texto">Total</span>
+                    <span class="text-lg font-semibold tabular-nums lg:text-xl" data-total>Q 0.00</span>
+                </div>
+                <button type="submit" class="btn btn-primario lg:mt-4 lg:w-full" @disabled($productos->isEmpty())>
+                    {{ $editando ? 'Guardar cambios' : 'Crear pedido' }}
+                </button>
             </div>
-        </form>
-    </div>
+            <a href="{{ $volver }}" class="btn btn-terciario mt-2 hidden w-full lg:flex">Cancelar</a>
+            @if ($editando)
+                <p class="ayuda hidden lg:block">Los productos que ya estaban en el pedido conservan el precio con el que se registraron.</p>
+            @endif
+        </aside>
+    </form>
 </x-layouts.app>
