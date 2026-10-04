@@ -142,6 +142,17 @@ document.addEventListener('click', (evento) => {
 });
 document.querySelectorAll('dialog[data-abrir]').forEach((dialogo) => dialogo.showModal());
 
+// Crear cuenta: solo se muestran los campos del camino elegido (<input data-tipo-cuenta>, <div data-solo-tipo="…">).
+const tiposCuenta = document.querySelectorAll('[data-tipo-cuenta]');
+if (tiposCuenta.length) {
+    const mostrarCamposDeCuenta = () => {
+        const tipo = document.querySelector('[data-tipo-cuenta]:checked')?.value;
+        document.querySelectorAll('[data-solo-tipo]').forEach((campo) => (campo.hidden = campo.dataset.soloTipo !== tipo));
+    };
+    tiposCuenta.forEach((radio) => radio.addEventListener('change', mostrarCamposDeCuenta));
+    mostrarCamposDeCuenta();
+}
+
 // Reportes: imprimir o guardar como PDF desde el navegador.
 document.addEventListener('click', (evento) => {
     if (evento.target.closest('[data-imprimir]')) window.print();

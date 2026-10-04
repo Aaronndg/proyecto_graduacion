@@ -1,1 +1,1 @@
-@include('errors.plantilla', ['codigo' => 404, 'titulo' => 'Página no encontrada', 'mensaje' => 'El recurso que busca no existe o no pertenece a su cuenta.'])
+@include('errors.plantilla', ['codigo' => 404, 'titulo' => 'No encontramos esta página', 'mensaje' => 'Puede que el enlace esté mal escrito o que lo que busca ya no exista o no sea de su cuenta.'])

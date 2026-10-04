@@ -1,1 +1,1 @@
-@include('errors.plantilla', ['codigo' => 419, 'titulo' => 'La sesión expiró', 'mensaje' => 'Por seguridad, su sesión venció por inactividad. Inicie sesión nuevamente.'])
+@include('errors.plantilla', ['codigo' => 419, 'titulo' => 'Su sesión expiró', 'mensaje' => 'Por seguridad, la página venció después de un tiempo sin usarse. Vuelva a intentarlo; si es necesario, inicie sesión de nuevo.'])

@@ -29,8 +29,8 @@
         {{ $attributes->except('id')->class(['campo', 'campo-error' => $error]) }}
     >
     @if ($error)
-        <p id="{{ $id }}-error" class="mt-1 text-sm text-red-600">{{ $error }}</p>
+        <p id="{{ $id }}-error" class="error-campo">{{ $error }}</p>
     @elseif ($ayuda)
-        <p class="mt-1 text-xs text-stone-500">{{ $ayuda }}</p>
+        <p class="ayuda">{{ $ayuda }}</p>
     @endif
 </div>
