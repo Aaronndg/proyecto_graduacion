@@ -14,15 +14,15 @@
     </form>
 
     <nav class="mb-4" aria-label="Productos por disponibilidad">
-        <ul class="flex gap-1 border-b border-borde">
+        <ul class="flex flex-wrap gap-2 pb-1">
             @foreach ($pestanas as $clave => $texto)
                 @php $actual = (string) $estado === (string) $clave; @endphp
                 <li>
                     <a href="{{ $enlace($clave) }}" @if ($actual) aria-current="page" @endif
                        @class([
-                           '-mb-px flex min-h-11 items-center border-b-2 px-3 text-sm whitespace-nowrap transition-colors',
-                           'border-marca font-medium text-texto' => $actual,
-                           'border-transparent text-texto-2 hover:text-texto' => ! $actual,
+                           'flex min-h-10 items-center rounded-xl px-4 text-sm font-extrabold whitespace-nowrap shadow-suave transition-colors',
+                           'bg-marca text-white' => $actual,
+                           'bg-superficie text-texto-2 hover:text-marca' => ! $actual,
                        ])>{{ $texto }}</a>
                 </li>
             @endforeach

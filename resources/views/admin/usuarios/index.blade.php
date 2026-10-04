@@ -16,15 +16,15 @@
     </form>
 
     <nav class="-mx-4 mb-4 overflow-x-auto px-4 sm:mx-0 sm:px-0" aria-label="Usuarios por rol" data-desplazable>
-        <ul class="flex w-max gap-1 border-b border-borde sm:w-auto">
+        <ul class="flex w-max gap-2 pb-1 sm:w-auto sm:flex-wrap">
             @foreach ($pestanas as $clave => $texto)
                 @php $actual = (string) $rol === (string) $clave; @endphp
                 <li>
                     <a href="{{ $enlace($clave) }}" @if ($actual) aria-current="page" @endif
                        @class([
-                           '-mb-px flex min-h-11 items-center border-b-2 px-3 text-sm whitespace-nowrap transition-colors',
-                           'border-marca font-medium text-texto' => $actual,
-                           'border-transparent text-texto-2 hover:text-texto' => ! $actual,
+                           'flex min-h-10 items-center rounded-xl px-4 text-sm font-extrabold whitespace-nowrap shadow-suave transition-colors',
+                           'bg-marca text-white' => $actual,
+                           'bg-superficie text-texto-2 hover:text-marca' => ! $actual,
                        ])>{{ $texto }}</a>
                 </li>
             @endforeach

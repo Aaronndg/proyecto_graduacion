@@ -1,4 +1,4 @@
-@props(['titulo' => 'Panel', 'subtitulo' => null, 'ruta' => []])
+@props(['titulo' => 'Panel', 'subtitulo' => null, 'ruta' => [], 'encabezado' => true])
 @php
     $usuario = auth()->user();
     $esCliente = $usuario->esCliente();
@@ -26,110 +26,111 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <meta name="theme-color" content="#F7F7F5">
+    <meta name="theme-color" content="#102945">
     <title>{{ $titulo }} · {{ config('app.name') }}</title>
+    @include('components.layouts.partials.fuentes')
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="h-full font-sans antialiased">
     <a href="#contenido" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-lg focus:bg-white focus:px-3 focus:py-2 focus:shadow-flotante">Saltar al contenido</a>
 
-    {{-- ===== Menú lateral (escritorio) ===== --}}
-    @unless ($esCliente)
-        <aside class="fixed inset-y-0 left-0 z-30 hidden w-58 flex-col border-r border-borde bg-superficie-2 lg:flex print:hidden">
-            <div class="px-5 pt-6 pb-5">
-                <a href="{{ route('panel') }}" class="rounded-lg"><x-marca /></a>
-            </div>
+    <div class="flex min-h-full flex-col">
+        {{-- ===== Franja azul: marca, búsqueda, «Crear pedido», cuenta y el menú (escritorio) ===== --}}
+        <header class="banda bg-marca pt-[env(safe-area-inset-top)] text-white print:hidden">
+            <div @class(['mx-auto px-4 sm:px-6', 'max-w-[1200px] lg:px-10' => ! $esCliente, 'max-w-3xl' => $esCliente])>
+                <div class="flex h-16 items-center gap-4">
+                    <a href="{{ route('panel') }}" class="shrink-0 rounded-xl"><x-marca claro :detalle="$usuario->negocio" /></a>
 
-            @if ($crearPedido)
-                <div class="px-3 pb-4">
-                    <a href="{{ route('pedidos.create') }}" class="btn btn-primario w-full"><x-icono nombre="mas" clase="size-4" /> Crear pedido</a>
+                    @if ($crearPedido)
+                        <form method="GET" action="{{ route('pedidos.index') }}" role="search" class="relative hidden max-w-xl flex-1 md:block">
+                            <label for="buscar-global" class="sr-only">Buscar pedidos</label>
+                            <x-icono nombre="buscar" clase="pointer-events-none absolute top-1/2 left-3.5 size-5 -translate-y-1/2 text-texto-2" />
+                            <input id="buscar-global" name="buscar" type="search" placeholder="Buscar pedido o cliente…" value="{{ request()->routeIs('pedidos.index') ? request('buscar') : '' }}"
+                                   class="h-10 w-full rounded-xl border-0 bg-white pr-3 pl-11 text-sm text-texto placeholder:text-texto-2 focus:ring-3 focus:ring-oro/60 focus:outline-none">
+                        </form>
+                    @endif
+
+                    <div class="ml-auto flex items-center gap-3">
+                        @if ($crearPedido)
+                            <a href="{{ route('pedidos.create') }}" class="btn btn-primario hidden lg:inline-flex"><x-icono nombre="mas" clase="size-4" /> Crear pedido</a>
+                        @endif
+
+                        <details class="menu relative" data-menu>
+                            <summary class="flex cursor-pointer items-center gap-2 rounded-full p-1 text-sm font-bold text-white hover:bg-white/10 sm:pl-3">
+                                <span class="hidden sm:inline">{{ strtok($usuario->nombre, ' ') }}</span>
+                                <span class="flex size-9 items-center justify-center rounded-full bg-oro text-[13px] font-extrabold text-stone-950">{{ $usuario->iniciales() }}</span>
+                                <span class="sr-only">Abrir menú de la cuenta</span>
+                            </summary>
+                            <div class="menu-lista text-texto">
+                                <p class="border-b border-borde px-3.5 pt-2 pb-2.5">
+                                    <span class="block text-sm font-bold">{{ $usuario->nombre }}</span>
+                                    <span class="block truncate text-[13px] text-texto-2">{{ $usuario->correo }}</span>
+                                </p>
+                                <a href="{{ route('perfil.edit') }}" class="menu-opcion"><x-icono nombre="usuario" clase="size-4 text-texto-2" /> Mi perfil</a>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="menu-opcion"><x-icono nombre="salir" clase="size-4 text-texto-2" /> Cerrar sesión</button>
+                                </form>
+                            </div>
+                        </details>
+                    </div>
                 </div>
-            @endif
 
-            <nav class="flex-1 space-y-0.5 overflow-y-auto px-3" aria-label="Menú principal">
-                @foreach ($menu as $item)
-                    <a href="{{ route($item['ruta']) }}" @if ($item['actual']) aria-current="page" @endif
-                       @class([
-                           'flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors',
-                           'bg-superficie font-medium text-texto shadow-[inset_2px_0_0_var(--color-marca)]' => $item['actual'],
-                           'text-texto-2 hover:bg-stone-200/50 hover:text-texto' => ! $item['actual'],
-                       ])>
-                        <x-icono :nombre="$item['icono']" :clase="'size-5 '.($item['actual'] ? 'text-marca' : '')" />
-                        {{ $item['texto'] }}
-                    </a>
-                @endforeach
-            </nav>
-
-            <div class="border-t border-borde p-3">
-                <a href="{{ route('perfil.edit') }}" @class(['flex items-center gap-3 rounded-lg px-2 py-2 transition-colors hover:bg-stone-200/50', 'bg-superficie' => request()->routeIs('perfil.*')])
-                   @if (request()->routeIs('perfil.*')) aria-current="page" @endif>
-                    <span class="flex size-8 shrink-0 items-center justify-center rounded-full bg-marca-100 text-[13px] font-semibold text-marca">{{ $usuario->iniciales() }}</span>
-                    <span class="min-w-0 leading-tight">
-                        <span class="block truncate text-sm font-medium">{{ $usuario->nombre }}</span>
-                        <span class="block truncate text-[13px] text-texto-2">{{ $usuario->negocio ?: $usuario->rol->nombre }}</span>
-                    </span>
-                </a>
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="mt-1 flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-sm text-texto-2 transition-colors hover:bg-stone-200/50 hover:text-texto">
-                        <x-icono nombre="salir" /> Cerrar sesión
-                    </button>
-                </form>
-            </div>
-        </aside>
-    @endunless
-
-    <div @class(['flex min-h-full flex-col print:pl-0', 'lg:pl-58' => ! $esCliente])>
-        {{-- ===== Barra superior: en el teléfono para todos; en escritorio solo para el cliente (no tiene menú) ===== --}}
-        <header @class([
-            'sticky top-0 z-20 border-b border-borde bg-fondo/95 pt-[env(safe-area-inset-top)] backdrop-blur print:hidden',
-            'lg:hidden' => ! $esCliente,
-        ])>
-            <div @class(['mx-auto flex h-14 items-center justify-between gap-3 px-4', 'max-w-3xl sm:px-6' => $esCliente])>
-                <a href="{{ route('panel') }}" class="rounded-lg"><x-marca /></a>
-
-                @if ($esCliente)
-                    <details class="menu relative" data-menu>
-                        <summary class="flex cursor-pointer items-center gap-2 rounded-lg py-1 pr-1 pl-2 text-sm text-texto-2 hover:bg-superficie-2 hover:text-texto">
-                            <span class="hidden sm:inline">{{ strtok($usuario->nombre, ' ') }}</span>
-                            <span class="flex size-8 items-center justify-center rounded-full bg-marca-100 text-[13px] font-semibold text-marca">{{ $usuario->iniciales() }}</span>
-                            <span class="sr-only">Abrir menú de la cuenta</span>
-                        </summary>
-                        <div class="menu-lista">
-                            <a href="{{ route('perfil.edit') }}" class="menu-opcion"><x-icono nombre="usuario" clase="size-4 text-texto-2" /> Mi perfil</a>
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <button type="submit" class="menu-opcion"><x-icono nombre="salir" clase="size-4 text-texto-2" /> Cerrar sesión</button>
-                            </form>
-                        </div>
-                    </details>
+                @if ($crearPedido)
+                    {{-- Búsqueda en el teléfono: debajo de la marca --}}
+                    <form method="GET" action="{{ route('pedidos.index') }}" role="search" class="relative pb-3 md:hidden">
+                        <label for="buscar-movil" class="sr-only">Buscar pedidos</label>
+                        <x-icono nombre="buscar" clase="pointer-events-none absolute top-5 left-3.5 size-5 -translate-y-1/2 text-texto-2" />
+                        <input id="buscar-movil" name="buscar" type="search" placeholder="Buscar pedido o cliente…"
+                               class="h-10 w-full rounded-xl border-0 bg-white pr-3 pl-11 text-base text-texto placeholder:text-texto-2 focus:ring-3 focus:ring-oro/60 focus:outline-none">
+                    </form>
                 @endif
+
+                {{-- Menú principal (escritorio): navegación basada en roles --}}
+                @unless ($esCliente)
+                    <nav class="-mx-1 hidden gap-1 pb-3 lg:flex" aria-label="Menú principal">
+                        @foreach ($menu as $item)
+                            <a href="{{ route($item['ruta']) }}" @if ($item['actual']) aria-current="page" @endif
+                               @class([
+                                   'flex items-center gap-2 rounded-xl px-3.5 py-2 text-sm font-bold transition-colors',
+                                   'bg-white text-marca' => $item['actual'],
+                                   'text-stone-300 hover:bg-white/10 hover:text-white' => ! $item['actual'],
+                               ])>
+                                <x-icono :nombre="$item['icono']" clase="size-5" />
+                                {{ $item['texto'] }}
+                            </a>
+                        @endforeach
+                    </nav>
+                @endunless
             </div>
         </header>
+        <div class="textil print:hidden" aria-hidden="true"></div>
 
         <main id="contenido" @class([
             'mx-auto w-full flex-1 px-4 pt-6 sm:px-6',
             'max-w-[1200px] pb-28 lg:px-10 lg:pt-8 lg:pb-12' => ! $esCliente,
             'max-w-3xl pb-12' => $esCliente,
         ])>
-            {{-- Encabezado: ruta corta para volver, título y la acción principal de la pantalla --}}
-            <div class="mb-6 flex items-start justify-between gap-4 sm:items-end">
-                <div class="min-w-0 flex-1">
-                    @if ($ruta)
-                        <nav aria-label="Ruta" class="mb-1 text-sm text-texto-2">
-                            @foreach ($ruta as $texto => $url)
-                                <a href="{{ $url }}" class="hover:text-texto hover:underline">{{ $texto }}</a>
-                                <span aria-hidden="true" class="mx-1">/</span>
-                            @endforeach
-                        </nav>
-                    @endif
-                    <h1 class="text-2xl font-semibold tracking-tight text-balance text-texto">{{ $titulo }}</h1>
-                    @if ($subtitulo)<p class="mt-1 text-texto-2">{{ $subtitulo }}</p>@endif
+            {{-- Encabezado: ruta corta para volver, título y la acción principal de la pantalla («Hoy» lo lleva en su banner) --}}
+            @if ($encabezado)
+                <div class="mb-6 flex items-start justify-between gap-4 sm:items-end">
+                    <div class="min-w-0 flex-1">
+                        @if ($ruta)
+                            <nav aria-label="Ruta" class="mb-1 text-sm font-bold text-texto-2">
+                                @foreach ($ruta as $texto => $url)
+                                    <a href="{{ $url }}" class="hover:text-marca hover:underline">{{ $texto }}</a>
+                                    <span aria-hidden="true" class="mx-1 text-stone-300">/</span>
+                                @endforeach
+                            </nav>
+                        @endif
+                        <h1 class="font-display text-[26px] leading-tight font-semibold text-balance text-texto sm:text-[30px]">{{ $titulo }}</h1>
+                        @if ($subtitulo)<p class="mt-1 text-texto-2">{{ $subtitulo }}</p>@endif
+                    </div>
+                    @isset($acciones)
+                        <div class="flex shrink-0 flex-wrap items-center justify-end gap-2">{{ $acciones }}</div>
+                    @endisset
                 </div>
-                @isset($acciones)
-                    <div class="flex shrink-0 flex-wrap items-center justify-end gap-2">{{ $acciones }}</div>
-                @endisset
-            </div>
+            @endif
 
             <x-alertas :separacion="$esCliente ? 'bottom-6' : 'bottom-24 lg:bottom-6'" />
             {{ $slot }}
@@ -142,7 +143,7 @@
 
     {{-- ===== Barra inferior (teléfono): accesos principales al alcance del pulgar ===== --}}
     @unless ($esCliente)
-        <nav class="fixed inset-x-0 bottom-0 z-30 border-t border-borde bg-superficie pb-[env(safe-area-inset-bottom)] lg:hidden print:hidden" aria-label="Menú principal">
+        <nav class="fixed inset-x-0 bottom-0 z-30 rounded-t-2xl bg-superficie pb-[env(safe-area-inset-bottom)] shadow-[0_-4px_18px_rgb(16_41_69/0.10)] lg:hidden print:hidden" aria-label="Menú principal">
             <ul class="mx-auto flex max-w-md items-stretch justify-around">
                 @foreach ($enBarra->take($crearPedido ? 2 : 3) as $item)
                     @include('components.layouts.partials.boton-barra', ['item' => $item])
@@ -150,8 +151,8 @@
 
                 @if ($crearPedido)
                     <li class="flex flex-1 justify-center">
-                        <a href="{{ route('pedidos.create') }}" class="flex min-h-16 flex-col items-center justify-center gap-1 px-2 text-[11px] font-medium text-marca">
-                            <span class="flex size-9 items-center justify-center rounded-lg bg-marca text-white"><x-icono nombre="mas" clase="size-5" /></span>
+                        <a href="{{ route('pedidos.create') }}" class="flex min-h-16 flex-col items-center justify-center px-2">
+                            <span class="-mt-6 flex size-13 items-center justify-center rounded-full bg-oro text-stone-950 shadow-oro ring-4 ring-superficie"><x-icono nombre="mas" clase="size-6" /></span>
                             <span class="sr-only">Crear pedido</span>
                         </a>
                     </li>
@@ -164,7 +165,7 @@
                 <li class="flex flex-1">
                     <details class="menu w-full" data-menu>
                         <summary @class([
-                            'flex min-h-16 w-full cursor-pointer flex-col items-center justify-center gap-1 px-2 text-[11px] font-medium',
+                            'flex min-h-16 w-full cursor-pointer flex-col items-center justify-center gap-1 px-2 text-[11px] font-bold',
                             'text-marca' => $masActiva,
                             'text-texto-2' => ! $masActiva,
                         ])>

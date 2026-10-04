@@ -2,7 +2,7 @@
 <li class="flex flex-1">
     <a href="{{ route($item['ruta']) }}" @if ($item['actual']) aria-current="page" @endif
        @class([
-           'flex min-h-16 w-full flex-col items-center justify-center gap-1 px-2 text-[11px] font-medium',
+           'flex min-h-16 w-full flex-col items-center justify-center gap-1 px-2 text-[11px] font-bold',
            'text-marca' => $item['actual'],
            'text-texto-2' => ! $item['actual'],
        ])>
