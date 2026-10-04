@@ -3,26 +3,35 @@
 
     $plural = fn (int $n, string $uno, string $varios) => number_format($n).' '.($n === 1 ? $uno : $varios);
 @endphp
-<x-layouts.app :titulo="'Hola, '.strtok(auth()->user()->nombre, ' ')">
-    <x-slot:acciones>
-        <a href="{{ route('admin.usuarios.create') }}" class="btn btn-primario"><x-icono nombre="mas" clase="size-4" /> <span>Nuevo<span class="hidden sm:inline"> usuario</span></span></a>
-    </x-slot:acciones>
+<x-layouts.app titulo="Inicio" :encabezado="false">
+    {{-- Resumen de la plataforma en el banner de bienvenida --}}
+    <x-bienvenida :titulo="'¡Hola, '.strtok(auth()->user()->nombre, ' ').'!'" antetitulo="En la plataforma">
+        <a href="{{ route('admin.usuarios.index', ['rol' => Rol::EMPRENDEDOR]) }}" class="font-extrabold text-white hover:underline">{{ $plural($totalEmprendedores, 'emprendedor', 'emprendedores') }}</a>
+        ·
+        <a href="{{ route('admin.usuarios.index', ['rol' => Rol::CLIENTE]) }}" class="font-extrabold text-white hover:underline">{{ $plural($totalClientes, 'cliente con cuenta', 'clientes con cuenta') }}</a>
+        · {{ $plural($totalPedidos, 'pedido registrado', 'pedidos registrados') }}
+        @if ($totalInactivos)
+            · <a href="{{ route('admin.usuarios.index') }}" class="font-extrabold text-[#E9C46A] hover:underline">{{ $plural($totalInactivos, 'cuenta desactivada', 'cuentas desactivadas') }}</a>
+        @endif
+        <x-slot:acciones>
+            <a href="{{ route('admin.usuarios.create') }}" class="btn btn-primario"><x-icono nombre="mas" clase="size-4" /> Nuevo usuario</a>
+            <a href="{{ route('admin.usuarios.index') }}" class="btn border-2 border-white/70 text-white hover:bg-white/10">Ver todos los usuarios</a>
+        </x-slot:acciones>
+    </x-bienvenida>
 
-    {{-- Resumen de la plataforma en una frase --}}
-    <section class="mb-8" aria-labelledby="titulo-resumen">
-        <h2 id="titulo-resumen" class="meta mb-1">En la plataforma</h2>
-        <p class="text-xl font-semibold tracking-tight text-balance sm:text-2xl">
-            <a href="{{ route('admin.usuarios.index', ['rol' => Rol::EMPRENDEDOR]) }}" class="hover:underline">{{ $plural($totalEmprendedores, 'emprendedor', 'emprendedores') }}</a>
-            <span class="text-texto-2">·</span>
-            <a href="{{ route('admin.usuarios.index', ['rol' => Rol::CLIENTE]) }}" class="hover:underline">{{ $plural($totalClientes, 'cliente con cuenta', 'clientes con cuenta') }}</a>
-        </p>
-        <p class="mt-1 text-sm text-texto-2">
-            {{ $plural($totalPedidos, 'pedido registrado', 'pedidos registrados') }}
-            @if ($totalInactivos)
-                · <a href="{{ route('admin.usuarios.index') }}" class="enlace">{{ $plural($totalInactivos, 'cuenta desactivada', 'cuentas desactivadas') }}</a>
-            @endif
-        </p>
-    </section>
+    {{-- Accesos: íconos en círculos hacia la lista ya filtrada --}}
+    <nav class="mb-8 grid grid-cols-3 gap-2 sm:gap-4" aria-label="Accesos rápidos">
+        @foreach ([
+            ['Emprendedores', 'negocio', Rol::EMPRENDEDOR, 'bg-oro-suave'],
+            ['Clientes', 'usuarios', Rol::CLIENTE, 'bg-marca-100'],
+            ['Administradores', 'usuario', Rol::ADMINISTRADOR, 'bg-oro-suave'],
+        ] as [$texto, $icono, $idRol, $tono])
+            <a href="{{ route('admin.usuarios.index', ['rol' => $idRol]) }}" class="flex flex-col items-center gap-2 rounded-2xl p-1 text-center transition sm:flex-row sm:gap-3 sm:bg-superficie sm:p-4 sm:text-left sm:shadow-suave sm:hover:-translate-y-0.5">
+                <span class="flex size-14 shrink-0 items-center justify-center rounded-full text-marca shadow-suave sm:size-12 sm:shadow-none {{ $tono }}"><x-icono :nombre="$icono" clase="size-6" /></span>
+                <span class="font-display text-[13px] font-semibold sm:text-base">{{ $texto }}</span>
+            </a>
+        @endforeach
+    </nav>
 
     <section class="panel overflow-hidden" aria-labelledby="titulo-recientes">
         <div class="flex items-center justify-between px-5 pt-4 pb-3">

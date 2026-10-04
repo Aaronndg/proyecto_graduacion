@@ -3,7 +3,17 @@
 
     [$anteriores, $enCursoLista] = $pedidos->partition(fn ($p) => in_array($p->id_estado, EstadoPedido::FINALES, true));
 @endphp
-<x-layouts.app titulo="Mis pedidos" :subtitulo="'Hola, '.strtok(auth()->user()->nombre, ' ').'.'">
+<x-layouts.app titulo="Mis pedidos" :encabezado="false">
+    <x-bienvenida :titulo="'¡Hola, '.strtok(auth()->user()->nombre, ' ').'!'" antetitulo="Mis pedidos">
+        @if ($pedidos->isEmpty())
+            Conecte su cuenta con el código del negocio y aquí verá cómo van sus pedidos.
+        @elseif ($enCurso)
+            Tiene <b class="text-white">{{ $enCurso }} {{ $enCurso === 1 ? 'pedido en curso' : 'pedidos en curso' }}</b>. Toque uno para ver en qué etapa va.
+        @else
+            No tiene pedidos en curso. Aquí abajo están los anteriores.
+        @endif
+    </x-bienvenida>
+
     @if ($pedidos->isEmpty())
         {{-- Primera vez: una sola tarea, conectar la cuenta con el código del negocio. --}}
         <section class="panel p-5 sm:p-8" aria-labelledby="titulo-conectar">
