@@ -1,64 +1,61 @@
-<x-layouts.app titulo="Usuarios" subtitulo="Cuentas con acceso a la plataforma.">
+@php
+    use App\Models\Rol;
+
+    $pestanas = ['' => 'Todos', Rol::EMPRENDEDOR => 'Emprendedores', Rol::CLIENTE => 'Clientes', Rol::ADMINISTRADOR => 'Administradores'];
+    $enlace = fn ($clave) => route('admin.usuarios.index', array_filter(['buscar' => $buscar, 'rol' => $clave]));
+@endphp
+<x-layouts.app titulo="Usuarios">
     <x-slot:acciones>
-        <a href="{{ route('admin.usuarios.create') }}" class="btn btn-primario"><x-icono nombre="mas" clase="size-4" /> Nuevo usuario</a>
+        <a href="{{ route('admin.usuarios.create') }}" class="btn btn-primario"><x-icono nombre="mas" clase="size-4" /> <span>Nuevo<span class="hidden sm:inline"> usuario</span></span></a>
     </x-slot:acciones>
 
-    <div class="tarjeta overflow-hidden">
-        <form method="GET" class="flex flex-col gap-2 border-b border-stone-100 p-4 sm:flex-row" role="search">
-            <x-campo-busqueda :valor="$buscar" placeholder="Nombre, correo o negocio" />
-            <label for="rol" class="sr-only">Rol</label>
-            <select id="rol" name="rol" class="campo sm:w-44" onchange="this.form.submit()">
-                <option value="">Todos los roles</option>
-                @foreach ($roles as $opcion)
-                    <option value="{{ $opcion->id_rol }}" @selected($rol === $opcion->id_rol)>{{ $opcion->nombre }}</option>
-                @endforeach
-            </select>
-            <button type="submit" class="btn btn-secundario">Buscar</button>
-        </form>
+    <form method="GET" class="mb-4 flex gap-2" role="search">
+        @if ($rol)<input type="hidden" name="rol" value="{{ $rol }}">@endif
+        <x-campo-busqueda :valor="$buscar" placeholder="Nombre, correo o negocio" />
+        <button type="submit" class="btn btn-secundario">Buscar</button>
+    </form>
 
-        <div class="overflow-x-auto">
-            <table class="tabla">
-                <thead>
-                    <tr><th>Usuario</th><th>Rol</th><th class="hidden md:table-cell">Negocio</th><th>Estado</th><th><span class="sr-only">Acciones</span></th></tr>
-                </thead>
-                <tbody class="divide-y divide-stone-100">
-                    @forelse ($usuarios as $usuario)
-                        <tr>
-                            <td>
-                                <p class="font-medium text-stone-900">{{ $usuario->nombre }}</p>
-                                <p class="text-xs text-stone-500">{{ $usuario->correo }}</p>
-                            </td>
-                            <td>{{ $usuario->rol->nombre }}</td>
-                            <td class="hidden text-stone-600 md:table-cell">{{ $usuario->negocio ?? '—' }}</td>
-                            <td>
-                                <span @class(['insignia', 'bg-emerald-50 text-emerald-700 ring-emerald-600/20' => $usuario->activo, 'bg-stone-100 text-stone-500 ring-stone-500/20' => ! $usuario->activo])>
-                                    {{ $usuario->activo ? 'Activo' : 'Inactivo' }}
-                                </span>
-                            </td>
-                            <td>
-                                <div class="flex justify-end gap-2">
-                                    <a href="{{ route('admin.usuarios.edit', $usuario) }}" class="btn btn-secundario px-3 py-1.5">Editar</a>
-                                    @unless ($usuario->is(auth()->user()))
-                                        <form method="POST" action="{{ route('admin.usuarios.estado', $usuario) }}"
-                                              data-confirmar-titulo="{{ $usuario->activo ? '¿Desactivar la cuenta de '.$usuario->nombre.'?' : '¿Activar la cuenta de '.$usuario->nombre.'?' }}"
-                                              data-confirmar="{{ $usuario->activo ? 'No podrá iniciar sesión hasta que la active de nuevo. Sus datos se conservan.' : 'Podrá volver a iniciar sesión.' }}"
-                                              data-confirmar-accion="{{ $usuario->activo ? 'Desactivar cuenta' : 'Activar cuenta' }}" @if ($usuario->activo) data-confirmar-peligro @endif>
-                                            @csrf
-                                            @method('PATCH')
-                                            <button type="submit" class="{{ $usuario->activo ? 'btn btn-peligro' : 'btn btn-secundario' }} px-3 py-1.5">
-                                                {{ $usuario->activo ? 'Desactivar' : 'Activar' }}
-                                            </button>
-                                        </form>
-                                    @endunless
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr><td colspan="5" class="py-12 text-center text-stone-500">No encontramos usuarios con esos datos.</td></tr>
-                    @endforelse
-                </tbody>
-            </table>
+    <nav class="-mx-4 mb-4 overflow-x-auto px-4 sm:mx-0 sm:px-0" aria-label="Usuarios por rol" data-desplazable>
+        <ul class="flex w-max gap-1 border-b border-borde sm:w-auto">
+            @foreach ($pestanas as $clave => $texto)
+                @php $actual = (string) $rol === (string) $clave; @endphp
+                <li>
+                    <a href="{{ $enlace($clave) }}" @if ($actual) aria-current="page" @endif
+                       @class([
+                           '-mb-px flex min-h-11 items-center border-b-2 px-3 text-sm whitespace-nowrap transition-colors',
+                           'border-marca font-medium text-texto' => $actual,
+                           'border-transparent text-texto-2 hover:text-texto' => ! $actual,
+                       ])>{{ $texto }}</a>
+                </li>
+            @endforeach
+        </ul>
+    </nav>
+
+    @if ($usuarios->isEmpty())
+        <div class="panel px-5 py-10 text-center">
+            <p class="font-medium">No encontramos usuarios{{ $buscar ? ' con «'.$buscar.'»' : '' }}</p>
+            <a href="{{ route('admin.usuarios.index') }}" class="btn btn-secundario mt-5">Ver todos los usuarios</a>
         </div>
-        @if ($usuarios->hasPages())<div class="border-t border-stone-100 px-5 py-3">{{ $usuarios->links() }}</div>@endif
-    </div>
+    @else
+        <ul class="panel overflow-hidden">
+            @foreach ($usuarios as $usuario)
+                <li class="border-b border-borde last:border-b-0">
+                    <a href="{{ route('admin.usuarios.edit', $usuario) }}" class="flex items-center justify-between gap-4 px-4 py-3 transition-colors hover:bg-superficie-2/60">
+                        <span class="min-w-0">
+                            <span @class(['block truncate font-medium', 'text-texto-2' => ! $usuario->activo])>
+                                {{ $usuario->nombre }}
+                                @if ($usuario->is(auth()->user()))<span class="meta font-normal">(usted)</span>@endif
+                            </span>
+                            <span class="meta block truncate">{{ collect([$usuario->activo ? null : 'Desactivada', $usuario->correo])->filter()->implode(' · ') }}</span>
+                        </span>
+                        <span class="shrink-0 text-right text-sm">
+                            <span @class(['block', 'text-texto-2' => ! $usuario->activo])>{{ $usuario->rol->nombre }}</span>
+                            @if ($usuario->negocio)<span class="meta block max-w-40 truncate">{{ $usuario->negocio }}</span>@endif
+                        </span>
+                    </a>
+                </li>
+            @endforeach
+        </ul>
+        @if ($usuarios->hasPages())<div class="mt-4">{{ $usuarios->links() }}</div>@endif
+    @endif
 </x-layouts.app>

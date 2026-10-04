@@ -142,11 +142,12 @@ document.addEventListener('click', (evento) => {
 });
 document.querySelectorAll('dialog[data-abrir]').forEach((dialogo) => dialogo.showModal());
 
-// Crear cuenta: solo se muestran los campos del camino elegido (<input data-tipo-cuenta>, <div data-solo-tipo="…">).
+// Crear cuenta / formulario de usuario: solo se muestran los campos del tipo de cuenta elegido.
+// <input type="radio" data-tipo-cuenta> o <select data-tipo-cuenta>, y <div data-solo-tipo="…">.
 const tiposCuenta = document.querySelectorAll('[data-tipo-cuenta]');
 if (tiposCuenta.length) {
     const mostrarCamposDeCuenta = () => {
-        const tipo = document.querySelector('[data-tipo-cuenta]:checked')?.value;
+        const tipo = document.querySelector('select[data-tipo-cuenta]')?.value ?? document.querySelector('[data-tipo-cuenta]:checked')?.value;
         document.querySelectorAll('[data-solo-tipo]').forEach((campo) => (campo.hidden = campo.dataset.soloTipo !== tipo));
     };
     tiposCuenta.forEach((radio) => radio.addEventListener('change', mostrarCamposDeCuenta));
