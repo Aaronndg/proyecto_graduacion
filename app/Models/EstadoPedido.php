@@ -15,6 +15,9 @@ class EstadoPedido extends Model
     /** Estados en los que el pedido ya no puede cambiar. */
     public const FINALES = [self::ENTREGADO, self::CANCELADO];
 
+    /** Estados en los que el pedido todavía necesita atención (las columnas de «Hoy»). */
+    public const ACTIVOS = [self::NUEVO, self::EN_PROCESO, self::LISTO];
+
     protected $table = 'estados_pedido';
     protected $primaryKey = 'id_estado';
     public $timestamps = false;

@@ -75,6 +75,21 @@ document.addEventListener('keydown', (evento) => {
     });
 });
 
+// «Hoy» en el teléfono: una etapa a la vez (en escritorio se ven las tres).
+document.querySelectorAll('[data-pestanas]').forEach((grupo) => {
+    grupo.addEventListener('click', (evento) => {
+        const boton = evento.target.closest('[data-pestana]');
+        if (!boton) return;
+        grupo.querySelectorAll('[data-pestana]').forEach((b) => b.setAttribute('aria-pressed', String(b === boton)));
+        document.querySelectorAll('[data-etapa]').forEach((etapa) => {
+            const visible = etapa.dataset.etapa === boton.dataset.pestana;
+            etapa.classList.toggle('flex', visible);
+            etapa.classList.toggle('hidden', !visible);
+            etapa.classList.toggle('lg:flex', !visible);
+        });
+    });
+});
+
 // Avisos de éxito: se retiran solos a los 5 segundos o con el botón cerrar.
 document.querySelectorAll('[data-aviso]').forEach((aviso) => {
     const cerrar = () => aviso.parentElement?.remove();

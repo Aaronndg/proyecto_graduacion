@@ -6,9 +6,8 @@
     // Navegación basada en roles (Figura 42): cada usuario ve solo las opciones autorizadas.
     // «movil»: dónde aparece en el teléfono (barra inferior o la hoja «Más»).
     $menu = collect([
-        ['ruta' => 'panel', 'activa' => 'panel', 'texto' => 'Inicio', 'icono' => 'inicio', 'roles' => ['administrador', 'emprendedor'], 'movil' => 'barra'],
+        ['ruta' => 'panel', 'activa' => 'panel', 'texto' => $usuario->esEmprendedor() ? 'Hoy' : 'Inicio', 'icono' => 'inicio', 'roles' => ['administrador', 'emprendedor'], 'movil' => 'barra'],
         ['ruta' => 'pedidos.index', 'activa' => 'pedidos.*', 'texto' => 'Pedidos', 'icono' => 'pedido', 'roles' => ['emprendedor'], 'movil' => 'barra'],
-        ['ruta' => 'seguimiento', 'activa' => 'seguimiento', 'texto' => 'Seguimiento', 'icono' => 'seguimiento', 'roles' => ['emprendedor'], 'movil' => 'mas'],
         ['ruta' => 'clientes.index', 'activa' => 'clientes.*', 'texto' => 'Clientes', 'icono' => 'usuarios', 'roles' => ['emprendedor'], 'movil' => 'barra'],
         ['ruta' => 'productos.index', 'activa' => 'productos.*', 'texto' => 'Productos', 'icono' => 'producto', 'roles' => ['emprendedor'], 'movil' => 'mas'],
         ['ruta' => 'reportes', 'activa' => 'reportes*', 'texto' => 'Reportes', 'icono' => 'reportes', 'roles' => ['emprendedor'], 'movil' => 'mas'],

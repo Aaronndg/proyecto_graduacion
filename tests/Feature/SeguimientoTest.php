@@ -118,11 +118,38 @@ class SeguimientoTest extends TestCase
 
     public function test_el_tablero_muestra_solo_los_pedidos_activos(): void
     {
-        $this->get('/seguimiento')->assertOk()->assertSee('Pedro Ruiz')->assertSee('Iniciar preparación');
+        // El tablero de seguimiento es parte de «Hoy»; la ruta antigua lleva ahí.
+        $this->get('/seguimiento')->assertRedirect('/panel');
+
+        $this->get('/panel')->assertOk()->assertSee('Pedro Ruiz')->assertSee('Iniciar preparación')->assertSee('1 pedido por atender');
 
         $this->cambiar(EstadoPedido::ENTREGADO);
 
-        $this->get('/seguimiento')->assertOk()->assertDontSee('Pedro Ruiz');
+        $this->get('/panel')->assertOk()->assertDontSee('Pedro Ruiz')->assertSee('No tiene pedidos pendientes');
+    }
+
+    public function test_hoy_muestra_primero_los_pedidos_mas_antiguos(): void
+    {
+        $antiguo = $this->pedido->replicate()->fill(['fecha' => now()->subDays(3)]);
+        $antiguo->id_emprendedor = $this->emprendedor->id_usuario;
+        $antiguo->save();
+
+        $this->get('/panel'); // consume el aviso «Pedido #0001 registrado» que dejó setUp()
+        $html = $this->get('/panel')->getContent();
+
+        $this->assertLessThan(
+            strpos($html, '#'.$this->pedido->numero()),
+            strpos($html, '#'.$antiguo->numero()),
+        );
+    }
+
+    public function test_hoy_resume_las_ventas_de_los_ultimos_7_dias(): void
+    {
+        $this->get('/panel')->assertSee('Sin ventas en los últimos 7 días');
+
+        $this->cambiar(EstadoPedido::ENTREGADO);
+
+        $this->get('/panel')->assertSee('En los últimos 7 días vendió')->assertSee('Q 100.00')->assertSee('1 entrega');
     }
 
     public function test_el_detalle_muestra_el_panel_para_actualizar_el_estado(): void
