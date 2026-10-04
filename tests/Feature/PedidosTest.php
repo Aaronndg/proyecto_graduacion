@@ -230,4 +230,26 @@ class PedidosTest extends TestCase
 
         $this->assertSame(0, Pedido::count());
     }
+
+    public function test_la_lista_abre_en_activos_y_en_todos_los_activos_van_primero(): void
+    {
+        $linea = [['id_producto' => $this->pastel->id_producto, 'cantidad' => 1]];
+        $this->post('/pedidos', $this->datos($linea, ['fecha' => $this->fecha->copy()->subDay()->format('Y-m-d\TH:i')]));
+        $this->post('/pedidos', $this->datos($linea));
+        [$antiguo, $reciente] = Pedido::orderBy('id_pedido')->get()->all();
+        $this->post("/pedidos/{$reciente->id_pedido}/estado", ['id_estado' => EstadoPedido::CANCELADO, 'observacion' => 'Ya no lo quiere']);
+
+        // Pestaña predeterminada: solo los activos, con el número de cada pestaña.
+        $activos = $this->get('/pedidos')->assertOk();
+        $this->assertSame('activos', $activos->viewData('vista'));
+        $this->assertSame([$antiguo->id_pedido], $activos->viewData('pedidos')->pluck('id_pedido')->all());
+        $this->assertSame(['activos' => 1, EstadoPedido::ENTREGADO => 0, EstadoPedido::CANCELADO => 1, 'todos' => 2], $activos->viewData('conteos'));
+
+        // «Todos»: el activo va antes que el cancelado aunque sea más antiguo.
+        $todos = $this->get('/pedidos?estado=todos')->viewData('pedidos')->pluck('id_pedido')->all();
+        $this->assertSame([$antiguo->id_pedido, $reciente->id_pedido], $todos);
+
+        // Un valor desconocido vuelve a la pestaña predeterminada.
+        $this->assertSame('activos', $this->get('/pedidos?estado=99')->viewData('vista'));
+    }
 }

@@ -90,6 +90,12 @@ document.querySelectorAll('[data-pestanas]').forEach((grupo) => {
     });
 });
 
+// Filas de pestañas desplazables (teléfono): la pestaña actual siempre queda a la vista.
+document.querySelectorAll('[data-desplazable]').forEach((fila) => {
+    const actual = fila.querySelector('[aria-current="page"]');
+    if (actual) fila.scrollLeft = actual.offsetLeft - fila.clientWidth / 2 + actual.offsetWidth / 2;
+});
+
 // Avisos de éxito: se retiran solos a los 5 segundos o con el botón cerrar.
 document.querySelectorAll('[data-aviso]').forEach((aviso) => {
     const cerrar = () => aviso.parentElement?.remove();

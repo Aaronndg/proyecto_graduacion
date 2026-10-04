@@ -20,32 +20,58 @@ class PedidoController extends Controller
     {
     }
 
+    /**
+     * Lista de pedidos con pestañas: «activos» (predeterminada), «todos» o un estado concreto
+     * (los enlaces «Ver los N» de Hoy usan el estado). En «todos», los activos van primero.
+     */
     public function index(Request $request): View
     {
         $buscar = trim((string) $request->query('buscar'));
-        $estado = $request->integer('estado') ?: null;
         $desde = $this->fecha($request->query('desde'));
         $hasta = $this->fecha($request->query('hasta'));
+        $estados = EstadoPedido::orderBy('orden')->get()->keyBy('id_estado');
 
-        $pedidos = Pedido::with(['cliente', 'estado'])
+        $vista = (string) $request->query('estado', 'activos');
+        if (! in_array($vista, ['activos', 'todos'], true) && ! $estados->has((int) $vista)) {
+            $vista = 'activos';
+        }
+
+        $base = Pedido::query()
             ->when($buscar !== '', function ($q) use ($buscar) {
                 $numero = ltrim($buscar, '#0');
                 $q->where(fn ($q) => $q
                     ->whereHas('cliente', fn ($c) => $c->where('nombre', 'like', "%{$buscar}%"))
                     ->when(ctype_digit($numero), fn ($q) => $q->orWhere('id_pedido', (int) $numero)));
             })
-            ->when($estado, fn ($q) => $q->where('id_estado', $estado))
             ->when($desde, fn ($q) => $q->where('fecha', '>=', $desde->startOfDay()))
-            ->when($hasta, fn ($q) => $q->where('fecha', '<=', $hasta->endOfDay()))
+            ->when($hasta, fn ($q) => $q->where('fecha', '<=', $hasta->endOfDay()));
+
+        // Número de cada pestaña con la búsqueda y las fechas aplicadas.
+        $porEstado = (clone $base)->selectRaw('id_estado, count(*) as total')->groupBy('id_estado')->pluck('total', 'id_estado');
+        $conteos = [
+            'activos' => (int) collect(EstadoPedido::ACTIVOS)->sum(fn ($id) => $porEstado[$id] ?? 0),
+            EstadoPedido::ENTREGADO => (int) ($porEstado[EstadoPedido::ENTREGADO] ?? 0),
+            EstadoPedido::CANCELADO => (int) ($porEstado[EstadoPedido::CANCELADO] ?? 0),
+            'todos' => (int) $porEstado->sum(),
+        ];
+
+        $pedidos = $base
+            ->with(['cliente', 'estado'])
+            ->withSum('detalles as unidades', 'cantidad')
+            ->when($vista === 'activos', fn ($q) => $q->whereIn('id_estado', EstadoPedido::ACTIVOS))
+            ->when(is_numeric($vista), fn ($q) => $q->where('id_estado', (int) $vista))
+            ->when($vista === 'todos', fn ($q) => $q->orderByRaw('id_estado in (?, ?)', EstadoPedido::FINALES))
             ->latest('fecha')
             ->latest('id_pedido')
-            ->paginate(10)
+            ->paginate(15)
             ->withQueryString();
 
         return view('pedidos.index', [
             'pedidos' => $pedidos,
-            'estados' => EstadoPedido::orderBy('orden')->get(),
-            'filtros' => ['buscar' => $buscar, 'estado' => $estado, 'desde' => $desde?->toDateString(), 'hasta' => $hasta?->toDateString()],
+            'estados' => $estados,
+            'conteos' => $conteos,
+            'vista' => $vista,
+            'filtros' => ['buscar' => $buscar, 'desde' => $desde?->toDateString(), 'hasta' => $hasta?->toDateString()],
         ]);
     }
 
