@@ -23,7 +23,8 @@
 
             @if ($pedidos->total() === 0)
                 <form method="POST" action="{{ route('clientes.destroy', $cliente) }}" class="text-center"
-                      data-confirmar="¿Eliminar a {{ $cliente->nombre }}? Esta acción no se puede deshacer.">
+                      data-confirmar-titulo="¿Eliminar a {{ $cliente->nombre }}?" data-confirmar="Se borrarán sus datos de contacto. Esta acción no se puede deshacer."
+                      data-confirmar-accion="Eliminar cliente" data-confirmar-peligro>
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="text-sm font-medium text-red-600 hover:underline">Eliminar cliente</button>

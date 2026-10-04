@@ -1,30 +1,99 @@
 @import '@fontsource-variable/inter';
 @import 'tailwindcss';
 
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
 @source '../**/*.js';
-@source '../../app/Models/*.php';
 
 /*
- * Paleta: verde azulado (marca) sobre grises cálidos (stone).
- * Transmite confianza y orden, y contrasta bien con los colores de los estados del pedido.
+ * Design System de Pedidos Jutiapa: «el cuaderno de pedidos, ahora en orden».
+ * Neutros cálidos como papel, texto en tinta y un solo verde para lo que se puede hacer.
+ * Las escalas stone, marca, red, emerald, amber y sky se redefinen con la paleta aprobada,
+ * así todas las vistas hablan el mismo idioma visual; los componentes nuevos usan los
+ * nombres semánticos (fondo, superficie, texto-2, borde-control…).
  */
 @theme {
     --font-sans: 'Inter Variable', ui-sans-serif, system-ui, 'Segoe UI', Roboto, sans-serif;
-    --color-marca-50: #effcf9;
-    --color-marca-100: #c8f5ec;
-    --color-marca-200: #93eadb;
-    --color-marca-300: #57d7c4;
-    --color-marca-400: #27bba9;
-    --color-marca-500: #0f9f90;
-    --color-marca-600: #0a8076;
-    --color-marca-700: #0d665f;
-    --color-marca-800: #10524d;
-    --color-marca-900: #124441;
-    --color-marca-950: #032827;
-    --shadow-suave: 0 1px 2px rgb(28 25 23 / 0.04), 0 4px 16px -4px rgb(28 25 23 / 0.08);
+
+    /* Neutros cálidos (contraste AA verificado sobre blanco y sobre el fondo) */
+    --color-stone-50: #F7F7F5;   /* fondo de la página */
+    --color-stone-100: #F1F1EE;  /* superficie secundaria: menú, filtros, totales */
+    --color-stone-200: #E4E2DD;  /* bordes de separación */
+    --color-stone-300: #CFCCC5;
+    --color-stone-400: #949087;  /* borde de campos (3.2:1) */
+    --color-stone-500: #6F6D68;  /* texto secundario (4.8:1) */
+    --color-stone-600: #55534E;
+    --color-stone-700: #3D3C38;
+    --color-stone-800: #2A2A27;
+    --color-stone-900: #20201E;  /* texto principal (15:1) */
+    --color-stone-950: #141413;
+
+    /* Verde de identidad: oscuro y desaturado; solo para acciones, navegación activa y foco */
+    --color-marca-50: #EEF4F1;
+    --color-marca-100: #E8EFEC;  /* selección */
+    --color-marca-200: #CFDDD7;
+    --color-marca-300: #A9C3B9;
+    --color-marca-400: #6F978A;
+    --color-marca-500: #4A7468;
+    --color-marca-600: #315C52;  /* marca (7.6:1 con blanco) */
+    --color-marca-700: #274A42;  /* hover */
+    --color-marca-800: #213E37;
+    --color-marca-900: #1B332D;
+    --color-marca-950: #10211D;
+
+    /* Semánticos suaves: error terracota, éxito, advertencia ámbar, información azul grisáceo */
+    --color-red-50: #F6E7E2;
+    --color-red-100: #F0D6CE;
+    --color-red-200: #E3C3B9;
+    --color-red-300: #D49D8E;
+    --color-red-400: #C46A55;
+    --color-red-500: #B04F39;
+    --color-red-600: #A3402B;
+    --color-red-700: #8A3523;
+    --color-red-800: #7A3122;
+    --color-emerald-50: #E4EFE6;
+    --color-emerald-100: #D3E6D8;
+    --color-emerald-200: #B9D6C1;
+    --color-emerald-500: #4C8460;
+    --color-emerald-600: #3B6E4A;
+    --color-emerald-700: #335F40;
+    --color-emerald-800: #2A4E35;
+    --color-amber-50: #F7EEDC;
+    --color-amber-100: #F1E2C2;
+    --color-amber-200: #E6CD98;
+    --color-amber-500: #B57E25;
+    --color-amber-600: #9C6A1A;
+    --color-amber-700: #8A5A12;
+    --color-amber-800: #6E480E;
+    --color-sky-50: #E9EEF3;
+    --color-sky-100: #DAE3EB;
+    --color-sky-500: #5B7891;
+    --color-sky-600: #3F5A73;
+    --color-sky-700: #3F5A73;
+
+    /* Nombres semánticos para los componentes */
+    --color-fondo: #F7F7F5;
+    --color-superficie: #FFFFFF;
+    --color-superficie-2: #F1F1EE;
+    --color-texto: #20201E;
+    --color-texto-2: #6F6D68;
+    --color-borde: #E4E2DD;
+    --color-borde-control: #949087;
+    --color-marca: #315C52;
+    --color-marca-hover: #274A42;
+    --color-seleccion: #E8EFEC;
+
+    /* Radios moderados: 6 px en controles, 10 px en paneles */
+    --radius-lg: 6px;
+    --radius-xl: 8px;
+    --radius-2xl: 10px;
+
+    /* Sin negrita 700: el 600 basta para títulos y totales */
+    --font-weight-bold: 600;
+
+    /* Sombra solo para lo que flota sobre la página (menús, diálogos, avisos) */
+    --shadow-suave: none;
+    --shadow-flotante: 0 1px 2px rgb(32 32 30 / 0.06), 0 8px 24px -6px rgb(32 32 30 / 0.16);
 }
 
 @layer base {
@@ -33,48 +102,95 @@
         font-feature-settings: 'cv11', 'ss01';
     }
 
+    body {
+        @apply bg-fondo text-texto;
+    }
+
     ::selection {
-        background: var(--color-marca-100);
+        background: var(--color-seleccion);
+    }
+
+    /* Foco visible y consistente en todo elemento interactivo */
+    :focus-visible {
+        outline: 2px solid var(--color-marca);
+        outline-offset: 2px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        *, ::before, ::after {
+            transition-duration: 0s !important;
+            animation-duration: 0s !important;
+        }
     }
 }
 
 @layer components {
+    /* ---------- Formularios ---------- */
     .etiqueta {
-        @apply mb-1.5 block text-sm font-medium text-stone-700;
+        @apply mb-1.5 block text-sm font-medium text-texto;
     }
 
+    /* 16 px en el teléfono (evita el zoom automático al escribir), 14 px desde sm */
     .campo {
-        @apply block w-full rounded-xl border border-stone-300 bg-white px-3.5 py-2.5 text-sm text-stone-900 shadow-xs transition placeholder:text-stone-400 hover:border-stone-400 focus:border-marca-500 focus:ring-4 focus:ring-marca-500/15 focus:outline-none disabled:bg-stone-100;
+        @apply block min-h-11 w-full rounded-lg border border-borde-control bg-superficie px-3 py-2 text-base text-texto transition-colors placeholder:text-texto-2 focus:border-marca focus:ring-3 focus:ring-marca/25 focus:outline-none disabled:bg-superficie-2 disabled:text-texto-2 sm:min-h-10 sm:text-sm;
     }
 
     .campo-error {
-        @apply border-red-400 hover:border-red-400 focus:border-red-500 focus:ring-red-500/15;
+        @apply border-red-600 focus:border-red-600 focus:ring-red-600/20;
     }
 
+    .casilla {
+        @apply size-4 shrink-0 cursor-pointer rounded border-borde-control accent-marca;
+    }
+
+    .ayuda {
+        @apply mt-1 text-[13px] text-texto-2;
+    }
+
+    .error-campo {
+        @apply mt-1 text-[13px] text-red-600;
+    }
+
+    /* ---------- Botones: primario (uno por pantalla), secundario, terciario, destructivo ---------- */
     .btn {
-        @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold whitespace-nowrap transition focus-visible:outline-2 focus-visible:outline-offset-2 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60;
+        @apply inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-lg border border-transparent px-4 text-sm font-medium whitespace-nowrap transition-colors disabled:cursor-not-allowed disabled:opacity-50 sm:min-h-10;
     }
 
     .btn-primario {
-        @apply bg-marca-600 text-white shadow-sm shadow-marca-900/20 hover:bg-marca-700 focus-visible:outline-marca-600;
+        @apply bg-marca text-white hover:bg-marca-hover;
     }
 
     .btn-secundario {
-        @apply border border-stone-300 bg-white text-stone-700 shadow-xs hover:border-stone-400 hover:bg-stone-50 focus-visible:outline-stone-400;
+        @apply border-borde-control bg-superficie text-texto hover:bg-superficie-2;
+    }
+
+    .btn-terciario {
+        @apply px-2.5 text-marca hover:bg-seleccion;
     }
 
     .btn-peligro {
-        @apply border border-red-200 bg-white text-red-700 hover:bg-red-50 focus-visible:outline-red-500;
+        @apply border-red-200 bg-superficie text-red-600 hover:bg-red-50;
+    }
+
+    .btn-chico {
+        @apply min-h-9 px-3 text-[13px] sm:min-h-8;
     }
 
     .btn-whatsapp {
-        @apply bg-[#1faa59] text-white shadow-sm hover:bg-[#188a48] focus-visible:outline-[#1faa59];
+        @apply bg-[#1C7C45] text-white hover:bg-[#166637];
     }
 
-    .tarjeta {
-        @apply rounded-2xl border border-stone-200/80 bg-white shadow-suave;
+    /* ---------- Superficies ---------- */
+    /* Panel: zona de trabajo blanca con borde fino, sin sombra (las tarjetas flotantes se evitan) */
+    .tarjeta, .panel {
+        @apply rounded-2xl border border-borde bg-superficie;
     }
 
+    .flotante {
+        @apply rounded-xl border border-borde bg-superficie shadow-flotante;
+    }
+
+    /* ---------- Tablas y listas ---------- */
     /* relative: los textos sr-only de las celdas quedan dentro del contenedor desplazable
        y no ensanchan la página en el teléfono (RNF-05). */
     .tabla {
@@ -82,26 +198,83 @@
     }
 
     .tabla thead th {
-        @apply border-b border-stone-200 bg-stone-50/70 px-4 py-3 text-left text-xs font-semibold tracking-wide text-stone-500 uppercase;
+        @apply border-b border-borde bg-superficie-2 px-4 py-2.5 text-left text-[13px] font-medium text-texto-2;
     }
 
     .tabla td {
-        @apply px-4 py-3.5 text-stone-700;
+        @apply px-4 py-3 text-texto;
     }
 
     .tabla tbody tr {
-        @apply transition-colors hover:bg-stone-50/70;
+        @apply transition-colors hover:bg-superficie-2/60;
     }
 
     .tabla tfoot td {
-        @apply border-t border-stone-200;
+        @apply border-t border-borde;
     }
 
+    /* Renglón de lista: toda la fila es el enlace (sin botones «Ver») */
+    .renglon {
+        @apply flex items-center gap-4 border-b border-borde px-4 py-3 transition-colors last:border-b-0 hover:bg-superficie-2/60;
+    }
+
+    /* ---------- Etiquetas de estado: punto + texto, nunca solo color ---------- */
     .insignia {
-        @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium whitespace-nowrap ring-1 ring-inset;
+        @apply inline-flex items-center gap-1.5 rounded-lg px-2 py-0.5 text-[13px] font-medium whitespace-nowrap;
     }
 
     .enlace {
-        @apply font-medium text-marca-700 underline-offset-4 hover:underline;
+        @apply font-medium text-marca underline-offset-4 hover:underline;
     }
+
+    /* ---------- Texto ---------- */
+    .titulo-seccion {
+        @apply text-[17px] font-semibold text-texto;
+    }
+
+    .meta {
+        @apply text-[13px] text-texto-2;
+    }
+
+    .cifra {
+        @apply tabular-nums;
+    }
+}
+
+/* Menú de acciones «⋯» y hoja «Más» con <details> nativo (accesible por teclado, sin librerías) */
+@layer components {
+    .menu > summary {
+        @apply list-none;
+    }
+
+    .menu > summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .menu-lista {
+        @apply absolute right-0 z-30 mt-1 min-w-52 rounded-xl border border-borde bg-superficie py-1 shadow-flotante;
+    }
+
+    .menu-opcion {
+        @apply flex w-full cursor-pointer items-center gap-2.5 px-3.5 py-2.5 text-left text-sm text-texto hover:bg-superficie-2;
+    }
+
+    .menu-opcion-peligro {
+        @apply text-red-600 hover:bg-red-50;
+    }
+}
+
+/* Aviso flotante (toast): aparece y se retira solo */
+@keyframes aviso-entrada {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: none; }
+}
+
+.aviso {
+    animation: aviso-entrada 160ms ease-out;
+}
+
+/* Diálogo de confirmación nativo */
+dialog.dialogo::backdrop {
+    background: rgb(32 32 30 / 0.4);
 }

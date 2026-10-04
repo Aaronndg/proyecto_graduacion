@@ -40,7 +40,9 @@
                                     <a href="{{ route('admin.usuarios.edit', $usuario) }}" class="btn btn-secundario px-3 py-1.5">Editar</a>
                                     @unless ($usuario->is(auth()->user()))
                                         <form method="POST" action="{{ route('admin.usuarios.estado', $usuario) }}"
-                                              data-confirmar="{{ $usuario->activo ? '¿Desactivar la cuenta de '.$usuario->nombre.'? No podrá iniciar sesión.' : '¿Activar la cuenta de '.$usuario->nombre.'?' }}">
+                                              data-confirmar-titulo="{{ $usuario->activo ? '¿Desactivar la cuenta de '.$usuario->nombre.'?' : '¿Activar la cuenta de '.$usuario->nombre.'?' }}"
+                                              data-confirmar="{{ $usuario->activo ? 'No podrá iniciar sesión hasta que la active de nuevo. Sus datos se conservan.' : 'Podrá volver a iniciar sesión.' }}"
+                                              data-confirmar-accion="{{ $usuario->activo ? 'Desactivar cuenta' : 'Activar cuenta' }}" @if ($usuario->activo) data-confirmar-peligro @endif>
                                             @csrf
                                             @method('PATCH')
                                             <button type="submit" class="{{ $usuario->activo ? 'btn btn-peligro' : 'btn btn-secundario' }} px-3 py-1.5">

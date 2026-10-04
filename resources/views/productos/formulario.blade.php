@@ -47,7 +47,8 @@
 
         @if ($editando)
             <form method="POST" action="{{ route('productos.destroy', $producto) }}" class="mt-4 text-right"
-                  data-confirmar="¿Eliminar el producto {{ $producto->nombre }}? Esta acción no se puede deshacer.">
+                  data-confirmar-titulo="¿Eliminar {{ $producto->nombre }}?" data-confirmar="Se quitará de su catálogo. Esta acción no se puede deshacer."
+                  data-confirmar-accion="Eliminar producto" data-confirmar-peligro>
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="text-sm font-medium text-red-600 hover:underline">Eliminar producto</button>

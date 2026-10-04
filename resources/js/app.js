@@ -1,29 +1,47 @@
 import './bootstrap';
 import { iniciarFormularioPedido } from './pedido';
 
-// Menú lateral en pantallas pequeñas (RNF-05: diseño adaptable).
-document.addEventListener('click', (evento) => {
-    const boton = evento.target.closest('[data-menu-toggle]');
-    const menu = document.getElementById('menu-lateral');
-    const fondo = document.getElementById('menu-fondo');
+/**
+ * Confirmación con el diálogo del Design System (reemplaza window.confirm).
+ * Explica la consecuencia y nombra el botón por la acción. Devuelve una promesa con true/false.
+ */
+function confirmar({ titulo = '¿Está seguro?', texto = '', accion = 'Confirmar', peligro = false } = {}) {
+    const dialogo = document.getElementById('dialogo-confirmar');
+    if (!dialogo?.showModal) return Promise.resolve(window.confirm(texto || titulo));
 
-    if (!menu) return;
+    dialogo.querySelector('#dialogo-titulo').textContent = titulo;
+    dialogo.querySelector('#dialogo-texto').textContent = texto;
+    const aceptar = dialogo.querySelector('[data-dialogo-aceptar]');
+    aceptar.textContent = accion;
+    aceptar.className = `btn ${peligro ? 'btn-peligro' : 'btn-primario'}`;
 
-    if (boton || evento.target === fondo) {
-        const abierto = menu.classList.toggle('-translate-x-full') === false;
-        fondo?.classList.toggle('hidden', !abierto);
-        document.querySelectorAll('[data-menu-toggle]').forEach((b) => b.setAttribute('aria-expanded', String(abierto)));
-    }
-});
+    return new Promise((resolver) => {
+        dialogo.addEventListener('close', () => resolver(dialogo.returnValue === 'si'), { once: true });
+        dialogo.returnValue = '';
+        dialogo.showModal();
+        // El foco empieza en «Volver»: la opción segura.
+        dialogo.querySelector('button[value="no"]').focus();
+    });
+}
 
-// Confirmación antes de acciones sensibles: <form data-confirmar="¿Seguro?">
+// Formularios que piden confirmación: <form data-confirmar="Consecuencia" data-confirmar-titulo="…"
+// data-confirmar-accion="Eliminar cliente" data-confirmar-peligro>
 // y bloqueo del doble envío para evitar registros duplicados: <form data-envio-unico>
-document.addEventListener('submit', (evento) => {
+document.addEventListener('submit', async (evento) => {
     const formulario = evento.target;
-    const mensaje = formulario.dataset.confirmar;
 
-    if (mensaje && !window.confirm(mensaje)) {
+    if (formulario.dataset.confirmar !== undefined && !formulario.dataset.confirmado) {
         evento.preventDefault();
+        const ok = await confirmar({
+            titulo: formulario.dataset.confirmarTitulo,
+            texto: formulario.dataset.confirmar,
+            accion: formulario.dataset.confirmarAccion,
+            peligro: 'confirmarPeligro' in formulario.dataset,
+        });
+        if (ok) {
+            formulario.dataset.confirmado = '1';
+            formulario.requestSubmit(evento.submitter ?? undefined);
+        }
         return;
     }
 
@@ -36,12 +54,33 @@ document.addEventListener('submit', (evento) => {
         // Se deshabilitan después de iniciar el envío para que viaje el valor del botón pulsado.
         setTimeout(() => {
             formulario.querySelectorAll('button[type="submit"]').forEach((b) => (b.disabled = true));
-            if (evento.submitter) evento.submitter.textContent = 'Guardando…';
+            if (evento.submitter) evento.submitter.textContent = evento.submitter.dataset.textoEnvio ?? 'Guardando…';
         }, 0);
     }
 });
 
 document.querySelectorAll('[data-formulario-pedido]').forEach(iniciarFormularioPedido);
+
+// Menús «⋯» y «Más» (<details data-menu>): uno abierto a la vez; se cierran al hacer clic fuera o con Escape.
+document.addEventListener('click', (evento) => {
+    document.querySelectorAll('details[data-menu][open]').forEach((menu) => {
+        if (!menu.contains(evento.target)) menu.open = false;
+    });
+});
+document.addEventListener('keydown', (evento) => {
+    if (evento.key !== 'Escape') return;
+    document.querySelectorAll('details[data-menu][open]').forEach((menu) => {
+        menu.open = false;
+        menu.querySelector('summary')?.focus();
+    });
+});
+
+// Avisos de éxito: se retiran solos a los 5 segundos o con el botón cerrar.
+document.querySelectorAll('[data-aviso]').forEach((aviso) => {
+    const cerrar = () => aviso.parentElement?.remove();
+    aviso.querySelector('[data-cerrar-aviso]')?.addEventListener('click', cerrar);
+    setTimeout(cerrar, 5000);
+});
 
 // Código de cliente: mayúsculas, solo caracteres válidos y guion automático (XXXX-XXXX).
 document.addEventListener('input', (evento) => {
@@ -68,21 +107,31 @@ document.addEventListener('click', async (evento) => {
 });
 
 // Actualización de estado: cancelar exige escribir el motivo y confirmar.
-document.addEventListener('click', (evento) => {
+document.addEventListener('click', async (evento) => {
     const boton = evento.target.closest('[data-cancelar]');
     if (!boton) return;
 
-    const nota = boton.form.querySelector('[name="observacion"]');
+    const formulario = boton.form;
+    if (formulario.dataset.cancelacionConfirmada) return;
+
+    evento.preventDefault();
+    const nota = formulario.querySelector('[name="observacion"]');
     if (!nota.value.trim()) {
-        evento.preventDefault();
         nota.placeholder = 'Escriba aquí el motivo de la cancelación';
         nota.classList.add('campo-error');
         nota.focus();
         return;
     }
 
-    if (!window.confirm('¿Cancelar este pedido? Esta acción no se puede deshacer.')) {
-        evento.preventDefault();
+    const ok = await confirmar({
+        titulo: '¿Cancelar este pedido?',
+        texto: 'El pedido quedará cancelado con el motivo que escribió. Esta acción no se puede deshacer.',
+        accion: 'Cancelar pedido',
+        peligro: true,
+    });
+    if (ok) {
+        formulario.dataset.cancelacionConfirmada = '1';
+        formulario.requestSubmit(boton);
     }
 });
 

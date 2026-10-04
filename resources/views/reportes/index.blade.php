@@ -148,7 +148,7 @@
                             </span>
                         </div>
                         <div class="h-2.5 rounded-full bg-stone-100">
-                            <div class="h-full rounded-full {{ $fila['estado']->colorBarra() }}" style="width: {{ round($fila['cantidad'] / $maxEstado * 100, 2) }}%"></div>
+                            <x-estado-pedido :estado="$fila['estado']" barra style="width: {{ round($fila['cantidad'] / $maxEstado * 100, 2) }}%" />
                         </div>
                     </li>
                 @endforeach

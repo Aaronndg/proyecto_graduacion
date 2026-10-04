@@ -66,29 +66,4 @@ class EstadoPedido extends Model
             default => $this->nombre,
         };
     }
-
-    /** Clase de color para la etiqueta del estado (siempre acompañada del nombre, 5.5.4). */
-    public function color(): string
-    {
-        return match ($this->id_estado) {
-            self::NUEVO => 'bg-sky-50 text-sky-700 ring-sky-600/20',
-            self::EN_PROCESO => 'bg-amber-50 text-amber-700 ring-amber-600/20',
-            self::LISTO => 'bg-violet-50 text-violet-700 ring-violet-600/20',
-            self::ENTREGADO => 'bg-emerald-50 text-emerald-700 ring-emerald-600/20',
-            self::CANCELADO => 'bg-stone-100 text-stone-600 ring-stone-500/20',
-            default => 'bg-stone-100 text-stone-600 ring-stone-500/20',
-        };
-    }
-
-    /** Relleno de la barra del estado en los reportes (mismo tono que su etiqueta). */
-    public function colorBarra(): string
-    {
-        return match ($this->id_estado) {
-            self::NUEVO => 'bg-sky-500',
-            self::EN_PROCESO => 'bg-amber-500',
-            self::LISTO => 'bg-violet-500',
-            self::ENTREGADO => 'bg-emerald-500',
-            default => 'bg-stone-400',
-        };
-    }
 }

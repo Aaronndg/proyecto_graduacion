@@ -17,7 +17,8 @@
             </div>
         </div>
         <form method="POST" action="{{ route('clientes.codigo', $cliente) }}" class="mt-4"
-              data-confirmar="¿Desconectar la cuenta {{ $cliente->usuario->correo }}? {{ $primerNombre }} dejará de ver sus pedidos hasta que use un código nuevo.">
+              data-confirmar-titulo="¿Desconectar la cuenta {{ $cliente->usuario->correo }}?" data-confirmar="{{ $primerNombre }} dejará de ver sus pedidos hasta que use un código nuevo."
+              data-confirmar-accion="Desconectar cuenta" data-confirmar-peligro>
             @csrf
             <button type="submit" class="text-xs font-medium text-stone-500 hover:text-red-600 hover:underline">Desconectar cuenta</button>
         </form>
@@ -45,7 +46,8 @@
         </div>
 
         <form method="POST" action="{{ route('clientes.codigo', $cliente) }}" class="mt-3 text-center"
-              data-confirmar="¿Crear un código nuevo? El código actual dejará de funcionar.">
+              data-confirmar-titulo="¿Crear un código nuevo?" data-confirmar="El código actual dejará de funcionar. Tendrá que enviarle el nuevo a {{ $primerNombre }}."
+              data-confirmar-accion="Crear código nuevo">
             @csrf
             <button type="submit" class="text-xs text-stone-500 hover:text-stone-800 hover:underline">Crear un código nuevo</button>
         </form>
