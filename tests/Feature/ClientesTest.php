@@ -48,6 +48,27 @@ class ClientesTest extends TestCase
         $this->assertNull($cliente->telefono);
     }
 
+    public function test_la_lista_muestra_cuando_fue_el_ultimo_pedido(): void
+    {
+        $con = Cliente::factory()->create(['id_emprendedor' => $this->emprendedor->id_usuario, 'nombre' => 'Ana Con Pedido']);
+        Cliente::factory()->create(['id_emprendedor' => $this->emprendedor->id_usuario, 'nombre' => 'Beto Sin Pedido']);
+        foreach ([10, 3] as $dias) {
+            \App\Models\Pedido::withoutGlobalScopes()->forceCreate([
+                'id_emprendedor' => $this->emprendedor->id_usuario,
+                'id_cliente' => $con->id_cliente,
+                'id_estado' => \App\Models\EstadoPedido::NUEVO,
+                'fecha' => now()->subDays($dias),
+                'total' => 50,
+            ]);
+        }
+
+        $this->get('/clientes')->assertOk()
+            ->assertSee('Último pedido')
+            ->assertSee('último hace 3 días')
+            ->assertDontSee('hace 1 semana')
+            ->assertSee('Sin pedidos');
+    }
+
     public function test_valida_los_datos_del_cliente(): void
     {
         $this->post('/clientes', ['nombre' => '', 'telefono' => 'abc', 'correo' => 'no-es-correo'])

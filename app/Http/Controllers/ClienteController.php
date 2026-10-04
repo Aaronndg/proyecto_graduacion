@@ -16,6 +16,7 @@ class ClienteController extends Controller
         $buscar = trim((string) $request->query('buscar'));
 
         $clientes = Cliente::withCount('pedidos')
+            ->withMax('pedidos as ultimo_pedido', 'fecha')
             ->when($buscar !== '', fn ($q) => $q->where(fn ($q) => $q
                 ->where('nombre', 'like', "%{$buscar}%")
                 ->orWhere('telefono', 'like', "%{$buscar}%")
