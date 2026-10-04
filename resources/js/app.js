@@ -127,34 +127,20 @@ document.addEventListener('click', async (evento) => {
     }
 });
 
-// Actualización de estado: cancelar exige escribir el motivo y confirmar.
-document.addEventListener('click', async (evento) => {
-    const boton = evento.target.closest('[data-cancelar]');
-    if (!boton) return;
-
-    const formulario = boton.form;
-    if (formulario.dataset.cancelacionConfirmada) return;
-
-    evento.preventDefault();
-    const nota = formulario.querySelector('[name="observacion"]');
-    if (!nota.value.trim()) {
-        nota.placeholder = 'Escriba aquí el motivo de la cancelación';
-        nota.classList.add('campo-error');
-        nota.focus();
-        return;
+// Diálogos propios de una pantalla (p. ej. cancelar pedido con su motivo).
+// <button data-abrir-dialogo="id">, <button data-cerrar-dialogo> y <dialog data-abrir> para abrirlo al cargar
+// (cuando el servidor devolvió un error en ese formulario).
+document.addEventListener('click', (evento) => {
+    const abrir = evento.target.closest('[data-abrir-dialogo]');
+    if (abrir) {
+        abrir.closest('details[data-menu]')?.removeAttribute('open');
+        const dialogo = document.getElementById(abrir.dataset.abrirDialogo);
+        dialogo?.showModal();
+        dialogo?.querySelector('textarea, input:not([type="hidden"])')?.focus();
     }
-
-    const ok = await confirmar({
-        titulo: '¿Cancelar este pedido?',
-        texto: 'El pedido quedará cancelado con el motivo que escribió. Esta acción no se puede deshacer.',
-        accion: 'Cancelar pedido',
-        peligro: true,
-    });
-    if (ok) {
-        formulario.dataset.cancelacionConfirmada = '1';
-        formulario.requestSubmit(boton);
-    }
+    evento.target.closest('[data-cerrar-dialogo]')?.closest('dialog')?.close();
 });
+document.querySelectorAll('dialog[data-abrir]').forEach((dialogo) => dialogo.showModal());
 
 // Reportes: imprimir o guardar como PDF desde el navegador.
 document.addEventListener('click', (evento) => {

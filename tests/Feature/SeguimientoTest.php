@@ -180,4 +180,20 @@ class SeguimientoTest extends TestCase
         $this->actingAs($otroCliente)->get("/mis-pedidos/{$this->pedido->id_pedido}")->assertNotFound();
         $this->actingAs($this->emprendedor)->get("/mis-pedidos/{$this->pedido->id_pedido}")->assertForbidden();
     }
+
+    public function test_el_detalle_cancela_con_motivo_y_muestra_el_cierre(): void
+    {
+        $url = "/pedidos/{$this->pedido->id_pedido}";
+        $this->get($url)->assertSee('Motivo de la cancelación')->assertSee('Editar pedido');
+
+        // El formulario del diálogo envía el motivo junto con el estado Cancelado.
+        $this->post("{$url}/estado", ['id_estado' => EstadoPedido::CANCELADO, 'observacion' => 'Cambió de fecha', 'cancelacion' => '1'])
+            ->assertSessionHasNoErrors();
+
+        $this->get($url)->assertOk()
+            ->assertSee('Cancelado el '.now()->format('d/m/Y'))
+            ->assertSee('Motivo: Cambió de fecha')
+            ->assertDontSee('Editar pedido')
+            ->assertDontSee('Motivo de la cancelación');
+    }
 }

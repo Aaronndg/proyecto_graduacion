@@ -113,8 +113,8 @@
             'max-w-3xl pb-12' => $esCliente,
         ])>
             {{-- Encabezado: ruta corta para volver, título y la acción principal de la pantalla --}}
-            <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-                <div class="min-w-0">
+            <div class="mb-6 flex items-start justify-between gap-4 sm:items-end">
+                <div class="min-w-0 flex-1">
                     @if ($ruta)
                         <nav aria-label="Ruta" class="mb-1 text-sm text-texto-2">
                             @foreach ($ruta as $texto => $url)
@@ -127,7 +127,7 @@
                     @if ($subtitulo)<p class="mt-1 text-texto-2">{{ $subtitulo }}</p>@endif
                 </div>
                 @isset($acciones)
-                    <div class="flex flex-wrap items-center gap-2">{{ $acciones }}</div>
+                    <div class="flex shrink-0 flex-wrap items-center justify-end gap-2">{{ $acciones }}</div>
                 @endisset
             </div>
 
