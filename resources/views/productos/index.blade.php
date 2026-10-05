@@ -20,7 +20,7 @@
                 <li>
                     <a href="{{ $enlace($clave) }}" @if ($actual) aria-current="page" @endif
                        @class([
-                           'flex min-h-10 items-center rounded-xl px-4 text-sm font-extrabold whitespace-nowrap shadow-suave transition-colors',
+                           'flex min-h-10 items-center rounded-xl px-4 text-sm font-extrabold whitespace-nowrap relieve transition active:translate-y-px',
                            'bg-marca text-white' => $actual,
                            'bg-superficie text-texto-2 hover:text-marca' => ! $actual,
                        ])>{{ $texto }}</a>

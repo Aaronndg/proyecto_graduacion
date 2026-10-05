@@ -152,7 +152,7 @@
                 @if ($crearPedido)
                     <li class="flex flex-1 justify-center">
                         <a href="{{ route('pedidos.create') }}" class="flex min-h-16 flex-col items-center justify-center px-2">
-                            <span class="-mt-6 flex size-13 items-center justify-center rounded-full bg-oro text-stone-950 shadow-oro ring-4 ring-superficie"><x-icono nombre="mas" clase="size-6" /></span>
+                            <span class="btn-primario -mt-6 flex size-13 items-center justify-center rounded-full ring-4 ring-superficie transition active:translate-y-[2px]"><x-icono nombre="mas" clase="size-6" /></span>
                             <span class="sr-only">Crear pedido</span>
                         </a>
                     </li>

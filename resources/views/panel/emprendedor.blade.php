@@ -65,8 +65,8 @@
     {{-- Accesos: íconos de dos tonos en círculos --}}
     <nav class="mb-8 grid grid-cols-4 gap-2 sm:gap-4" aria-label="Accesos rápidos">
         @foreach ($accesos as $acceso)
-            <a href="{{ $acceso['ruta'] }}" class="group flex flex-col items-center gap-2 rounded-2xl p-1 text-center transition sm:flex-row sm:gap-3 sm:bg-superficie sm:p-4 sm:text-left sm:shadow-suave sm:hover:-translate-y-0.5 sm:hover:shadow-flotante">
-                <span class="flex size-14 shrink-0 items-center justify-center rounded-full shadow-suave sm:size-13 sm:shadow-none {{ $acceso['tono'] }}">
+            <a href="{{ $acceso['ruta'] }}" class="group flex flex-col items-center gap-2 rounded-2xl p-1 text-center transition sm:flex-row sm:gap-3 sm:bg-superficie sm:p-4 sm:text-left sm:relieve sm:hover:-translate-y-0.5 active:translate-y-px">
+                <span class="flex size-14 shrink-0 items-center justify-center rounded-full relieve sm:size-13 {{ $acceso['tono'] }}">
                     <x-icono-duo :nombre="$acceso['icono']" />
                 </span>
                 <span class="min-w-0">
@@ -95,7 +95,7 @@
                 @foreach ($columnas as $columna)
                     @php $id = $columna['estado']->id_estado; $tono = $tonos[$etapas[$id][2]]; @endphp
                     <button type="button" data-pestana="{{ $id }}" aria-controls="etapa-{{ $id }}" aria-pressed="{{ $id === $pestanaInicial ? 'true' : 'false' }}"
-                            class="flex min-h-10 flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-xl bg-superficie px-3 text-sm font-extrabold whitespace-nowrap text-texto-2 shadow-suave aria-pressed:text-white {{ $tono['pestana'] }}">
+                            class="flex min-h-10 flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-xl bg-superficie px-3 text-sm font-extrabold whitespace-nowrap text-texto-2 relieve transition active:translate-y-px aria-pressed:text-white {{ $tono['pestana'] }}">
                         {{ $id === EstadoPedido::LISTO ? 'Listos' : $etapas[$id][0] }}
                         <span class="tabular-nums">{{ $columna['total'] }}</span>
                     </button>

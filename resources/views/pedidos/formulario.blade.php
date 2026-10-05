@@ -123,7 +123,7 @@
                             @foreach ($disponibles as $producto)
                                 <li class="shrink-0 snap-start">
                                     <button type="button" data-elegir-producto="{{ $producto->id_producto }}" aria-pressed="false"
-                                            class="group relative flex w-28 cursor-pointer flex-col overflow-hidden rounded-2xl bg-superficie text-left shadow-[0_0_0_1px_var(--color-borde)] transition hover:-translate-y-0.5 hover:shadow-suave aria-pressed:shadow-[0_0_0_2px_var(--color-marca)]">
+                                            class="group relative flex w-28 cursor-pointer flex-col overflow-hidden rounded-2xl bg-superficie text-left relieve ring-1 ring-borde transition hover:-translate-y-0.5 active:translate-y-px aria-pressed:ring-2 aria-pressed:ring-marca">
                                         <span class="block aspect-square overflow-hidden"><x-foto-producto :producto="$producto" icono="size-9" /></span>
                                         <span class="px-2.5 pt-1.5 pb-2 text-[13px] leading-tight">
                                             <span class="line-clamp-2 font-bold">{{ $producto->nombre }}</span>
