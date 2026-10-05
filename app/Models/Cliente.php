@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Concerns\PerteneceAEmprendedor;
+use App\Support\WhatsApp;
 use Database\Factories\ClienteFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -77,13 +78,7 @@ class Cliente extends Model
     /** Número para wa.me (con 502 si es un número de Guatemala de 8 dígitos), o null si no tiene uno válido. */
     public function numeroWhatsApp(): ?string
     {
-        $digitos = preg_replace('/\D/', '', (string) $this->telefono);
-
-        if (strlen($digitos) < 8) {
-            return null;
-        }
-
-        return strlen($digitos) === 8 ? '502'.$digitos : $digitos;
+        return WhatsApp::numero($this->telefono);
     }
 
     /** Mensaje de WhatsApp, ya escrito, para avisar que el pedido está listo. Palabras sencillas, sin datos técnicos. */

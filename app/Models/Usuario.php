@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Notifications\RestablecerContrasena;
+use App\Support\WhatsApp;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Notifications\Notifiable;
 
 class Usuario extends Authenticatable
@@ -18,7 +21,7 @@ class Usuario extends Authenticatable
     protected $table = 'usuarios';
     protected $primaryKey = 'id_usuario';
 
-    protected $fillable = ['nombre', 'correo', 'contrasena', 'id_rol', 'negocio', 'activo'];
+    protected $fillable = ['nombre', 'correo', 'contrasena', 'id_rol', 'negocio', 'telefono', 'activo'];
 
     protected $hidden = ['contrasena', 'remember_token'];
 
@@ -34,6 +37,40 @@ class Usuario extends Authenticatable
     public function getAuthPasswordName(): string
     {
         return 'contrasena';
+    }
+
+    /** Nombre que ven los clientes: el del negocio o, si no tiene, el de la persona. */
+    public function nombreNegocio(): string
+    {
+        return $this->negocio ?: $this->nombre;
+    }
+
+    public function urlLogo(): ?string
+    {
+        $logo = $this->attributes['logo'] ?? null;
+
+        return $logo ? asset('storage/'.$logo) : null;
+    }
+
+    /** Guarda el logo nuevo (o lo quita) y borra el anterior. */
+    public function cambiarLogo(?UploadedFile $archivo, bool $quitar = false): void
+    {
+        if (! $archivo && ! $quitar) {
+            return;
+        }
+
+        $anterior = $this->attributes['logo'] ?? null;
+        $this->logo = $archivo?->store('logos', 'public');
+
+        if ($anterior) {
+            Storage::disk('public')->delete($anterior);
+        }
+    }
+
+    /** Enlace para que un cliente le escriba al negocio por WhatsApp, con un saludo ya escrito. */
+    public function enlaceWhatsAppNegocio(string $mensaje): ?string
+    {
+        return WhatsApp::enlace($this->attributes['telefono'] ?? null, $mensaje);
     }
 
     /** «¿Olvidó su contraseña?»: el correo de la cuenta está en la columna «correo». */

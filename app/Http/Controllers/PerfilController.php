@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ClienteRequest;
+use App\Http\Requests\ProductoRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -25,13 +27,25 @@ class PerfilController extends Controller
             'nombre' => ['required', 'string', 'max:100'],
             'correo' => ['required', 'string', 'email', 'max:150', Rule::unique('usuarios', 'correo')->ignore($usuario->id_usuario, 'id_usuario')],
             'negocio' => [Rule::requiredIf($usuario->esEmprendedor()), 'nullable', 'string', 'max:100'],
+            // Del negocio (solo emprendedor): WhatsApp para que los clientes le escriban y su logo.
+            'telefono' => ['nullable', 'string', 'max:20', ClienteRequest::TELEFONO],
+            'logo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:'.ProductoRequest::IMAGEN_MAX_KB],
+            'quitar_logo' => ['nullable', 'boolean'],
+        ], [
+            'telefono.regex' => 'El teléfono solo puede contener números, espacios, guiones o el signo +, con al menos 8 dígitos.',
+            'logo.image' => 'El archivo debe ser una imagen.',
+            'logo.mimes' => 'El logo debe ser JPG, PNG o WebP.',
+            'logo.max' => 'El logo no debe pesar más de 2 MB.',
         ]);
 
-        if (! $usuario->esEmprendedor()) {
-            unset($datos['negocio']);
+        unset($datos['logo'], $datos['quitar_logo']);
+        if ($usuario->esEmprendedor()) {
+            $usuario->cambiarLogo($request->file('logo'), $request->boolean('quitar_logo'));
+        } else {
+            unset($datos['negocio'], $datos['telefono']);
         }
 
-        $usuario->update($datos);
+        $usuario->fill($datos)->save();
 
         return back()->with('exito', 'Perfil actualizado correctamente.');
     }

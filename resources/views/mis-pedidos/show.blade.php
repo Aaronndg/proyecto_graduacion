@@ -30,6 +30,25 @@
             </div>
         </section>
 
+        {{-- El negocio: para escribirle por este pedido --}}
+        @php
+            $whatsappNegocio = $pedido->emprendedor->enlaceWhatsAppNegocio(
+                'Hola, soy '.strtok($pedido->cliente->nombre, ' ').'. Le escribo por mi pedido #'.$pedido->numero().'.'
+            );
+        @endphp
+        <section class="panel flex flex-wrap items-center gap-4 p-5" aria-label="El negocio">
+            <x-logo-negocio :negocio="$pedido->emprendedor" tamano="lg" />
+            <div class="min-w-0 flex-1">
+                <p class="font-bold">{{ $negocio }}</p>
+                <p class="meta">¿Tiene alguna pregunta sobre su pedido?</p>
+            </div>
+            @if ($whatsappNegocio)
+                <a href="{{ $whatsappNegocio }}" target="_blank" rel="noopener" class="btn btn-whatsapp w-full sm:w-auto">
+                    <x-icono nombre="whatsapp" clase="size-5" /> Escribir por WhatsApp
+                </a>
+            @endif
+        </section>
+
         {{-- Novedades: lo que el negocio fue anotando, la más reciente arriba --}}
         <section aria-labelledby="titulo-novedades">
             <h2 id="titulo-novedades" class="titulo-seccion mb-3">Novedades</h2>

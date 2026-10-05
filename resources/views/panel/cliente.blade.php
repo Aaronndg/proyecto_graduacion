@@ -41,7 +41,9 @@
                         <ul class="panel overflow-hidden">
                             @foreach ($lista as $pedido)
                                 <li class="border-b border-borde last:border-b-0">
-                                    <a href="{{ route('mis-pedidos.show', $pedido) }}" class="block px-5 py-4 transition-colors hover:bg-superficie-2/60">
+                                    <a href="{{ route('mis-pedidos.show', $pedido) }}" class="flex items-start gap-3 px-5 py-4 transition-colors hover:bg-superficie-2/60">
+                                        <x-logo-negocio :negocio="$pedido->emprendedor" />
+                                        <span class="min-w-0 flex-1">
                                         <span class="flex items-start justify-between gap-3">
                                             <span @class(['font-medium', 'text-texto-2' => $grupo === 'Anteriores'])>{{ $pedido->estado->mensajeCliente() }}</span>
                                             <x-estado-pedido :estado="$pedido->estado" class="shrink-0" />
@@ -53,6 +55,7 @@
                                             <x-moneda :valor="$pedido->total" class="shrink-0 text-sm font-medium" />
                                         </span>
                                         <x-entrega :pedido="$pedido" class="mt-1.5" />
+                                        </span>
                                     </a>
                                 </li>
                             @endforeach
