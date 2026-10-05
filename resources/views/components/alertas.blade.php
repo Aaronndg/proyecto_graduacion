@@ -13,7 +13,12 @@
         <div role="status" data-aviso
              class="aviso pointer-events-auto flex max-w-md items-start gap-3 rounded-lg bg-stone-900 py-3 pr-2 pl-4 text-sm text-stone-50 shadow-flotante">
             <x-icono nombre="ok" clase="mt-px size-5 shrink-0 text-marca-300" />
-            <span class="flex-1">{{ session('exito') }}</span>
+            <span class="flex-1">
+                {{ session('exito') }}
+                @if ($accion = session('accion'))
+                    <a href="{{ $accion['url'] }}" target="_blank" rel="noopener" class="btn btn-whatsapp btn-chico mt-2 flex w-max" data-aviso-accion>{{ $accion['texto'] }}</a>
+                @endif
+            </span>
             <button type="button" data-cerrar-aviso class="-my-1 cursor-pointer rounded-md p-1 text-stone-300 hover:bg-white/10 hover:text-white">
                 <x-icono nombre="cerrar" clase="size-4" />
                 <span class="sr-only">Cerrar aviso</span>

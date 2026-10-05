@@ -144,6 +144,11 @@
                                             </span>
                                         @endif
                                     </a>
+                                    @if ($id === EstadoPedido::LISTO && $aviso = $pedido->cliente->avisoPedidoListo($pedido, auth()->user()->negocio ?? auth()->user()->nombre))
+                                        <a href="{{ $aviso }}" target="_blank" rel="noopener" class="mx-4 mb-2 flex items-center justify-center gap-1.5 rounded-xl py-1.5 text-sm font-bold text-[#1C7C45] hover:bg-emerald-50">
+                                            <x-icono nombre="whatsapp" clase="size-4" /> Avisar que está listo
+                                        </a>
+                                    @endif
                                     <form method="POST" action="{{ route('pedidos.estado', $pedido) }}" class="px-4 pb-3.5" data-envio-unico>
                                         @csrf
                                         <button type="submit" name="id_estado" value="{{ $columna['siguiente']->id_estado }}" data-texto-envio="Actualizando…"

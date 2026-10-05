@@ -115,8 +115,14 @@ class PedidoController extends Controller
         $this->gestor->cambiarEstado($pedido, (int) $datos['id_estado'], $datos['observacion'] ?? null, $request->user());
 
         $estado = EstadoPedido::find($datos['id_estado']);
+        $respuesta = back()->with('exito', "Pedido #{$pedido->numero()} actualizado a «{$estado->nombre}».");
 
-        return back()->with('exito', "Pedido #{$pedido->numero()} actualizado a «{$estado->nombre}».");
+        // Al quedar listo, el aviso ofrece escribirle al cliente por WhatsApp con el mensaje ya escrito.
+        if ($estado->id_estado === EstadoPedido::LISTO && $enlace = $pedido->cliente->avisoPedidoListo($pedido, $request->user()->negocio ?? $request->user()->nombre)) {
+            $respuesta->with('accion', ['texto' => 'Avisar a '.strtok($pedido->cliente->nombre, ' ').' por WhatsApp', 'url' => $enlace]);
+        }
+
+        return $respuesta;
     }
 
     public function edit(Pedido $pedido): View|RedirectResponse

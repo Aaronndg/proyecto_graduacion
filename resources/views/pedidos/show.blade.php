@@ -39,6 +39,19 @@
 
                 <x-progreso-pedido :pedido="$pedido" />
 
+                {{-- Pedido listo: avisarle al cliente por WhatsApp con el mensaje ya escrito --}}
+                @if ($pedido->id_estado === EstadoPedido::LISTO)
+                    @if ($aviso = $cliente->avisoPedidoListo($pedido, auth()->user()->negocio ?? auth()->user()->nombre))
+                        <a href="{{ $aviso }}" target="_blank" rel="noopener" class="btn btn-whatsapp mt-6 w-full">
+                            <x-icono nombre="whatsapp" clase="size-5" /> Avisar a {{ strtok($cliente->nombre, ' ') }} que ya está listo
+                        </a>
+                    @else
+                        <p class="mt-6 rounded-lg bg-superficie-2 px-4 py-3 text-sm text-texto-2">
+                            Para avisarle por WhatsApp, <a href="{{ route('clientes.edit', $cliente) }}" class="enlace">agregue el teléfono de {{ strtok($cliente->nombre, ' ') }}</a>.
+                        </p>
+                    @endif
+                @endif
+
                 @if ($estadosSiguientes->isNotEmpty())
                     <form method="POST" action="{{ route('pedidos.estado', $pedido) }}" class="mt-6 space-y-3" novalidate data-envio-unico>
                         @csrf

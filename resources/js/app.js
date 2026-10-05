@@ -100,7 +100,8 @@ document.querySelectorAll('[data-desplazable]').forEach((fila) => {
 document.querySelectorAll('[data-aviso]').forEach((aviso) => {
     const cerrar = () => aviso.parentElement?.remove();
     aviso.querySelector('[data-cerrar-aviso]')?.addEventListener('click', cerrar);
-    setTimeout(cerrar, 5000);
+    // Con un botón de acción (p. ej. avisar por WhatsApp) se queda más tiempo para alcanzar a tocarlo.
+    setTimeout(cerrar, aviso.querySelector('[data-aviso-accion]') ? 15000 : 5000);
 });
 
 // Código de cliente: mayúsculas, solo caracteres válidos y guion automático (XXXX-XXXX).

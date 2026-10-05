@@ -74,16 +74,41 @@ class Cliente extends Model
     }
 
     /** Enlace de WhatsApp con el mensaje de invitación listo para enviar (Guatemala: +502). */
-    public function enlaceWhatsApp(string $negocio): ?string
+    /** Número para wa.me (con 502 si es un número de Guatemala de 8 dígitos), o null si no tiene uno válido. */
+    public function numeroWhatsApp(): ?string
     {
         $digitos = preg_replace('/\D/', '', (string) $this->telefono);
 
-        if (! $this->codigo_vinculacion || strlen($digitos) < 8) {
+        if (strlen($digitos) < 8) {
             return null;
         }
 
-        if (strlen($digitos) === 8) {
-            $digitos = '502'.$digitos;
+        return strlen($digitos) === 8 ? '502'.$digitos : $digitos;
+    }
+
+    /** Mensaje de WhatsApp, ya escrito, para avisar que el pedido está listo. Palabras sencillas, sin datos técnicos. */
+    public function avisoPedidoListo(Pedido $pedido, string $negocio): ?string
+    {
+        if (! $numero = $this->numeroWhatsApp()) {
+            return null;
+        }
+
+        $mensaje = 'Hola '.strtok($this->nombre, ' ').", le saluda {$negocio}. ¡Su pedido ya está listo! "
+            .'Pedido #'.$pedido->numero().' por Q '.number_format((float) $pedido->total, 2).'.';
+
+        if ($this->id_usuario) {
+            $mensaje .= ' Puede verlo aquí: '.route('mis-pedidos.show', $pedido);
+        }
+
+        return 'https://wa.me/'.$numero.'?text='.rawurlencode($mensaje.' ¡Gracias por su compra!');
+    }
+
+    public function enlaceWhatsApp(string $negocio): ?string
+    {
+        $digitos = $this->numeroWhatsApp();
+
+        if (! $this->codigo_vinculacion || ! $digitos) {
+            return null;
         }
 
         $mensaje = "Hola {$this->nombre}, en {$negocio} ya puede consultar el estado de sus pedidos en línea. "
