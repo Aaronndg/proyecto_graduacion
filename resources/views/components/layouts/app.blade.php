@@ -26,7 +26,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <meta name="theme-color" content="#102945">
+    <meta name="theme-color" content="#0B2452">
     <title>{{ $titulo }} · {{ config('app.name') }}</title>
     @include('components.layouts.partials.fuentes')
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -123,7 +123,7 @@
                                 @endforeach
                             </nav>
                         @endif
-                        <h1 class="font-display text-[26px] leading-tight font-semibold text-balance text-texto sm:text-[30px]">{{ $titulo }}</h1>
+                        <h1 class="text-[26px] leading-tight font-bold text-balance text-texto sm:text-[30px]">{{ $titulo }}</h1>
                         @if ($subtitulo)<p class="mt-1 text-texto-2">{{ $subtitulo }}</p>@endif
                     </div>
                     @isset($acciones)

@@ -48,7 +48,8 @@ class PanelController extends Controller
     private function emprendedor(): View
     {
         // El trait PerteneceAEmprendedor limita estas consultas a los datos del emprendedor autenticado.
-        $activos = Pedido::with('cliente')
+        // detalles.producto: miniaturas de lo que pidió cada cliente (fotos de producto).
+        $activos = Pedido::with(['cliente', 'detalles.producto'])
             ->withSum('detalles as unidades', 'cantidad')
             ->whereIn('id_estado', EstadoPedido::ACTIVOS)
             ->orderBy('fecha')

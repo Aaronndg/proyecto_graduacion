@@ -13,7 +13,7 @@
         @else
             {{-- Dos caminos distintos: se elige primero y solo se muestran los campos de ese camino --}}
             <fieldset>
-                <legend class="etiqueta">¿Cómo va a usar Pedidos Jutiapa?</legend>
+                <legend class="etiqueta">¿Cómo va a usar NEXO?</legend>
                 <div class="space-y-2">
                     @foreach ([
                         'emprendedor' => 'Tengo un negocio y quiero registrar mis pedidos',

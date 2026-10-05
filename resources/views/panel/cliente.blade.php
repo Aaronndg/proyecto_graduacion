@@ -17,6 +17,7 @@
     @if ($pedidos->isEmpty())
         {{-- Primera vez: una sola tarea, conectar la cuenta con el código del negocio. --}}
         <section class="panel p-5 sm:p-8" aria-labelledby="titulo-conectar">
+            <x-ilustracion nombre="caja" class="mb-3" />
             <h2 id="titulo-conectar" class="titulo-seccion">Conecte su cuenta con el negocio</h2>
             <p class="mt-1 text-texto-2">Escriba el código que le envió el negocio donde hizo su pedido.</p>
 

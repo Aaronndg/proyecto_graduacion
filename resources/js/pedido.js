@@ -56,6 +56,14 @@ export function iniciarFormularioPedido(formulario) {
             const subtotal = producto ? Math.round(producto.precio * 100) * cantidad / 100 : 0;
 
             linea.querySelector('[data-precio]').textContent = producto ? quetzales(producto.precio) : '—';
+            // Miniatura: la foto del producto, o la caja por defecto.
+            const miniatura = linea.querySelector('[data-miniatura]');
+            if (miniatura) {
+                const foto = producto?.imagen;
+                miniatura.classList.toggle('hidden', !foto);
+                linea.querySelector('[data-miniatura-vacia]').classList.toggle('hidden', !!foto);
+                if (foto && miniatura.getAttribute('src') !== foto) miniatura.src = foto;
+            }
             linea.querySelector('[data-subtotal]').textContent = producto ? quetzales(subtotal) : '—';
             suma += subtotal;
             if (producto) unidades += cantidad;
@@ -65,15 +73,49 @@ export function iniciarFormularioPedido(formulario) {
             resumenProductos.textContent = unidades ? `${unidades} ${unidades === 1 ? 'producto' : 'productos'}` : '—';
         }
 
+        // Fichas con foto: marcan los productos que ya están en el pedido y cuántos lleva.
+        const cantidades = {};
+        cuerpo.querySelectorAll('[data-linea]').forEach((linea) => {
+            const id = linea.querySelector('[data-producto]').value;
+            if (id) cantidades[id] = (cantidades[id] || 0) + (parseInt(linea.querySelector('[data-cantidad]').value, 10) || 0);
+        });
+        formulario.querySelectorAll('[data-elegir-producto]').forEach((ficha) => {
+            const cantidad = cantidades[ficha.dataset.elegirProducto] || 0;
+            ficha.setAttribute('aria-pressed', String(cantidad > 0));
+            ficha.querySelector('[data-ficha-cantidad]').textContent = cantidad > 0 ? cantidad : '+';
+        });
+
         const unica = cuerpo.querySelectorAll('[data-linea]').length === 1;
         cuerpo.querySelectorAll('[data-quitar-linea]').forEach((b) => (b.hidden = unica));
     };
 
-    formulario.querySelector('[data-agregar-linea]')?.addEventListener('click', () => {
+    const agregarLinea = () => {
         const html = plantilla.innerHTML.replaceAll('__INDICE__', String(siguienteIndice++));
         cuerpo.insertAdjacentHTML('beforeend', html);
-        cuerpo.lastElementChild.querySelector('[data-producto]').focus();
+        return cuerpo.lastElementChild;
+    };
+
+    formulario.querySelector('[data-agregar-linea]')?.addEventListener('click', () => {
+        agregarLinea().querySelector('[data-producto]').focus();
         recalcular();
+    });
+
+    // Fichas con foto: si el producto ya está en el pedido suma uno; si no, ocupa una línea vacía o agrega una.
+    formulario.querySelectorAll('[data-elegir-producto]').forEach((ficha) => {
+        ficha.addEventListener('click', () => {
+            const id = ficha.dataset.elegirProducto;
+            const lineas = [...cuerpo.querySelectorAll('[data-linea]')];
+            const existente = lineas.find((l) => l.querySelector('[data-producto]').value === id);
+            if (existente) {
+                const campo = existente.querySelector('[data-cantidad]');
+                campo.value = Math.min(9999, (parseInt(campo.value, 10) || 0) + 1);
+            } else {
+                const linea = lineas.find((l) => !l.querySelector('[data-producto]').value) ?? agregarLinea();
+                linea.querySelector('[data-producto]').value = id;
+                linea.querySelector('[data-cantidad]').value = 1;
+            }
+            recalcular();
+        });
     });
 
     cuerpo.addEventListener('click', (evento) => {

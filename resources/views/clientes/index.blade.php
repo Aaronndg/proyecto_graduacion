@@ -14,7 +14,8 @@
     </form>
 
     @if ($clientes->isEmpty())
-        <div class="panel px-5 py-10 text-center">
+        <div class="panel flex flex-col items-center px-5 py-10 text-center">
+            <x-ilustracion nombre="clientes" class="mb-3" />
             @if ($buscar)
                 <p class="font-medium">No encontramos clientes con «{{ $buscar }}»</p>
                 <p class="mt-1 text-sm text-texto-2">Pruebe con otro nombre, teléfono o correo.</p>
@@ -37,13 +38,16 @@
                     <li class="border-b border-borde last:border-b-0">
                         <a href="{{ route('clientes.show', $cliente) }}"
                            class="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-0.5 px-4 py-3 transition-colors hover:bg-superficie-2/60 md:grid-cols-[minmax(0,1fr)_8rem_10rem_5rem]">
-                            <span class="min-w-0">
-                                <span class="block truncate font-medium">{{ $cliente->nombre }}</span>
-                                <span class="meta hidden truncate md:block">
-                                    {{ collect([$cliente->correo, $cliente->id_usuario ? 'Ve sus pedidos en línea' : null])->filter()->implode(' · ') ?: ' ' }}
+                            <span class="flex min-w-0 items-center gap-3">
+                                <x-avatar :nombre="$cliente->nombre" />
+                                <span class="min-w-0">
+                                    <span class="block truncate font-medium">{{ $cliente->nombre }}</span>
+                                    <span class="meta hidden truncate md:block">
+                                        {{ collect([$cliente->correo, $cliente->id_usuario ? 'Ve sus pedidos en línea' : null])->filter()->implode(' · ') ?: ' ' }}
+                                    </span>
                                 </span>
                             </span>
-                            <span class="meta col-span-2 row-start-2 truncate md:hidden">
+                            <span class="meta col-span-2 row-start-2 truncate pl-13 md:hidden">
                                 {{ collect([$cliente->telefono, $ultimo($cliente), $cliente->id_usuario ? 'en línea' : null])->filter()->implode(' · ') ?: 'Sin teléfono' }}
                             </span>
                             <span class="hidden text-sm text-texto-2 tabular-nums md:block">{{ $cliente->telefono ?? '—' }}</span>

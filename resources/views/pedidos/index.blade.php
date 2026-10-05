@@ -79,7 +79,8 @@
     @endif
 
     @if ($pedidos->isEmpty())
-        <div class="panel px-5 py-10 text-center">
+        <div class="panel flex flex-col items-center px-5 py-10 text-center">
+            <x-ilustracion nombre="libreta" class="mb-3" />
             @if ($filtros['buscar'])
                 <p class="font-medium">No encontramos pedidos con «{{ $filtros['buscar'] }}»</p>
                 <p class="mt-1 text-sm text-texto-2">Revise el número o el nombre del cliente.</p>
@@ -108,9 +109,12 @@
                         <a href="{{ route('pedidos.show', $pedido) }}"
                            class="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-1 px-4 py-3 transition-colors hover:bg-superficie-2/60 md:grid-cols-[4.5rem_minmax(0,1fr)_7rem_8.5rem_7.5rem]">
                             <span class="hidden font-medium text-marca tabular-nums md:block">#{{ $pedido->numero() }}</span>
-                            <span class="col-start-1 row-start-1 min-w-0 md:col-start-2">
-                                <span class="block truncate font-medium">{{ $pedido->cliente->nombre }}</span>
-                                <span class="meta hidden md:block">{{ $productos }}</span>
+                            <span class="col-start-1 row-start-1 flex min-w-0 items-center gap-3 md:col-start-2">
+                                <x-avatar :nombre="$pedido->cliente->nombre" tamano="sm" class="hidden md:inline-flex" />
+                                <span class="min-w-0">
+                                    <span class="block truncate font-medium">{{ $pedido->cliente->nombre }}</span>
+                                    <span class="meta hidden md:block">{{ $productos }}</span>
+                                </span>
                             </span>
                             <span class="meta col-start-1 row-start-2 md:hidden">#{{ $pedido->numero() }} · {{ $pedido->fecha->format('d/m/Y') }}</span>
                             <span class="hidden text-sm text-texto-2 tabular-nums md:col-start-3 md:row-start-1 md:block">{{ $pedido->fecha->format('d/m/Y') }}</span>

@@ -5,19 +5,16 @@
 @source '../**/*.js';
 
 /*
- * Design System de Pedidos Jutiapa: estilo «Oro tejido».
- * Azul noche para la marca y la navegación, oro para la acción principal, grises cálidos de fondo
- * y una franja tejida (huipil) en los mismos tonos. Letra redonda (Fredoka) en títulos y Nunito
- * en el texto, cargadas desde Google Fonts en cada layout.
+ * Design System de NEXO (estilo «Oro tejido»).
+ * Azul profundo del banner y del logo para la marca y la navegación, oro para la acción principal,
+ * grises cálidos de fondo y una franja tejida (huipil) en los mismos tonos. Plus Jakarta Sans,
+ * geométrica y elegante como el logotipo, en títulos y texto (desde Google Fonts).
  * Las escalas stone, marca, red, emerald, amber y sky se redefinen con esta paleta, así todas
  * las vistas hablan el mismo idioma visual; los componentes usan los nombres semánticos.
  */
 @theme {
-    --font-sans: 'Nunito', ui-sans-serif, system-ui, 'Segoe UI', Roboto, sans-serif;
-    --font-display: 'Fredoka', 'Nunito', ui-sans-serif, system-ui, sans-serif;
-
-    /* Nunito se carga en 400/600/700/800: «medium» usa el 600 para que los nombres no se vean delgados */
-    --font-weight-medium: 600;
+    --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, 'Segoe UI', Roboto, sans-serif;
+    --font-display: 'Plus Jakarta Sans', ui-sans-serif, system-ui, 'Segoe UI', Roboto, sans-serif;
 
     /* Grises de la paleta (B3B3B3, CFCED0) con un toque cálido; el 900 es el azul noche */
     --color-stone-50: #F5F4F1;   /* fondo de la página */
@@ -29,21 +26,23 @@
     --color-stone-600: #4A505B;
     --color-stone-700: #343A45;
     --color-stone-800: #1F2833;
-    --color-stone-900: #0C1F34;  /* azul noche: avisos y texto fuerte */
-    --color-stone-950: #0A101A;
+    --color-stone-900: #0A1E45;  /* azul noche: avisos y texto fuerte */
+    --color-stone-950: #071530;
 
-    /* Azul de marca (102945): navegación, enlaces, foco y selección */
-    --color-marca-50: #EEF2F7;
-    --color-marca-100: #E3E9F1;
-    --color-marca-200: #C7D3E2;
-    --color-marca-300: #9DB0C8;
-    --color-marca-400: #5F7A9C;
-    --color-marca-500: #2F5D9A;
-    --color-marca-600: #102945;
-    --color-marca-700: #0C1F34;
-    --color-marca-800: #0A1828;
-    --color-marca-900: #0A101A;
-    --color-marca-950: #060A10;
+    /* Azul de marca (del banner y del logo NEXO): navegación, enlaces, foco y selección.
+       El 500 es el azul brillante del logo, oscurecido para leerse como texto (5:1). */
+    --color-marca-50: #EEF3FC;
+    --color-marca-100: #E1EAF9;
+    --color-marca-200: #C3D5F3;
+    --color-marca-300: #94B4EA;
+    --color-marca-400: #4F86E6;
+    --color-marca-500: #1C64D8;
+    --color-marca-600: #0B2452;
+    --color-marca-700: #071B3D;
+    --color-marca-800: #061530;
+    --color-marca-900: #040F24;
+    --color-marca-950: #020916;
+    --color-logo: #2B7CFA;
 
     /* Oro (C18D21): la acción principal, siempre con letra oscura (6:1) */
     --color-oro: #C18D21;
@@ -52,11 +51,11 @@
     --color-oro-texto: #7A5512;
 
     /* Estados: Nuevo azul, En proceso oro, Listo verde, Cancelado terracota */
-    --color-sky-50: #E8EFF8;
-    --color-sky-100: #D6E3F3;
-    --color-sky-500: #2F5D9A;
-    --color-sky-600: #24497A;
-    --color-sky-700: #1E3F6B;
+    --color-sky-50: #E8F0FD;
+    --color-sky-100: #D3E2FB;
+    --color-sky-500: #2B6FE0;
+    --color-sky-600: #1D5BC4;
+    --color-sky-700: #1A4FA8;
     --color-amber-50: #F8EEDA;
     --color-amber-100: #F2E1BC;
     --color-amber-200: #E8CD8F;
@@ -85,14 +84,14 @@
     --color-fondo: #F5F4F1;
     --color-superficie: #FFFFFF;
     --color-superficie-2: #EFEDE8;
-    --color-texto: #0C1F34;
+    --color-texto: #0A1E45;
     --color-texto-2: #5B6270;
     --color-borde: #E3E1DC;
     --color-borde-control: #8C8F96;
-    --color-marca: #102945;
-    --color-marca-hover: #0C1F34;
-    --color-seleccion: #E3E9F1;
-    --color-noche: #0C1F34;
+    --color-marca: #0B2452;
+    --color-marca-hover: #071B3D;
+    --color-seleccion: #E1EAF9;
+    --color-noche: #071B3D;
     --color-gris-claro: #CFCED0;
 
     /* Formas redondas y amables */
@@ -101,8 +100,8 @@
     --radius-2xl: 20px;
 
     /* Relieve suave para tarjetas y algo más marcado para lo que flota */
-    --shadow-suave: 0 1px 2px rgb(16 41 69 / 0.04), 0 8px 22px -6px rgb(16 41 69 / 0.10);
-    --shadow-flotante: 0 2px 4px rgb(16 41 69 / 0.06), 0 14px 32px -8px rgb(16 41 69 / 0.24);
+    --shadow-suave: 0 1px 2px rgb(11 36 82 / 0.04), 0 8px 22px -6px rgb(11 36 82 / 0.10);
+    --shadow-flotante: 0 2px 4px rgb(11 36 82 / 0.06), 0 14px 32px -8px rgb(11 36 82 / 0.26);
     --shadow-oro: 0 4px 12px -2px rgb(193 141 33 / 0.45);
 }
 
@@ -132,6 +131,7 @@
 
     h1, h2, h3 {
         font-family: var(--font-display);
+        letter-spacing: -0.015em;
     }
 
     @media (prefers-reduced-motion: reduce) {

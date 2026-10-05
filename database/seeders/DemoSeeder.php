@@ -27,16 +27,17 @@ class DemoSeeder extends Seeder
         $id = $emprendedor->id_usuario;
 
         $productos = collect([
-            ['Pastel de chocolate', 'Pastel mediano para 12 porciones', 185.00],
-            ['Pastel de tres leches', 'Pastel mediano para 12 porciones', 165.00],
-            ['Cupcake de vainilla', 'Con betún de mantequilla', 12.50],
-            ['Galletas decoradas', 'Docena, decoración personalizada', 60.00],
-            ['Pie de limón', 'Pie entero de 8 porciones', 95.00],
-            ['Brownies', 'Caja de 6 unidades', 45.00],
-            ['Rosca de canela', 'Rosca familiar', 55.00],
-            ['Quesadilla salvadoreña', 'Porción individual', 18.00],
+            ['Pastel de chocolate', 'Pastel mediano para 12 porciones', 185.00, 'chocolate'],
+            ['Pastel de tres leches', 'Pastel mediano para 12 porciones', 165.00, 'tresleches'],
+            ['Cupcake de vainilla', 'Con betún de mantequilla', 12.50, 'cupcake'],
+            ['Galletas decoradas', 'Docena, decoración personalizada', 60.00, 'galletas'],
+            ['Pie de limón', 'Pie entero de 8 porciones', 95.00, 'limon'],
+            ['Brownies', 'Caja de 6 unidades', 45.00, 'brownie'],
+            ['Rosca de canela', 'Rosca familiar', 55.00, 'rosca'],
+            ['Quesadilla salvadoreña', 'Porción individual', 18.00, 'quesadilla'],
         ])->map(fn ($p) => Producto::withoutGlobalScopes()->forceCreate([
             'id_emprendedor' => $id, 'nombre' => $p[0], 'descripcion' => $p[1], 'precio' => $p[2], 'estado' => true,
+            'imagen' => $this->imagenDemo($p[3]),
         ]));
 
         $clientes = collect([
@@ -108,5 +109,19 @@ class DemoSeeder extends Seeder
                 ]);
             }
         }
+    }
+
+    /** Imagen ilustrada de ejemplo para el producto (en uso real, el negocio sube sus fotos). */
+    private function imagenDemo(string $clave): ?string
+    {
+        $origen = database_path("seeders/imagenes/{$clave}.svg");
+        if (! is_file($origen)) {
+            return null;
+        }
+
+        $ruta = "productos/demo-{$clave}.svg";
+        \Illuminate\Support\Facades\Storage::disk('public')->put($ruta, file_get_contents($origen));
+
+        return $ruta;
     }
 }

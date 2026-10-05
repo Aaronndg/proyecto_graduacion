@@ -23,12 +23,12 @@
     <nav class="mb-8 grid grid-cols-3 gap-2 sm:gap-4" aria-label="Accesos rápidos">
         @foreach ([
             ['Emprendedores', 'negocio', Rol::EMPRENDEDOR, 'bg-oro-suave'],
-            ['Clientes', 'usuarios', Rol::CLIENTE, 'bg-marca-100'],
+            ['Clientes', 'clientes', Rol::CLIENTE, 'bg-marca-100'],
             ['Administradores', 'usuario', Rol::ADMINISTRADOR, 'bg-oro-suave'],
         ] as [$texto, $icono, $idRol, $tono])
-            <a href="{{ route('admin.usuarios.index', ['rol' => $idRol]) }}" class="flex flex-col items-center gap-2 rounded-2xl p-1 text-center transition sm:flex-row sm:gap-3 sm:bg-superficie sm:p-4 sm:text-left sm:shadow-suave sm:hover:-translate-y-0.5">
-                <span class="flex size-14 shrink-0 items-center justify-center rounded-full text-marca shadow-suave sm:size-12 sm:shadow-none {{ $tono }}"><x-icono :nombre="$icono" clase="size-6" /></span>
-                <span class="font-display text-[13px] font-semibold sm:text-base">{{ $texto }}</span>
+            <a href="{{ route('admin.usuarios.index', ['rol' => $idRol]) }}" class="flex flex-col items-center gap-2 rounded-2xl p-1 text-center transition sm:flex-row sm:gap-3 sm:bg-superficie sm:p-4 sm:text-left sm:shadow-suave sm:hover:-translate-y-0.5 sm:hover:shadow-flotante">
+                <span class="flex size-14 shrink-0 items-center justify-center rounded-full shadow-suave sm:size-13 sm:shadow-none {{ $tono }}"><x-icono-duo :nombre="$icono" /></span>
+                <span class="text-[13px] font-bold sm:text-base">{{ $texto }}</span>
             </a>
         @endforeach
     </nav>

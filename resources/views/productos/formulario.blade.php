@@ -19,7 +19,7 @@
     @endif
 
     <form method="POST" action="{{ $editando ? route('productos.update', $producto) : route('productos.store') }}"
-          class="panel max-w-xl space-y-5 p-5 sm:p-6" novalidate data-envio-unico>
+          class="panel max-w-xl space-y-5 p-5 sm:p-6" enctype="multipart/form-data" novalidate data-envio-unico>
         @csrf
         @if ($editando) @method('PUT') @endif
 
@@ -41,6 +41,31 @@
             <textarea id="descripcion" name="descripcion" rows="2" maxlength="255" placeholder="Tamaño, sabor o lo que ayude a distinguirlo"
                       @class(['campo', 'campo-error' => $errors->has('descripcion')])>{{ old('descripcion', $producto->descripcion) }}</textarea>
             @error('descripcion')<p class="error-campo">{{ $message }}</p>@enderror
+        </div>
+
+        {{-- Foto del producto (opcional): vista previa inmediata al elegirla --}}
+        <div data-foto>
+            <span class="etiqueta">Foto <span class="font-normal text-texto-2">(opcional)</span></span>
+            <div class="flex items-center gap-4">
+                <span class="size-24 shrink-0 overflow-hidden rounded-2xl shadow-[0_0_0_1px_var(--color-borde)]">
+                    <img src="{{ $producto->urlImagen() }}" alt="" @class(['size-full object-cover', 'hidden' => ! $producto->imagen]) data-foto-vista>
+                    <span @class(['size-full', 'hidden' => $producto->imagen]) data-foto-vacia><x-foto-producto :producto="null" icono="size-10" /></span>
+                </span>
+                <div class="min-w-0 space-y-2">
+                    <label for="imagen" class="btn btn-secundario btn-chico cursor-pointer">
+                        <x-icono nombre="imagen" clase="size-4" /> {{ $producto->imagen ? 'Cambiar foto' : 'Elegir foto' }}
+                    </label>
+                    <input id="imagen" name="imagen" type="file" accept="image/jpeg,image/png,image/webp" class="sr-only" data-foto-archivo
+                           @error('imagen') aria-invalid="true" aria-describedby="imagen-error" @enderror>
+                    <p class="ayuda mt-0">JPG, PNG o WebP, hasta 2 MB. Una foto cuadrada o apaisada se ve mejor.</p>
+                    @if ($producto->imagen)
+                        <label class="flex cursor-pointer items-center gap-2 text-sm text-texto-2">
+                            <input type="checkbox" name="quitar_imagen" value="1" class="casilla" data-foto-quitar> Quitar la foto
+                        </label>
+                    @endif
+                </div>
+            </div>
+            @error('imagen')<p id="imagen-error" class="error-campo">{{ $message }}</p>@enderror
         </div>
 
         {{-- Interruptor hecho con la casilla de siempre (role="switch"); el hidden envía 0 cuando está apagado --}}

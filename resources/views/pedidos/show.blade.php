@@ -93,8 +93,9 @@
                 <h2 id="titulo-productos" class="titulo-seccion px-5 pt-4 pb-2">Productos</h2>
                 <ul>
                     @foreach ($pedido->detalles as $detalle)
-                        <li class="flex items-baseline justify-between gap-4 border-b border-borde px-5 py-3 last:border-b-0">
-                            <span class="min-w-0">
+                        <li class="flex items-center gap-3 border-b border-borde px-5 py-3 last:border-b-0">
+                            <span class="size-12 shrink-0 overflow-hidden rounded-xl"><x-foto-producto :producto="$detalle->producto" icono="size-6" /></span>
+                            <span class="min-w-0 flex-1">
                                 <span class="mr-1 tabular-nums text-texto-2">{{ $detalle->cantidad }} ×</span>
                                 <span class="font-medium">{{ $detalle->producto->nombre }}</span>
                                 <span class="meta block">Q {{ number_format((float) $detalle->precio_unitario, 2) }} c/u</span>
@@ -111,8 +112,9 @@
 
             <section class="panel p-5" aria-labelledby="titulo-cliente">
                 <div class="flex flex-wrap items-start justify-between gap-3">
-                    <div class="min-w-0">
-                        <h2 id="titulo-cliente" class="font-medium">{{ $cliente->nombre }}</h2>
+                    <x-avatar :nombre="$cliente->nombre" tamano="lg" />
+                    <div class="min-w-0 flex-1">
+                        <h2 id="titulo-cliente" class="font-bold">{{ $cliente->nombre }}</h2>
                         <p class="text-sm text-texto-2">{{ collect([$cliente->telefono, $cliente->correo])->filter()->implode(' · ') ?: 'Sin datos de contacto' }}</p>
                         @if ($cliente->direccion)<p class="text-sm text-texto-2">{{ $cliente->direccion }}</p>@endif
                     </div>

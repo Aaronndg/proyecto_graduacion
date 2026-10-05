@@ -13,8 +13,9 @@
             <h2 id="titulo-productos" class="titulo-seccion px-5 pt-4 pb-2">Lo que pidió</h2>
             <ul>
                 @foreach ($pedido->detalles as $detalle)
-                    <li class="flex items-baseline justify-between gap-4 border-b border-borde px-5 py-3 last:border-b-0">
-                        <span class="min-w-0">
+                    <li class="flex items-center gap-3 border-b border-borde px-5 py-3 last:border-b-0">
+                        <span class="size-12 shrink-0 overflow-hidden rounded-xl"><x-foto-producto :producto="$detalle->producto" icono="size-6" /></span>
+                        <span class="min-w-0 flex-1">
                             <span class="mr-1 tabular-nums text-texto-2">{{ $detalle->cantidad }} ×</span>
                             <span class="font-medium">{{ $detalle->producto->nombre }}</span>
                             <span class="meta block">Q {{ number_format((float) $detalle->precio_unitario, 2) }} c/u</span>

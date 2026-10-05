@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 class Producto extends Model
 {
@@ -25,6 +27,27 @@ class Producto extends Model
             'precio' => 'decimal:2',
             'estado' => 'boolean',
         ];
+    }
+
+    /** Dirección pública de la foto, o null si el producto no tiene. */
+    public function urlImagen(): ?string
+    {
+        return $this->imagen ? asset('storage/'.$this->imagen) : null;
+    }
+
+    /** Guarda la nueva foto (o la quita) y borra el archivo anterior para no dejar basura en el disco. */
+    public function cambiarImagen(?UploadedFile $archivo, bool $quitar = false): void
+    {
+        if (! $archivo && ! $quitar) {
+            return;
+        }
+
+        $anterior = $this->imagen;
+        $this->imagen = $archivo?->store('productos', 'public');
+
+        if ($anterior) {
+            Storage::disk('public')->delete($anterior);
+        }
     }
 
     public function scopeActivos(Builder $query): void

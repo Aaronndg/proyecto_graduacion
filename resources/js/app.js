@@ -154,6 +154,27 @@ if (tiposCuenta.length) {
     mostrarCamposDeCuenta();
 }
 
+// Foto de producto: vista previa al elegir el archivo; «Quitar la foto» la oculta.
+document.querySelectorAll('[data-foto]').forEach((bloque) => {
+    const vista = bloque.querySelector('[data-foto-vista]');
+    const vacia = bloque.querySelector('[data-foto-vacia]');
+    const mostrar = (url) => {
+        vista.classList.toggle('hidden', !url);
+        vacia.classList.toggle('hidden', !!url);
+        if (url) vista.src = url;
+    };
+    const original = vista.getAttribute('src') || '';
+    bloque.querySelector('[data-foto-archivo]')?.addEventListener('change', (evento) => {
+        const archivo = evento.target.files?.[0];
+        const quitar = bloque.querySelector('[data-foto-quitar]');
+        if (quitar) quitar.checked = false;
+        mostrar(archivo ? URL.createObjectURL(archivo) : original);
+    });
+    bloque.querySelector('[data-foto-quitar]')?.addEventListener('change', (evento) => {
+        mostrar(evento.target.checked ? '' : original);
+    });
+});
+
 // Reportes: imprimir o guardar como PDF desde el navegador.
 document.addEventListener('click', (evento) => {
     if (evento.target.closest('[data-imprimir]')) window.print();

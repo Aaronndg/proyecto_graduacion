@@ -144,7 +144,7 @@ class PedidoController extends Controller
         // Productos activos, más los ya incluidos en el pedido aunque se hayan desactivado.
         $productos = Producto::where(fn ($q) => $q->where('estado', true)->orWhereIn('id_producto', $enPedido))
             ->orderBy('nombre')
-            ->get(['id_producto', 'nombre', 'precio', 'estado']);
+            ->get(['id_producto', 'nombre', 'precio', 'estado', 'imagen']);
 
         $lineas = old('productos', $pedido->exists
             ? $pedido->detalles->map(fn ($d) => ['id_producto' => $d->id_producto, 'cantidad' => $d->cantidad])->all()

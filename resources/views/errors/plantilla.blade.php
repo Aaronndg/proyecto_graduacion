@@ -13,7 +13,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#102945">
+    <meta name="theme-color" content="#0B2452">
     <title>{{ $titulo }} · {{ config('app.name') }}</title>
     @include('components.layouts.partials.fuentes')
     @vite(['resources/css/app.css'])
@@ -26,7 +26,7 @@
     <main class="mx-auto flex w-full max-w-[28rem] flex-1 flex-col justify-center px-4 py-10">
         <div class="panel p-6 sm:p-8">
             <p class="text-sm font-extrabold text-oro-texto">Código de error {{ $codigo }}</p>
-            <h1 class="mt-1 font-display text-[28px] leading-tight font-semibold text-balance">{{ $titulo }}</h1>
+            <h1 class="mt-1 text-[28px] leading-tight font-bold text-balance">{{ $titulo }}</h1>
             <p class="mt-2 text-texto-2">{{ $mensaje }}</p>
             <a href="{{ $destino }}" class="btn btn-primario mt-7">{{ $boton }}</a>
         </div>

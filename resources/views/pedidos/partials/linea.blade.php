@@ -1,9 +1,14 @@
 {{-- Una línea del pedido: producto, cantidad (− / +), precio y subtotal.
      Teléfono: producto + quitar arriba; cantidad, precio y subtotal abajo (RNF-05). --}}
 <li data-linea class="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 border-b border-borde px-5 py-4 md:grid-cols-[minmax(0,1fr)_8.5rem_6rem_6.5rem_2.5rem] md:gap-x-4 md:py-3">
-    <div class="col-span-2 row-start-1 md:col-span-1">
+    <div class="col-span-2 row-start-1 flex items-center gap-3 md:col-span-1">
+        {{-- Miniatura del producto elegido (la actualiza pedido.js) --}}
+        <span class="size-11 shrink-0 overflow-hidden rounded-xl sm:size-10" aria-hidden="true">
+            <img alt="" class="hidden size-full object-cover" data-miniatura>
+            <span data-miniatura-vacia><x-foto-producto :producto="null" icono="size-5" /></span>
+        </span>
         <label for="producto_{{ $indice }}" class="sr-only">Producto</label>
-        <select id="producto_{{ $indice }}" name="productos[{{ $indice }}][id_producto]" class="campo" data-producto>
+        <select id="producto_{{ $indice }}" name="productos[{{ $indice }}][id_producto]" class="campo min-w-0 flex-1" data-producto>
             <option value="">Elija un producto…</option>
             @foreach ($productos as $producto)
                 <option value="{{ $producto->id_producto }}" @selected((string) $linea['id_producto'] === (string) $producto->id_producto)>

@@ -6,6 +6,7 @@
     $catalogo = $productos->mapWithKeys(fn ($p) => [$p->id_producto => [
         'nombre' => $p->nombre,
         'precio' => (float) ($preciosRegistrados[$p->id_producto] ?? $p->precio),
+        'imagen' => $p->urlImagen(),
     ]]);
     $errorProductos = $errors->first('productos') ?: collect($errors->getMessages())
         ->filter(fn ($m, $clave) => str_starts_with($clave, 'productos.'))->flatten()->first();
@@ -113,6 +114,27 @@
                     @if ($errorProductos)
                         <p role="alert" class="error-campo mx-5 mb-2">{{ $errorProductos }}</p>
                     @endif
+
+                    {{-- Elegir con fotos: un toque agrega el producto (o suma uno si ya está en el pedido) --}}
+                    @php $disponibles = $productos->where('estado', true); @endphp
+                    <div class="border-t border-borde px-5 pt-3 pb-4">
+                        <p class="meta mb-2.5">Toque un producto para agregarlo.</p>
+                        <ul class="-mx-5 flex snap-x scroll-px-5 gap-3 overflow-x-auto px-5 pt-1 pb-1" aria-label="Productos disponibles">
+                            @foreach ($disponibles as $producto)
+                                <li class="shrink-0 snap-start">
+                                    <button type="button" data-elegir-producto="{{ $producto->id_producto }}" aria-pressed="false"
+                                            class="group relative flex w-28 cursor-pointer flex-col overflow-hidden rounded-2xl bg-superficie text-left shadow-[0_0_0_1px_var(--color-borde)] transition hover:-translate-y-0.5 hover:shadow-suave aria-pressed:shadow-[0_0_0_2px_var(--color-marca)]">
+                                        <span class="block aspect-square overflow-hidden"><x-foto-producto :producto="$producto" icono="size-9" /></span>
+                                        <span class="px-2.5 pt-1.5 pb-2 text-[13px] leading-tight">
+                                            <span class="line-clamp-2 font-bold">{{ $producto->nombre }}</span>
+                                            <span class="meta block"><x-moneda :valor="$catalogo[$producto->id_producto]['precio']" /></span>
+                                        </span>
+                                        <span class="absolute top-1.5 right-1.5 flex size-7 items-center justify-center rounded-full bg-oro text-sm font-extrabold text-stone-950 shadow-md group-aria-pressed:bg-marca group-aria-pressed:text-white" data-ficha-cantidad>+</span>
+                                    </button>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
 
                     <div class="hidden grid-cols-[minmax(0,1fr)_8.5rem_6rem_6.5rem_2.5rem] gap-x-4 border-y border-borde bg-superficie-2 px-5 py-2 text-[13px] font-medium text-texto-2 md:grid" aria-hidden="true">
                         <span>Producto</span><span>Cantidad</span><span class="text-right">Precio</span><span class="text-right">Subtotal</span><span></span>

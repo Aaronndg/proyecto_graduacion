@@ -23,7 +23,7 @@ class ProductoController extends Controller
             ->when(in_array($estado, ['activos', 'inactivos'], true), fn ($q) => $q->where('estado', $estado === 'activos'))
             ->orderByDesc('estado')
             ->orderBy('nombre')
-            ->paginate(10)
+            ->paginate(12)
             ->withQueryString();
 
         return view('productos.index', compact('productos', 'buscar', 'estado'));
@@ -36,7 +36,9 @@ class ProductoController extends Controller
 
     public function store(ProductoRequest $request): RedirectResponse
     {
-        Producto::create($request->validated());
+        $producto = new Producto($request->safe()->except(['imagen', 'quitar_imagen']));
+        $producto->cambiarImagen($request->file('imagen'));
+        $producto->save();
 
         return redirect()->route('productos.index')->with('exito', 'Producto registrado correctamente.');
     }
@@ -48,7 +50,9 @@ class ProductoController extends Controller
 
     public function update(ProductoRequest $request, Producto $producto): RedirectResponse
     {
-        $producto->update($request->validated());
+        $producto->fill($request->safe()->except(['imagen', 'quitar_imagen']));
+        $producto->cambiarImagen($request->file('imagen'), $request->boolean('quitar_imagen'));
+        $producto->save();
 
         return redirect()->route('productos.index')->with('exito', 'Producto actualizado correctamente.');
     }
@@ -60,6 +64,7 @@ class ProductoController extends Controller
             return back()->with('error', 'Este producto forma parte de pedidos registrados. Desactívelo en lugar de eliminarlo.');
         }
 
+        $producto->cambiarImagen(null, quitar: true);
         $producto->delete();
 
         return redirect()->route('productos.index')->with('exito', 'Producto eliminado.');

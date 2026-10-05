@@ -30,34 +30,38 @@
     </nav>
 
     @if ($productos->isEmpty())
-        <div class="panel px-5 py-10 text-center">
+        <div class="panel flex flex-col items-center px-5 py-10 text-center">
+            <x-ilustracion nombre="caja" class="mb-3" />
             @if ($buscar || $estado)
-                <p class="font-medium">No encontramos productos{{ $buscar ? ' con «'.$buscar.'»' : '' }}</p>
+                <p class="font-bold">No encontramos productos{{ $buscar ? ' con «'.$buscar.'»' : '' }}</p>
                 <a href="{{ route('productos.index') }}" class="btn btn-secundario mt-5">Ver todos los productos</a>
             @else
-                <p class="font-medium">Aún no tiene productos</p>
-                <p class="mt-1 text-sm text-texto-2">Agregue lo que vende para poder registrar pedidos.</p>
+                <p class="font-bold">Aún no tiene productos</p>
+                <p class="mt-1 text-sm text-texto-2">Agregue lo que vende, con su foto, para poder registrar pedidos.</p>
                 <a href="{{ route('productos.create') }}" class="btn btn-primario mt-5"><x-icono nombre="mas" clase="size-4" /> Agregar producto</a>
             @endif
         </div>
     @else
-        <ul class="panel overflow-hidden">
+        {{-- Catálogo: cada producto es una tarjeta con su foto que abre la edición --}}
+        <ul class="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
             @foreach ($productos as $producto)
-                <li class="border-b border-borde last:border-b-0">
-                    <a href="{{ route('productos.edit', $producto) }}" class="flex items-center justify-between gap-4 px-4 py-3 transition-colors hover:bg-superficie-2/60">
-                        <span class="min-w-0">
-                            <span @class(['block truncate font-medium', 'text-texto-2' => ! $producto->estado])>{{ $producto->nombre }}</span>
-                            @if (! $producto->estado || $producto->descripcion)
-                                <span class="meta block truncate">
-                                    {{ collect([$producto->estado ? null : 'Inactivo', $producto->descripcion])->filter()->implode(' · ') }}
-                                </span>
-                            @endif
+                <li>
+                    <a href="{{ route('productos.edit', $producto) }}" class="group flex h-full flex-col overflow-hidden rounded-2xl bg-superficie shadow-suave transition hover:-translate-y-0.5 hover:shadow-flotante">
+                        <span @class(['relative block aspect-[4/3] overflow-hidden', 'opacity-60 grayscale' => ! $producto->estado])>
+                            <x-foto-producto :producto="$producto" class="transition duration-300 group-hover:scale-[1.03]" icono="size-12" />
                         </span>
-                        <x-moneda :valor="$producto->precio" :class="$producto->estado ? 'shrink-0 font-medium' : 'shrink-0 font-medium text-texto-2'" />
+                        <span class="flex flex-1 flex-col gap-0.5 p-3 sm:p-4">
+                            <span class="flex items-start justify-between gap-2">
+                                <span @class(['font-bold leading-snug', 'text-texto-2' => ! $producto->estado])>{{ $producto->nombre }}</span>
+                                @unless ($producto->estado)<span class="insignia shrink-0 bg-superficie-2 text-texto-2">Inactivo</span>@endunless
+                            </span>
+                            @if ($producto->descripcion)<span class="meta line-clamp-2">{{ $producto->descripcion }}</span>@endif
+                            <x-moneda :valor="$producto->precio" :class="'mt-auto pt-2 text-[17px] font-extrabold '.($producto->estado ? 'text-texto' : 'text-texto-2')" />
+                        </span>
                     </a>
                 </li>
             @endforeach
         </ul>
-        @if ($productos->hasPages())<div class="mt-4">{{ $productos->links() }}</div>@endif
+        @if ($productos->hasPages())<div class="mt-5">{{ $productos->links() }}</div>@endif
     @endif
 </x-layouts.app>

@@ -40,8 +40,9 @@
         <ul class="panel overflow-hidden">
             @foreach ($usuarios as $usuario)
                 <li class="border-b border-borde last:border-b-0">
-                    <a href="{{ route('admin.usuarios.edit', $usuario) }}" class="flex items-center justify-between gap-4 px-4 py-3 transition-colors hover:bg-superficie-2/60">
-                        <span class="min-w-0">
+                    <a href="{{ route('admin.usuarios.edit', $usuario) }}" class="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-superficie-2/60">
+                        <x-avatar :nombre="$usuario->nombre" :class="$usuario->activo ? '' : 'opacity-50'" />
+                        <span class="min-w-0 flex-1">
                             <span @class(['block truncate font-medium', 'text-texto-2' => ! $usuario->activo])>
                                 {{ $usuario->nombre }}
                                 @if ($usuario->is(auth()->user()))<span class="meta font-normal">(usted)</span>@endif
