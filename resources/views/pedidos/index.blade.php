@@ -114,6 +114,7 @@
                                 <span class="min-w-0">
                                     <span class="block truncate font-medium">{{ $pedido->cliente->nombre }}</span>
                                     <span class="meta hidden md:block">{{ $productos }}</span>
+                                    <x-entrega :pedido="$pedido" class="mt-1" />
                                 </span>
                             </span>
                             <span class="meta col-start-1 row-start-2 md:hidden">#{{ $pedido->numero() }} · {{ $pedido->fecha->format('d/m/Y') }}</span>

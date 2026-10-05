@@ -52,6 +52,8 @@ class PanelController extends Controller
         $activos = Pedido::with(['cliente', 'detalles.producto'])
             ->withSum('detalles as unidades', 'cantidad')
             ->whereIn('id_estado', EstadoPedido::ACTIVOS)
+            ->orderByRaw('fecha_entrega is null')
+            ->orderBy('fecha_entrega')
             ->orderBy('fecha')
             ->orderBy('id_pedido')
             ->get()

@@ -90,6 +90,7 @@ class DemoSeeder extends Seeder
                 'id_emprendedor' => $id,
                 'id_cliente' => $clientes[$indiceCliente]->id_cliente,
                 'fecha' => $fecha,
+                'fecha_entrega' => $this->entregaDemo($diasAtras, $estadoFinal, $fecha),
                 'total' => $lineas->sum('subtotal'),
                 'id_estado' => $estadoFinal,
             ]);
@@ -123,5 +124,21 @@ class DemoSeeder extends Seeder
         \Illuminate\Support\Facades\Storage::disk('public')->put($ruta, file_get_contents($origen));
 
         return $ruta;
+    }
+
+    /** Fecha de entrega de ejemplo: los activos muestran «Atrasado», «Para hoy», «Para mañana» y uno sin fecha. */
+    private function entregaDemo(int $diasAtras, int $estado, \Illuminate\Support\Carbon $fecha): ?string
+    {
+        if (in_array($estado, EstadoPedido::FINALES, true)) {
+            return $fecha->copy()->addDays(2)->toDateString();
+        }
+
+        return match ($diasAtras) {
+            5 => today()->toDateString(),
+            3 => today()->subDay()->toDateString(),
+            2 => today()->addDay()->toDateString(),
+            1 => today()->addDays(4)->toDateString(),
+            default => null,
+        };
     }
 }

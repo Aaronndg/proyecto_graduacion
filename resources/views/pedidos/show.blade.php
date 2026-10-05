@@ -34,6 +34,7 @@
                 <div class="mb-5 flex flex-wrap items-center gap-x-3 gap-y-1">
                     <x-estado-pedido :estado="$pedido->estado" />
                     <span class="text-sm text-texto-2">{{ $pedido->estado->descripcion }}</span>
+                    <x-entrega :pedido="$pedido" />
                 </div>
 
                 <x-progreso-pedido :pedido="$pedido" />

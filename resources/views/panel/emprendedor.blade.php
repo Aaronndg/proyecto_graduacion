@@ -129,6 +129,7 @@
                                                 <span class="meta block">
                                                     #{{ $pedido->numero() }} · {{ $pedido->fecha->diffForHumans() }} · {{ (int) $pedido->unidades }} {{ (int) $pedido->unidades === 1 ? 'producto' : 'productos' }}
                                                 </span>
+                                                <x-entrega :pedido="$pedido" class="mt-1.5" />
                                             </span>
                                         </span>
                                         {{-- Miniaturas de lo que pidió (solo si algún producto tiene foto) --}}

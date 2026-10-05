@@ -69,6 +69,16 @@ class PedidoRequest extends FormRequest
                 Rule::exists('clientes', 'id_cliente')->where('id_emprendedor', $idEmprendedor),
             ],
             'fecha' => ['required', 'date', 'after_or_equal:'.self::fechaMinima($this->route('pedido')), 'before_or_equal:'.self::fechaMaxima()],
+            // Para cuándo es (opcional): no antes del día del pedido y como máximo un año después.
+            'fecha_entrega' => [
+                'nullable', 'date_format:Y-m-d', 'before_or_equal:'.now()->addYear()->toDateString(),
+                function (string $campo, mixed $valor, \Closure $falla) {
+                    $fecha = strtotime(substr((string) $this->input('fecha'), 0, 10));
+                    if ($fecha && strtotime((string) $valor) < $fecha) {
+                        $falla('La entrega no puede ser antes del día en que se hizo el pedido.');
+                    }
+                },
+            ],
             'productos' => ['required', 'array', 'min:1', 'max:50'],
             'productos.*.id_producto' => [
                 'required', 'integer',
@@ -90,6 +100,8 @@ class PedidoRequest extends FormRequest
             'id_cliente.required' => 'Seleccione el cliente del pedido.',
             'fecha.after_or_equal' => 'La fecha del pedido no puede ser de hace más de un año.',
             'fecha.before_or_equal' => 'La fecha del pedido no puede ser más de 6 meses en el futuro.',
+            'fecha_entrega.date_format' => 'Elija una fecha de entrega válida.',
+            'fecha_entrega.before_or_equal' => 'La entrega no puede ser dentro de más de un año.',
             'productos.required' => 'Agregue al menos un producto al pedido.',
             'productos.min' => 'Agregue al menos un producto al pedido.',
             'productos.*.id_producto.exists' => 'Uno de los productos seleccionados no es válido.',

@@ -5,7 +5,7 @@
     <div class="space-y-6">
         <section class="panel p-5" aria-labelledby="titulo-estado">
             <h2 id="titulo-estado" class="sr-only">En qué etapa va su pedido</h2>
-            <div class="mb-5"><x-estado-pedido :estado="$pedido->estado" /></div>
+            <div class="mb-5 flex flex-wrap items-center gap-2"><x-estado-pedido :estado="$pedido->estado" /><x-entrega :pedido="$pedido" /></div>
             <x-progreso-pedido :pedido="$pedido" />
         </section>
 

@@ -26,6 +26,7 @@ class GestorPedidos
             $pedido = Pedido::create([
                 'id_cliente' => $cliente->id_cliente,
                 'fecha' => $datos['fecha'],
+                'fecha_entrega' => $datos['fecha_entrega'] ?? null,
                 'id_estado' => EstadoPedido::NUEVO, // RN-03: estado inicial asignado por el sistema
                 'total' => $this->total($lineas),
             ]);
@@ -59,6 +60,7 @@ class GestorPedidos
             $pedido->update([
                 'id_cliente' => $cliente->id_cliente,
                 'fecha' => $datos['fecha'],
+                'fecha_entrega' => $datos['fecha_entrega'] ?? null,
                 'total' => $this->total($lineas),
             ]);
 

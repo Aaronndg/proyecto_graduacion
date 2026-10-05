@@ -175,6 +175,17 @@ document.querySelectorAll('[data-foto]').forEach((bloque) => {
     });
 });
 
+// «¿Para cuándo es?»: los atajos Hoy / Mañana / Sin fecha llenan el campo de fecha.
+document.querySelectorAll('[data-entrega]').forEach((bloque) => {
+    const campo = bloque.querySelector('input[type="date"]');
+    bloque.querySelectorAll('[data-dia]').forEach((boton) =>
+        boton.addEventListener('click', () => {
+            campo.value = boton.dataset.dia;
+            campo.dispatchEvent(new Event('change', { bubbles: true }));
+        }),
+    );
+});
+
 // Reportes: imprimir o guardar como PDF desde el navegador.
 document.addEventListener('click', (evento) => {
     if (evento.target.closest('[data-imprimir]')) window.print();

@@ -14,12 +14,13 @@ class Pedido extends Model
     protected $table = 'pedidos';
     protected $primaryKey = 'id_pedido';
 
-    protected $fillable = ['fecha', 'total', 'id_cliente', 'id_estado'];
+    protected $fillable = ['fecha', 'fecha_entrega', 'total', 'id_cliente', 'id_estado'];
 
     protected function casts(): array
     {
         return [
             'fecha' => 'datetime',
+            'fecha_entrega' => 'date',
             'total' => 'decimal:2',
         ];
     }
@@ -47,5 +48,28 @@ class Pedido extends Model
     public function numero(): string
     {
         return str_pad((string) $this->id_pedido, 4, '0', STR_PAD_LEFT);
+    }
+
+    /**
+     * Cómo se lee la fecha de entrega: «Para hoy», «Para mañana», «Para el jue 8 oct.» o «Atrasado»
+     * (solo mientras el pedido está activo). tono: atrasado | hoy | pronto | neutro.
+     */
+    public function entrega(): ?array
+    {
+        if (! $this->fecha_entrega) {
+            return null;
+        }
+
+        $dia = $this->fecha_entrega;
+        if (in_array($this->id_estado, EstadoPedido::FINALES, true)) {
+            return ['texto' => 'Entrega: '.$dia->translatedFormat('j M'), 'tono' => 'neutro'];
+        }
+
+        return match (true) {
+            $dia->isToday() => ['texto' => 'Para hoy', 'tono' => 'hoy'],
+            $dia->isPast() => ['texto' => 'Atrasado: era para el '.$dia->translatedFormat('j M'), 'tono' => 'atrasado'],
+            $dia->isTomorrow() => ['texto' => 'Para mañana', 'tono' => 'pronto'],
+            default => ['texto' => 'Para el '.$dia->translatedFormat('D j M'), 'tono' => 'pronto'],
+        };
     }
 }

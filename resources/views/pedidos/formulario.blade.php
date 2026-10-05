@@ -158,9 +158,22 @@
                 @endif
             </section>
 
-            {{-- 3. ¿Cuándo? Normalmente ahora mismo --}}
-            <section class="panel p-5" aria-labelledby="titulo-fecha">
-                <h2 id="titulo-fecha" class="sr-only">Fecha del pedido</h2>
+            {{-- 3. ¿Para cuándo es? (opcional) y cuándo se registró --}}
+            <section class="panel space-y-5 p-5" aria-labelledby="titulo-fecha">
+                <h2 id="titulo-fecha" class="sr-only">Fechas del pedido</h2>
+                @php $entrega = old('fecha_entrega', $pedido->fecha_entrega?->toDateString()); @endphp
+                <div data-entrega>
+                    <label for="fecha_entrega" class="etiqueta">¿Para cuándo es? <span class="font-normal text-texto-2">(opcional)</span></label>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button type="button" class="btn btn-secundario btn-chico" data-dia="{{ today()->toDateString() }}">Hoy</button>
+                        <button type="button" class="btn btn-secundario btn-chico" data-dia="{{ today()->addDay()->toDateString() }}">Mañana</button>
+                        <input id="fecha_entrega" name="fecha_entrega" type="date" value="{{ $entrega }}" min="{{ $pedido->fecha?->toDateString() ?? today()->toDateString() }}"
+                               @class(['campo w-44', 'campo-error' => $errors->has('fecha_entrega')])
+                               @error('fecha_entrega') aria-invalid="true" aria-describedby="fecha_entrega-error" @enderror>
+                        <button type="button" class="btn btn-terciario btn-chico" data-dia="">Sin fecha</button>
+                    </div>
+                    @error('fecha_entrega')<p id="fecha_entrega-error" class="error-campo">{{ $message }}</p>@enderror
+                </div>
                 <details class="group" @if ($fechaAbierta) open @endif>
                     <summary class="flex cursor-pointer list-none flex-wrap items-center gap-x-2 text-sm [&::-webkit-details-marker]:hidden">
                         <x-icono nombre="reloj" clase="size-5 text-texto-2" />

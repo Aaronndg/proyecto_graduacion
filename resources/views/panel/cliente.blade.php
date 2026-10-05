@@ -52,6 +52,7 @@
                                             </span>
                                             <x-moneda :valor="$pedido->total" class="shrink-0 text-sm font-medium" />
                                         </span>
+                                        <x-entrega :pedido="$pedido" class="mt-1.5" />
                                     </a>
                                 </li>
                             @endforeach
