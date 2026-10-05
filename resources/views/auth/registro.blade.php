@@ -2,6 +2,8 @@
 <x-layouts.invitado :titulo="$invitacion ? 'Vea sus pedidos de '.$negocioInvita : 'Crear cuenta'"
                     :pestana="$invitacion ? 'Crear cuenta' : null"
                     :subtitulo="$invitacion ? 'Cree su cuenta y sus pedidos aparecerán aquí.' : null">
+    @include('auth.partials.boton-google', ['codigo' => $invitacion?->codigoFormateado() ?? request('codigo'), 'texto' => 'Crear cuenta con Google'])
+
     <form method="POST" action="{{ route('registro.store') }}" class="space-y-5" novalidate data-envio-unico>
         @csrf
 

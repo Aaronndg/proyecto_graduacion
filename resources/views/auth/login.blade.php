@@ -1,4 +1,6 @@
 <x-layouts.invitado titulo="Iniciar sesión" subtitulo="Ingrese con su correo y contraseña.">
+    @include('auth.partials.boton-google')
+
     <form method="POST" action="{{ route('login.store') }}" class="space-y-5" novalidate data-envio-unico>
         @csrf
         <x-campo nombre="correo" etiqueta="Correo electrónico" tipo="email" autocomplete="username" placeholder="nombre@correo.com" requerido autofocus />

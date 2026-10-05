@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\UsuarioController;
 use App\Http\Controllers\Auth\ContrasenaOlvidadaController;
+use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\Auth\RegistroController;
 use App\Http\Controllers\Auth\SesionController;
 use App\Http\Controllers\ClienteController;
@@ -22,6 +23,12 @@ Route::middleware('guest')->group(function () {
     Route::post('login', [SesionController::class, 'store'])->name('login.store');
     Route::get('registro', [RegistroController::class, 'create'])->middleware('throttle:30,1')->name('registro');
     Route::post('registro', [RegistroController::class, 'store'])->middleware('throttle:10,1')->name('registro.store');
+
+    // «Continuar con Google» (Socialite)
+    Route::get('auth/google', [GoogleController::class, 'redirigir'])->middleware('throttle:20,1')->name('google');
+    Route::get('auth/google/callback', [GoogleController::class, 'volver'])->name('google.volver');
+    Route::get('auth/google/completar', [GoogleController::class, 'completar'])->name('google.completar');
+    Route::post('auth/google/completar', [GoogleController::class, 'guardar'])->middleware('throttle:10,1')->name('google.guardar');
 
     // «¿Olvidó su contraseña?»: enlace por correo (vence a los 60 minutos)
     Route::get('contrasena/olvido', [ContrasenaOlvidadaController::class, 'create'])->name('contrasena.olvido');
