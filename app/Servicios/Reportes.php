@@ -27,6 +27,15 @@ class Reportes
     ) {
     }
 
+    /** El período inmediatamente anterior, de la misma duración (p. ej. los 30 días previos), para comparar. */
+    public function anterior(): self
+    {
+        $dias = (int) $this->desde->copy()->startOfDay()->diffInDays($this->hasta->copy()->startOfDay()) + 1;
+        $hasta = $this->desde->copy()->subDay()->endOfDay();
+
+        return new self($hasta->copy()->subDays($dias - 1)->startOfDay(), $hasta, $this->idEstado);
+    }
+
     /** Pedidos del período, con el filtro de estado si se indicó. */
     public function pedidos(): Builder
     {

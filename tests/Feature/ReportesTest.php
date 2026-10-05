@@ -187,4 +187,18 @@ class ReportesTest extends TestCase
         $this->assertStringContainsString("'=HYPERLINK", $csv); // no se exporta como fórmula
         $this->assertStringNotContainsString('2026-07', $csv);
     }
+
+    public function test_compara_con_el_periodo_anterior_de_la_misma_duracion(): void
+    {
+        // Septiembre 1–10 (10 días) contra agosto 22–31
+        $this->pedido('2026-09-05 10:00:00', EstadoPedido::ENTREGADO, [[$this->pastel, 3]]);   // Q 300
+        $this->pedido('2026-08-25 10:00:00', EstadoPedido::ENTREGADO, [[$this->pastel, 2]]);   // Q 200
+        $this->pedido('2026-08-10 10:00:00', EstadoPedido::ENTREGADO, [[$this->pastel, 9]]);   // fuera de ambos
+
+        $this->actingAs($this->emprendedor)->get('/reportes?desde=2026-09-01&hasta=2026-09-10')
+            ->assertOk()
+            ->assertSee('▲ 50 %')
+            ->assertSee('Más que en el período anterior (del 22 ago. al 31 ago.), cuando vendió')
+            ->assertSee('Q 200.00');
+    }
 }

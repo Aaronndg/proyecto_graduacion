@@ -84,6 +84,33 @@
         @else
             <p class="text-xl font-semibold tracking-tight sm:text-2xl">Sin ventas en este período</p>
         @endif
+
+        {{-- Comparación con el período anterior de la misma duración, en palabras --}}
+        @php
+            $antes = $anterior['monto_vendido'];
+            $ahora = $resumen['monto_vendido'];
+            $fechasAntes = 'del '.$anterior['desde']->translatedFormat('j M').' al '.$anterior['hasta']->translatedFormat('j M');
+            $cambio = $antes > 0 ? round(($ahora - $antes) / $antes * 100) : null;
+        @endphp
+        @if ($antes > 0 || $ahora > 0)
+            <p class="mt-2 flex flex-wrap items-center gap-2 text-sm">
+                @if ($cambio === null)
+                    <span class="insignia bg-emerald-50 text-emerald-700">Nuevo</span>
+                    <span class="text-texto-2">En el período anterior ({{ $fechasAntes }}) no tuvo ventas.</span>
+                @elseif ($cambio == 0)
+                    <span class="insignia bg-superficie-2 text-texto-2">= Igual</span>
+                    <span class="text-texto-2">Vendió lo mismo que en el período anterior ({{ $fechasAntes }}).</span>
+                @else
+                    <span @class(['insignia', 'bg-emerald-50 text-emerald-700' => $cambio > 0, 'bg-red-50 text-red-700' => $cambio < 0])>
+                        {{ $cambio > 0 ? '▲' : '▼' }} {{ abs($cambio) }} %
+                    </span>
+                    <span class="text-texto-2">
+                        {{ $cambio > 0 ? 'Más' : 'Menos' }} que en el período anterior ({{ $fechasAntes }}), cuando vendió
+                        <span class="font-bold text-texto tabular-nums">Q {{ number_format($antes, 2) }}</span>.
+                    </span>
+                @endif
+            </p>
+        @endif
         <p class="mt-1 text-sm text-texto-2">
             {{ collect([
                 $resumen['ventas'] ? 'Venta promedio Q '.number_format($resumen['ticket_promedio'], 2) : null,

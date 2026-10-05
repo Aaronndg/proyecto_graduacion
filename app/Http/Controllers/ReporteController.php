@@ -14,9 +14,12 @@ class ReporteController extends Controller
     public function index(ReporteRequest $request): View
     {
         $reportes = $request->reportes();
+        $anterior = $reportes->anterior();
 
         return view('reportes.index', [
             'resumen' => $reportes->resumen(),
+            // Comparación con el período anterior de la misma duración
+            'anterior' => $anterior->resumen() + ['desde' => $anterior->desde(), 'hasta' => $anterior->hasta()],
             'porEstado' => $reportes->porEstado(),
             'ventas' => $reportes->ventasPorPeriodo(),
             'porMes' => $reportes->agrupaPorMes(),
