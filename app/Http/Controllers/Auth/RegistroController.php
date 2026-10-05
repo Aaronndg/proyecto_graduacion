@@ -73,8 +73,8 @@ class RegistroController extends Controller
         $request->session()->regenerate();
 
         $mensaje = $codigo
-            ? '¡Bienvenido! Su cuenta fue creada y vinculada con sus pedidos.'
-            : '¡Bienvenido! Su cuenta fue creada correctamente.';
+            ? 'Su cuenta está lista. Ya puede ver sus pedidos.'
+            : 'Su cuenta está lista.';
 
         return redirect()->route('panel')->with('exito', $mensaje);
     }

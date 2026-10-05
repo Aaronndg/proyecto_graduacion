@@ -1,9 +1,8 @@
-@props(['icono' => 'pedido', 'titulo', 'texto' => null])
-<div class="px-5 py-14 text-center">
-    <span class="mx-auto flex size-14 items-center justify-center rounded-2xl bg-stone-100 text-stone-400">
-        <x-icono :nombre="$icono" clase="size-7" />
-    </span>
-    <p class="mt-4 font-semibold text-stone-800">{{ $titulo }}</p>
-    @if ($texto)<p class="mx-auto mt-1 max-w-sm text-sm text-stone-500">{{ $texto }}</p>@endif
+@props(['icono' => 'pedido', 'titulo', 'texto' => null, 'ilustracion' => 'libreta'])
+{{-- Estado vacío: ilustración propia, un título y la acción para salir de él. --}}
+<div class="flex flex-col items-center px-5 py-10 text-center">
+    <x-ilustracion :nombre="$ilustracion" class="mb-3" />
+    <p class="font-bold">{{ $titulo }}</p>
+    @if ($texto)<p class="mx-auto mt-1 max-w-sm text-sm text-texto-2">{{ $texto }}</p>@endif
     @if ($slot->isNotEmpty())<div class="mt-5">{{ $slot }}</div>@endif
 </div>

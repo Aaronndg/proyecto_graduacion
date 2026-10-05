@@ -107,7 +107,7 @@
                 <h2 id="titulo-productos" class="titulo-seccion px-5 pt-4 pb-2">Productos</h2>
 
                 @if ($productos->isEmpty())
-                    <x-vacio icono="producto" titulo="No tiene productos activos" texto="Registre lo que vende en su catálogo para poder crear pedidos.">
+                    <x-vacio ilustracion="caja" titulo="No tiene productos activos" texto="Registre lo que vende en su catálogo para poder crear pedidos.">
                         <a href="{{ route('productos.create') }}" class="btn btn-primario">Registrar producto</a>
                     </x-vacio>
                 @else
