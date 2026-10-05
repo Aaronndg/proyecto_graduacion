@@ -44,6 +44,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware('rol:emprendedor')->group(function () {
         Route::resource('clientes', ClienteController::class);
         Route::resource('productos', ProductoController::class)->except('show');
+        Route::patch('productos/{producto}/disponible', [ProductoController::class, 'alternarDisponible'])->name('productos.disponible');
         Route::resource('pedidos', PedidoController::class)->except('destroy');
         Route::post('pedidos/{pedido}/estado', [PedidoController::class, 'cambiarEstado'])->name('pedidos.estado');
         Route::get('seguimiento', SeguimientoController::class)->name('seguimiento');

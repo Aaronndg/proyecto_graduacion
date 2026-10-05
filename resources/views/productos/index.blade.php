@@ -45,7 +45,7 @@
         {{-- Catálogo: cada producto es una tarjeta con su foto que abre la edición --}}
         <ul class="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
             @foreach ($productos as $producto)
-                <li>
+                <li class="relative">
                     <a href="{{ route('productos.edit', $producto) }}" class="group flex h-full flex-col overflow-hidden rounded-2xl bg-superficie shadow-suave transition hover:-translate-y-0.5 hover:shadow-flotante">
                         <span @class(['relative block aspect-[4/3] overflow-hidden', 'opacity-60 grayscale' => ! $producto->estado])>
                             <x-foto-producto :producto="$producto" class="transition duration-300 group-hover:scale-[1.03]" icono="size-12" />
@@ -53,12 +53,25 @@
                         <span class="flex flex-1 flex-col gap-0.5 p-3 sm:p-4">
                             <span class="flex items-start justify-between gap-2">
                                 <span @class(['font-bold leading-snug', 'text-texto-2' => ! $producto->estado])>{{ $producto->nombre }}</span>
-                                @unless ($producto->estado)<span class="insignia shrink-0 bg-superficie-2 text-texto-2">Inactivo</span>@endunless
                             </span>
                             @if ($producto->descripcion)<span class="meta line-clamp-2">{{ $producto->descripcion }}</span>@endif
                             <x-moneda :valor="$producto->precio" :class="'mt-auto pt-2 text-[17px] font-extrabold '.($producto->estado ? 'text-texto' : 'text-texto-2')" />
                         </span>
                     </a>
+                    {{-- Disponible / pausado con un toque, sin abrir el producto --}}
+                    <form method="POST" action="{{ route('productos.disponible', $producto) }}" class="absolute top-2 right-2" data-envio-unico>
+                        @csrf
+                        @method('PATCH')
+                        <button type="submit" role="switch" aria-checked="{{ $producto->estado ? 'true' : 'false' }}"
+                                aria-label="{{ $producto->estado ? 'Pausar' : 'Activar' }} {{ $producto->nombre }}"
+                                title="{{ $producto->estado ? 'Disponible: toque para pausarlo' : 'Pausado: toque para activarlo' }}"
+                                class="flex cursor-pointer items-center gap-1.5 rounded-full bg-white/95 py-1 pr-2.5 pl-1 text-xs font-extrabold text-texto shadow-flotante backdrop-blur transition active:translate-y-px">
+                            <span @class(['relative h-4 w-7 rounded-full transition-colors', 'bg-emerald-500' => $producto->estado, 'bg-stone-300' => ! $producto->estado])>
+                                <span @class(['absolute top-0.5 size-3 rounded-full bg-white shadow transition-all', 'left-3.5' => $producto->estado, 'left-0.5' => ! $producto->estado])></span>
+                            </span>
+                            {{ $producto->estado ? 'Disponible' : 'Pausado' }}
+                        </button>
+                    </form>
                 </li>
             @endforeach
         </ul>

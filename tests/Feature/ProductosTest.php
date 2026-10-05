@@ -85,4 +85,22 @@ class ProductosTest extends TestCase
         $this->delete("/productos/{$libre->id_producto}")->assertRedirect('/productos');
         $this->assertModelMissing($libre);
     }
+
+    public function test_se_pausa_y_activa_desde_el_catalogo(): void
+    {
+        $producto = Producto::factory()->create(['id_emprendedor' => $this->emprendedor->id_usuario, 'nombre' => 'Brownies', 'estado' => true]);
+
+        $this->get('/productos')->assertSee('Pausar Brownies');
+        $this->from('/productos')->patch("/productos/{$producto->id_producto}/disponible")
+            ->assertRedirect('/productos')
+            ->assertSessionHas('exito', '«Brownies» ya no aparece al crear pedidos.');
+        $this->assertFalse($producto->fresh()->estado);
+
+        $this->from('/productos')->patch("/productos/{$producto->id_producto}/disponible");
+        $this->assertTrue($producto->fresh()->estado);
+
+        // Solo sobre sus propios productos (RN-10)
+        $ajeno = Producto::factory()->create();
+        $this->patch("/productos/{$ajeno->id_producto}/disponible")->assertNotFound();
+    }
 }

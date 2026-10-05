@@ -57,6 +57,16 @@ class ProductoController extends Controller
         return redirect()->route('productos.index')->with('exito', 'Producto actualizado correctamente.');
     }
 
+    /** Activa o desactiva el producto con un toque desde el catálogo (sin abrir el formulario). */
+    public function alternarDisponible(Producto $producto): RedirectResponse
+    {
+        $producto->update(['estado' => ! $producto->estado]);
+
+        return back()->with('exito', $producto->estado
+            ? "«{$producto->nombre}» está disponible otra vez."
+            : "«{$producto->nombre}» ya no aparece al crear pedidos.");
+    }
+
     public function destroy(Producto $producto): RedirectResponse
     {
         // Un producto usado en pedidos se desactiva en lugar de eliminarse, para conservar el historial.
