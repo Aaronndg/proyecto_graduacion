@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\ContrasenaOlvidadaController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\Auth\RegistroController;
 use App\Http\Controllers\Auth\SesionController;
+use App\Http\Controllers\CatalogoController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\MiPedidoController;
 use App\Http\Controllers\SeguimientoController;
@@ -17,6 +18,9 @@ use App\Http\Controllers\ReporteController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/panel');
+
+// Catálogo para compartir: página pública del negocio (sin iniciar sesión)
+Route::get('catalogo/{catalogo}', [CatalogoController::class, 'show'])->middleware('throttle:60,1')->name('catalogo');
 
 Route::middleware('guest')->group(function () {
     Route::get('login', [SesionController::class, 'create'])->name('login');

@@ -187,6 +187,38 @@ document.querySelectorAll('[data-entrega]').forEach((bloque) => {
     );
 });
 
+// Catálogo público: elegir cantidades y armar el mensaje de WhatsApp con el pedido (no se guarda nada).
+document.querySelectorAll('[data-catalogo]').forEach((catalogo) => {
+    const barra = document.querySelector('[data-barra-pedido]');
+    if (!barra) return;
+    const formato = new Intl.NumberFormat('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const actualizar = () => {
+        let unidades = 0;
+        let total = 0;
+        const lineas = [];
+        catalogo.querySelectorAll('[data-producto-catalogo]').forEach((p) => {
+            const n = parseInt(p.querySelector('[data-cantidad]').textContent, 10) || 0;
+            if (!n) return;
+            unidades += n;
+            total += n * parseFloat(p.dataset.precio);
+            lineas.push(`• ${n} × ${p.dataset.nombre}`);
+        });
+        barra.classList.toggle('hidden', unidades === 0);
+        barra.querySelector('[data-resumen-cantidad]').textContent = `${unidades} ${unidades === 1 ? 'producto' : 'productos'}`;
+        barra.querySelector('[data-resumen-total]').textContent = `Q ${formato.format(total)}`;
+        const mensaje = `Hola ${catalogo.dataset.negocio}, quiero hacer este pedido:\n${lineas.join('\n')}\nTotal: Q ${formato.format(total)}\nMi nombre es: `;
+        barra.querySelector('[data-enviar-pedido]').href = `https://wa.me/${catalogo.dataset.whatsapp}?text=${encodeURIComponent(mensaje)}`;
+    };
+    catalogo.addEventListener('click', (evento) => {
+        const boton = evento.target.closest('[data-mas], [data-menos]');
+        if (!boton) return;
+        const salida = boton.closest('[data-producto-catalogo]').querySelector('[data-cantidad]');
+        const n = (parseInt(salida.textContent, 10) || 0) + ('mas' in boton.dataset ? 1 : -1);
+        salida.textContent = Math.max(0, Math.min(99, n));
+        actualizar();
+    });
+});
+
 // Reportes: imprimir o guardar como PDF desde el navegador.
 document.addEventListener('click', (evento) => {
     if (evento.target.closest('[data-imprimir]')) window.print();

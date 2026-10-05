@@ -4,6 +4,7 @@
 @endphp
 <x-layouts.app titulo="Productos">
     <x-slot:acciones>
+        <button type="button" class="btn btn-secundario" data-abrir-dialogo="dialogo-catalogo"><x-icono nombre="compartir" clase="size-4" /> <span class="hidden sm:inline">Compartir catálogo</span><span class="sr-only sm:hidden">Compartir catálogo</span></button>
         <a href="{{ route('productos.create') }}" class="btn btn-primario"><x-icono nombre="mas" clase="size-4" /> <span>Nuevo<span class="hidden sm:inline"> producto</span></span></a>
     </x-slot:acciones>
 
@@ -77,4 +78,34 @@
         </ul>
         @if ($productos->hasPages())<div class="mt-5">{{ $productos->links() }}</div>@endif
     @endif
+
+    {{-- Compartir el catálogo público con los clientes --}}
+    @php
+        $yo = auth()->user();
+        $enlace = $yo->enlaceCatalogo();
+        $compartir = 'https://wa.me/?text='.rawurlencode('Vea nuestros productos y haga su pedido aquí: '.$enlace);
+    @endphp
+    <dialog id="dialogo-catalogo" class="dialogo m-auto w-[calc(100%-2rem)] max-w-md rounded-2xl border border-borde bg-superficie p-0 text-texto shadow-flotante" aria-labelledby="catalogo-titulo">
+        <div class="p-6">
+            <h2 id="catalogo-titulo" class="titulo-seccion">Compartir su catálogo</h2>
+            <p class="mt-1 text-sm text-texto-2">Sus clientes ven sus productos activos con foto y precio, eligen y le envían el pedido por WhatsApp. Usted lo registra en NEXO como siempre.</p>
+
+            @unless ($yo->telefonoNegocio())
+                <p class="mt-4 rounded-xl bg-oro-suave px-4 py-3 text-sm text-oro-texto">
+                    Para que puedan pedirle por WhatsApp, <a href="{{ route('perfil.edit') }}" class="font-bold underline">agregue el WhatsApp de su negocio</a>.
+                </p>
+            @endunless
+
+            <div class="mt-5 flex items-center gap-2 rounded-xl bg-superficie-2 p-2 pl-3">
+                <span class="min-w-0 flex-1 truncate text-sm font-semibold select-all">{{ $enlace }}</span>
+                <button type="button" class="btn btn-secundario btn-chico" data-copiar="{{ $enlace }}">Copiar</button>
+            </div>
+
+            <div class="mt-5 flex flex-col gap-2 sm:flex-row">
+                <a href="{{ $compartir }}" target="_blank" rel="noopener" class="btn btn-whatsapp flex-1"><x-icono nombre="whatsapp" clase="size-5" /> Enviar por WhatsApp</a>
+                <a href="{{ $enlace }}" target="_blank" rel="noopener" class="btn btn-secundario flex-1">Ver mi catálogo</a>
+            </div>
+            <button type="button" class="btn btn-terciario mt-3 w-full" data-cerrar-dialogo>Cerrar</button>
+        </div>
+    </dialog>
 </x-layouts.app>

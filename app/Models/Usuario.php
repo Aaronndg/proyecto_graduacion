@@ -11,6 +11,7 @@ use App\Notifications\RestablecerContrasena;
 use App\Support\WhatsApp;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Notifications\Notifiable;
 
 class Usuario extends Authenticatable
@@ -65,6 +66,27 @@ class Usuario extends Authenticatable
         if ($anterior) {
             Storage::disk('public')->delete($anterior);
         }
+    }
+
+    /** Dirección pública del catálogo; la primera vez se crea a partir del nombre del negocio (dulces-maria, dulces-maria-2…). */
+    public function enlaceCatalogo(): string
+    {
+        if (! ($this->attributes['catalogo'] ?? null)) {
+            $base = Str::slug($this->nombreNegocio()) ?: 'negocio';
+            $slug = $base;
+            for ($n = 2; static::where('catalogo', $slug)->exists(); $n++) {
+                $slug = $base.'-'.$n;
+            }
+            $this->forceFill(['catalogo' => $slug])->save();
+        }
+
+        return route('catalogo', $this->catalogo);
+    }
+
+    /** WhatsApp del negocio (o null), sin fallar si el modelo se cargó sin esa columna. */
+    public function telefonoNegocio(): ?string
+    {
+        return $this->attributes['telefono'] ?? null;
     }
 
     /** Enlace para que un cliente le escriba al negocio por WhatsApp, con un saludo ya escrito. */
