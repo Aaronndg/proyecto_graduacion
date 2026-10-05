@@ -2,7 +2,10 @@
     <form method="POST" action="{{ route('login.store') }}" class="space-y-5" novalidate data-envio-unico>
         @csrf
         <x-campo nombre="correo" etiqueta="Correo electrónico" tipo="email" autocomplete="username" placeholder="nombre@correo.com" requerido autofocus />
-        <x-campo nombre="contrasena" etiqueta="Contraseña" tipo="password" autocomplete="current-password" requerido />
+        <div>
+            <x-campo nombre="contrasena" etiqueta="Contraseña" tipo="password" autocomplete="current-password" requerido />
+            <a href="{{ route('contrasena.olvido') }}" class="enlace mt-2 inline-block text-sm">¿Olvidó su contraseña?</a>
+        </div>
 
         <button type="submit" class="btn btn-primario w-full" data-texto-envio="Ingresando…">Iniciar sesión</button>
     </form>

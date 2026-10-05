@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\UsuarioController;
+use App\Http\Controllers\Auth\ContrasenaOlvidadaController;
 use App\Http\Controllers\Auth\RegistroController;
 use App\Http\Controllers\Auth\SesionController;
 use App\Http\Controllers\ClienteController;
@@ -21,6 +22,12 @@ Route::middleware('guest')->group(function () {
     Route::post('login', [SesionController::class, 'store'])->name('login.store');
     Route::get('registro', [RegistroController::class, 'create'])->middleware('throttle:30,1')->name('registro');
     Route::post('registro', [RegistroController::class, 'store'])->middleware('throttle:10,1')->name('registro.store');
+
+    // «¿Olvidó su contraseña?»: enlace por correo (vence a los 60 minutos)
+    Route::get('contrasena/olvido', [ContrasenaOlvidadaController::class, 'create'])->name('contrasena.olvido');
+    Route::post('contrasena/olvido', [ContrasenaOlvidadaController::class, 'store'])->middleware('throttle:5,1')->name('contrasena.enviar');
+    Route::get('contrasena/nueva/{token}', [ContrasenaOlvidadaController::class, 'edit'])->name('contrasena.nueva');
+    Route::post('contrasena/nueva', [ContrasenaOlvidadaController::class, 'update'])->middleware('throttle:10,1')->name('contrasena.guardar');
 });
 
 Route::middleware('auth')->group(function () {

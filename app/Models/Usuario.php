@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\Notifications\RestablecerContrasena;
 use Illuminate\Notifications\Notifiable;
 
 class Usuario extends Authenticatable
@@ -33,6 +34,22 @@ class Usuario extends Authenticatable
     public function getAuthPasswordName(): string
     {
         return 'contrasena';
+    }
+
+    /** «¿Olvidó su contraseña?»: el correo de la cuenta está en la columna «correo». */
+    public function getEmailForPasswordReset(): string
+    {
+        return $this->correo;
+    }
+
+    public function routeNotificationForMail(): string
+    {
+        return $this->correo;
+    }
+
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new RestablecerContrasena($token));
     }
 
     public function rol(): BelongsTo
