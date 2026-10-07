@@ -22,7 +22,7 @@
                     <a href="{{ $enlace($clave) }}" @if ($actual) aria-current="page" @endif
                        @class([
                            'flex min-h-10 items-center rounded-xl px-4 text-sm font-extrabold whitespace-nowrap relieve transition active:translate-y-px',
-                           'bg-marca text-white' => $actual,
+                           'bg-marca text-tinta-oro' => $actual,
                            'bg-superficie text-texto-2 hover:text-marca' => ! $actual,
                        ])>{{ $texto }}</a>
                 </li>
@@ -66,7 +66,7 @@
                         <button type="submit" role="switch" aria-checked="{{ $producto->estado ? 'true' : 'false' }}"
                                 aria-label="{{ $producto->estado ? 'Pausar' : 'Activar' }} {{ $producto->nombre }}"
                                 title="{{ $producto->estado ? 'Disponible: toque para pausarlo' : 'Pausado: toque para activarlo' }}"
-                                class="flex cursor-pointer items-center gap-1.5 rounded-full bg-white/95 py-1 pr-2.5 pl-1 text-xs font-extrabold text-texto shadow-flotante backdrop-blur transition active:translate-y-px">
+                                class="flex cursor-pointer items-center gap-1.5 rounded-full bg-[#16171B]/85 py-1 pr-2.5 pl-1 text-xs font-extrabold text-texto ring-1 ring-white/10 shadow-flotante backdrop-blur transition active:translate-y-px">
                             <span @class(['relative h-4 w-7 rounded-full transition-colors', 'bg-emerald-500' => $producto->estado, 'bg-stone-300' => ! $producto->estado])>
                                 <span @class(['absolute top-0.5 size-3 rounded-full bg-white shadow transition-all', 'left-3.5' => $producto->estado, 'left-0.5' => ! $producto->estado])></span>
                             </span>

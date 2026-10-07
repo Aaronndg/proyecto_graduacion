@@ -129,7 +129,7 @@
                                             <span class="line-clamp-2 font-bold">{{ $producto->nombre }}</span>
                                             <span class="meta block"><x-moneda :valor="$catalogo[$producto->id_producto]['precio']" /></span>
                                         </span>
-                                        <span class="absolute top-1.5 right-1.5 flex size-7 items-center justify-center rounded-full bg-oro text-sm font-extrabold text-stone-950 shadow-md group-aria-pressed:bg-marca group-aria-pressed:text-white" data-ficha-cantidad>+</span>
+                                        <span class="absolute top-1.5 right-1.5 flex size-7 items-center justify-center rounded-full bg-oro text-sm font-extrabold text-tinta-oro shadow-md group-aria-pressed:bg-marca group-aria-pressed:text-tinta-oro" data-ficha-cantidad>+</span>
                                     </button>
                                 </li>
                             @endforeach

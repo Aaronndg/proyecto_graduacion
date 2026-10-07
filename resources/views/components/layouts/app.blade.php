@@ -26,17 +26,17 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <meta name="theme-color" content="#0B2452">
+    <meta name="theme-color" content="#0D0E11">
     <title>{{ $titulo }} · {{ config('app.name') }}</title>
     @include('components.layouts.partials.fuentes')
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="h-full font-sans antialiased">
-    <a href="#contenido" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-lg focus:bg-white focus:px-3 focus:py-2 focus:shadow-flotante">Saltar al contenido</a>
+    <a href="#contenido" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-lg focus:bg-superficie focus:text-texto focus:px-3 focus:py-2 focus:shadow-flotante">Saltar al contenido</a>
 
     <div class="flex min-h-full flex-col">
         {{-- ===== Franja azul: marca, búsqueda, «Crear pedido», cuenta y el menú (escritorio) ===== --}}
-        <header class="banda bg-marca pt-[env(safe-area-inset-top)] text-white print:hidden">
+        <header class="banda bg-noche/90 border-b border-white/[0.06] backdrop-blur pt-[env(safe-area-inset-top)] text-white print:hidden">
             <div @class(['mx-auto px-4 sm:px-6', 'max-w-[1200px] lg:px-10' => ! $esCliente, 'max-w-3xl' => $esCliente])>
                 <div class="flex h-16 items-center gap-4">
                     <a href="{{ route('panel') }}" class="shrink-0 rounded-xl"><x-marca claro :detalle="$usuario->negocio" /></a>
@@ -46,7 +46,7 @@
                             <label for="buscar-global" class="sr-only">Buscar pedidos</label>
                             <x-icono nombre="buscar" clase="pointer-events-none absolute top-1/2 left-3.5 size-5 -translate-y-1/2 text-texto-2" />
                             <input id="buscar-global" name="buscar" type="search" placeholder="Buscar pedido o cliente…" value="{{ request()->routeIs('pedidos.index') ? request('buscar') : '' }}"
-                                   class="h-10 w-full rounded-xl border-0 bg-white pr-3 pl-11 text-sm text-texto placeholder:text-texto-2 focus:ring-3 focus:ring-oro/60 focus:outline-none">
+                                   class="h-10 w-full rounded-xl border-0 bg-superficie pr-3 pl-11 ring-1 ring-white/10 text-sm text-texto placeholder:text-texto-2 focus:ring-3 focus:ring-oro/60 focus:outline-none">
                         </form>
                     @endif
 
@@ -58,7 +58,7 @@
                         <details class="menu relative" data-menu>
                             <summary class="flex cursor-pointer items-center gap-2 rounded-full p-1 text-sm font-bold text-white hover:bg-white/10 sm:pl-3">
                                 <span class="hidden sm:inline">{{ strtok($usuario->nombre, ' ') }}</span>
-                                <span class="flex size-9 items-center justify-center rounded-full bg-oro text-[13px] font-extrabold text-stone-950">{{ $usuario->iniciales() }}</span>
+                                <span class="flex size-9 items-center justify-center rounded-full bg-oro text-[13px] font-extrabold text-tinta-oro">{{ $usuario->iniciales() }}</span>
                                 <span class="sr-only">Abrir menú de la cuenta</span>
                             </summary>
                             <div class="menu-lista text-texto">
@@ -82,7 +82,7 @@
                         <label for="buscar-movil" class="sr-only">Buscar pedidos</label>
                         <x-icono nombre="buscar" clase="pointer-events-none absolute top-5 left-3.5 size-5 -translate-y-1/2 text-texto-2" />
                         <input id="buscar-movil" name="buscar" type="search" placeholder="Buscar pedido o cliente…"
-                               class="h-10 w-full rounded-xl border-0 bg-white pr-3 pl-11 text-base text-texto placeholder:text-texto-2 focus:ring-3 focus:ring-oro/60 focus:outline-none">
+                               class="h-10 w-full rounded-xl border-0 bg-superficie pr-3 pl-11 ring-1 ring-white/10 text-base text-texto placeholder:text-texto-2 focus:ring-3 focus:ring-oro/60 focus:outline-none">
                     </form>
                 @endif
 
@@ -93,8 +93,8 @@
                             <a href="{{ route($item['ruta']) }}" @if ($item['actual']) aria-current="page" @endif
                                @class([
                                    'flex items-center gap-2 rounded-xl px-3.5 py-2 text-sm font-bold transition-colors',
-                                   'bg-white text-marca' => $item['actual'],
-                                   'text-stone-300 hover:bg-white/10 hover:text-white' => ! $item['actual'],
+                                   'bg-linear-to-b from-oro-claro via-oro to-[#C4952F] text-tinta-oro shadow-[inset_0_1px_0_rgb(255_255_255/0.5),0_2px_0_#8A6420]' => $item['actual'],
+                                   'text-stone-600 hover:bg-white/10 hover:text-white' => ! $item['actual'],
                                ])>
                                 <x-icono :nombre="$item['icono']" clase="size-5" />
                                 {{ $item['texto'] }}
@@ -119,7 +119,7 @@
                             <nav aria-label="Ruta" class="mb-1 text-sm font-bold text-texto-2">
                                 @foreach ($ruta as $texto => $url)
                                     <a href="{{ $url }}" class="hover:text-marca hover:underline">{{ $texto }}</a>
-                                    <span aria-hidden="true" class="mx-1 text-stone-300">/</span>
+                                    <span aria-hidden="true" class="mx-1 text-stone-600">/</span>
                                 @endforeach
                             </nav>
                         @endif

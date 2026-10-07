@@ -6,8 +6,8 @@
         'bg-marca-100 text-marca',
         'bg-emerald-50 text-emerald-700',
         'bg-red-50 text-red-700',
-        'bg-[#ECE6F5] text-[#4B3A73]',
-        'bg-[#E3F1F3] text-[#1F5560]',
+        'bg-[#221E33] text-[#B9A8F0]',
+        'bg-[#132A2E] text-[#7FD3DF]',
     ];
     $palabras = preg_split('/\s+/', trim($nombre));
     $iniciales = mb_strtoupper(mb_substr($palabras[0] ?? '', 0, 1).mb_substr(count($palabras) > 1 ? end($palabras) : '', 0, 1));

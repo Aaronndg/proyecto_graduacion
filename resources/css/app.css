@@ -5,113 +5,120 @@
 @source '../**/*.js';
 
 /*
- * Design System de NEXO (estilo «Oro tejido»).
- * Azul profundo del banner y del logo para la marca y la navegación, oro para la acción principal,
- * grises cálidos de fondo y una franja tejida (huipil) en los mismos tonos. Plus Jakarta Sans,
- * geométrica y elegante como el logotipo, en títulos y texto (desde Google Fonts).
- * Las escalas stone, marca, red, emerald, amber y sky se redefinen con esta paleta, así todas
- * las vistas hablan el mismo idioma visual; los componentes usan los nombres semánticos.
+ * Design System de NEXO: «Bento negro y oro» (versión 3D).
+ * Colores tomados del banner: negro azulado de fondo, tarjetas gris carbón, dorado para las acciones,
+ * champán (el color de la caja) para detalles y un azul eléctrico mínimo (lo «nuevo» y la luz de fondo).
+ * Tema oscuro: las escalas se redefinen para leerse sobre negro. En stone, los números bajos son
+ * superficies oscuras y los altos, textos claros; en red/emerald/amber/sky/marca, el 50–200 es un fondo
+ * tenue y el 600–800 un texto claro, así las combinaciones «fondo 50 + texto 700» siguen funcionando.
+ * Relieve 3D sutil: luz arriba, canto oscuro abajo y sombra profunda. Outfit (títulos) + Manrope (texto).
  */
 @theme {
-    --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, 'Segoe UI', Roboto, sans-serif;
-    --font-display: 'Plus Jakarta Sans', ui-sans-serif, system-ui, 'Segoe UI', Roboto, sans-serif;
+    --font-sans: 'Manrope', ui-sans-serif, system-ui, 'Segoe UI', Roboto, sans-serif;
+    --font-display: 'Outfit', 'Manrope', ui-sans-serif, system-ui, sans-serif;
 
-    /* Grises de la paleta (B3B3B3, CFCED0) con un toque cálido; el 900 es el azul noche */
-    --color-stone-50: #F5F4F1;   /* fondo de la página */
-    --color-stone-100: #EFEDE8;  /* superficie secundaria */
-    --color-stone-200: #E3E1DC;  /* bordes de separación */
-    --color-stone-300: #CFCED0;
-    --color-stone-400: #8C8F96;  /* borde de campos (3.3:1) */
-    --color-stone-500: #5B6270;  /* texto secundario (6:1) */
-    --color-stone-600: #4A505B;
-    --color-stone-700: #343A45;
-    --color-stone-800: #1F2833;
-    --color-stone-900: #0A1E45;  /* azul noche: avisos y texto fuerte */
-    --color-stone-950: #071530;
+    /* Neutros sobre negro (de oscuro a claro) */
+    --color-stone-50: #0D0E11;
+    --color-stone-100: #1F2026;
+    --color-stone-200: #2A2B31;
+    --color-stone-300: #3A3B42;
+    --color-stone-400: #6E6F78;
+    --color-stone-500: #9A9AA3;
+    --color-stone-600: #B5B5BC;
+    --color-stone-700: #D0D0D5;
+    --color-stone-800: #E4E4E8;
+    --color-stone-900: #F3F1EC;
+    --color-stone-950: #FFFFFF;
 
-    /* Azul de marca (del banner y del logo NEXO): navegación, enlaces, foco y selección.
-       El 500 es el azul brillante del logo, oscurecido para leerse como texto (5:1). */
-    --color-marca-50: #EEF3FC;
-    --color-marca-100: #E1EAF9;
-    --color-marca-200: #C3D5F3;
-    --color-marca-300: #94B4EA;
-    --color-marca-400: #4F86E6;
-    --color-marca-500: #1C64D8;
-    --color-marca-600: #0B2452;
-    --color-marca-700: #071B3D;
-    --color-marca-800: #061530;
-    --color-marca-900: #040F24;
-    --color-marca-950: #020916;
-    --color-logo: #2B7CFA;
+    /* «Marca» = dorado del banner: acciones, navegación activa, enlaces y foco */
+    --color-marca-50: #221D12;
+    --color-marca-100: #2E2617;
+    --color-marca-200: #4A3B20;
+    --color-marca-300: #8C6B2E;
+    --color-marca-400: #C9973E;
+    --color-marca-500: #F2D18B;
+    --color-marca-600: #E0B04F;
+    --color-marca-700: #C4952F;
+    --color-marca-800: #9C7426;
+    --color-marca-900: #6E5119;
+    --color-marca-950: #3D2D0E;
 
-    /* Oro (C18D21): la acción principal, siempre con letra oscura (6:1) */
-    --color-oro: #C18D21;
-    --color-oro-hover: #A87A1A;
-    --color-oro-suave: #F6EBD2;
-    --color-oro-texto: #7A5512;
+    --color-oro: #E0B04F;
+    --color-oro-claro: #F2D18B;
+    --color-oro-hover: #C4952F;
+    --color-oro-suave: #2E2617;
+    --color-oro-texto: #F2D18B;
+    --color-champan: #EDD8BA;
+    --color-azul: #4C8DFF;
+    --color-tinta-oro: #14100A;   /* texto oscuro sobre dorado (10:1) */
 
-    /* Estados: Nuevo azul, En proceso oro, Listo verde, Cancelado terracota */
-    --color-sky-50: #E8F0FD;
-    --color-sky-100: #D3E2FB;
-    --color-sky-500: #2B6FE0;
-    --color-sky-600: #1D5BC4;
-    --color-sky-700: #1A4FA8;
-    --color-amber-50: #F8EEDA;
-    --color-amber-100: #F2E1BC;
-    --color-amber-200: #E8CD8F;
-    --color-amber-500: #C18D21;
-    --color-amber-600: #A87A1A;
-    --color-amber-700: #7A5512;
-    --color-amber-800: #5E410D;
-    --color-emerald-50: #E3F2EA;
-    --color-emerald-100: #CDE8D9;
-    --color-emerald-200: #A9D6BC;
-    --color-emerald-500: #2E8B57;
-    --color-emerald-600: #257349;
-    --color-emerald-700: #1F6140;
-    --color-emerald-800: #194F34;
-    --color-red-50: #FBE9E5;
-    --color-red-100: #F6D5CD;
-    --color-red-200: #EDBDB1;
-    --color-red-300: #DE9583;
-    --color-red-400: #CC6B55;
-    --color-red-500: #B9503A;
-    --color-red-600: #A6402B;
-    --color-red-700: #8A3523;
-    --color-red-800: #722C1E;
+    /* Estados: Nuevo azul, En proceso dorado, Listo verde, Cancelado coral */
+    --color-sky-50: #131E33;
+    --color-sky-100: #182746;
+    --color-sky-500: #4C8DFF;
+    --color-sky-600: #6AA0FF;
+    --color-sky-700: #8DB6FF;
+    --color-amber-50: #2A2314;
+    --color-amber-100: #3A3019;
+    --color-amber-200: #5A4720;
+    --color-amber-500: #E0B04F;
+    --color-amber-600: #E6BC62;
+    --color-amber-700: #F2D18B;
+    --color-amber-800: #F7DFA9;
+    --color-emerald-50: #10241C;
+    --color-emerald-100: #14302A;
+    --color-emerald-200: #1C4436;
+    --color-emerald-500: #3FBF8A;
+    --color-emerald-600: #48C793;
+    --color-emerald-700: #6FD6AB;
+    --color-emerald-800: #9BE3C4;
+    --color-red-50: #2A1416;
+    --color-red-100: #3A1A1D;
+    --color-red-200: #5A2328;
+    --color-red-300: #A8473F;
+    --color-red-400: #E06A5A;
+    --color-red-500: #EF7D6C;
+    --color-red-600: #F28B7B;
+    --color-red-700: #F5A193;
+    --color-red-800: #F8B8AD;
 
     /* Nombres semánticos para los componentes */
-    --color-fondo: #F5F4F1;
-    --color-superficie: #FFFFFF;
-    --color-superficie-2: #EFEDE8;
-    --color-texto: #0A1E45;
-    --color-texto-2: #5B6270;
-    --color-borde: #E3E1DC;
-    --color-borde-control: #8C8F96;
-    --color-marca: #0B2452;
-    --color-marca-hover: #071B3D;
-    --color-seleccion: #E1EAF9;
-    --color-noche: #071B3D;
-    --color-gris-claro: #CFCED0;
+    --color-fondo: #0D0E11;
+    --color-superficie: #16171B;
+    --color-superficie-2: #1C1D22;
+    --color-texto: #F3F1EC;
+    --color-texto-2: #9A9AA3;
+    --color-borde: #26272D;
+    --color-borde-control: #3A3B42;
+    --color-marca: #E0B04F;
+    --color-marca-hover: #C4952F;
+    --color-seleccion: #2E2617;
+    --color-noche: #0D0E11;
+    --color-gris-claro: #3A3B42;
 
-    /* Formas redondas y amables */
     --radius-lg: 12px;
     --radius-xl: 16px;
-    --radius-2xl: 20px;
+    --radius-2xl: 22px;
 
-    /* Relieve suave para tarjetas y algo más marcado para lo que flota */
-    --shadow-suave: 0 1px 2px rgb(11 36 82 / 0.04), 0 8px 22px -6px rgb(11 36 82 / 0.10);
-    --shadow-flotante: 0 2px 4px rgb(11 36 82 / 0.06), 0 14px 32px -8px rgb(11 36 82 / 0.26);
-    --shadow-oro: 0 4px 12px -2px rgb(193 141 33 / 0.45);
+    /* Relieve: luz arriba, canto oscuro abajo y sombra profunda */
+    --shadow-suave: inset 0 1px 0 rgb(255 255 255 / 0.06), 0 0 0 1px rgb(255 255 255 / 0.05), 0 2px 0 rgb(0 0 0 / 0.6), 0 14px 30px -12px rgb(0 0 0 / 0.8);
+    --shadow-flotante: inset 0 1px 0 rgb(255 255 255 / 0.08), 0 0 0 1px rgb(255 255 255 / 0.08), 0 20px 44px -12px rgb(0 0 0 / 0.9);
+    --shadow-oro: 0 10px 22px -8px rgb(224 176 79 / 0.7);
 }
 
 @layer base {
     html {
         -webkit-tap-highlight-color: transparent;
+        color-scheme: dark;
     }
 
+    /* Fondo negro con una luz azul muy suave arriba y un brillo dorado abajo, como en el banner */
     body {
         @apply bg-fondo text-texto;
+        background-image:
+            radial-gradient(110% 60% at 85% -10%, rgb(76 141 255 / 0.09), transparent 60%),
+            radial-gradient(80% 50% at 0% 110%, rgb(224 176 79 / 0.06), transparent 60%);
+        background-attachment: fixed;
     }
 
     ::selection {
@@ -131,7 +138,7 @@
 
     h1, h2, h3 {
         font-family: var(--font-display);
-        letter-spacing: -0.015em;
+        letter-spacing: -0.02em;
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -176,60 +183,54 @@
     }
 
     .btn-primario {
-        @apply bg-linear-to-b from-[#D6A63C] to-oro text-stone-950 hover:from-[#CB9A30] hover:to-oro-hover;
-        box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.4), 0 2px 0 #8F6614, 0 6px 14px -4px rgb(193 141 33 / 0.55);
+        @apply bg-linear-to-b from-oro-claro via-oro to-[#C4952F] text-tinta-oro hover:from-[#F7DDA0] hover:to-oro;
+        box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.55), 0 2px 0 #8A6420, 0 10px 22px -8px rgb(224 176 79 / 0.7);
     }
-    .btn-primario:active { box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.3), 0 0 0 #8F6614, 0 2px 6px -2px rgb(193 141 33 / 0.5); }
+    .btn-primario:active { box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.4), 0 0 0 #8A6420, 0 4px 10px -4px rgb(224 176 79 / 0.6); }
 
-    /* Azul: acción principal donde el oro ya está presente (p. ej. sobre el banner) */
+    /* Azul eléctrico: acción secundaria destacada (poco uso) */
     .btn-azul {
-        @apply bg-linear-to-b from-[#173A78] to-marca text-white hover:to-marca-hover;
-        box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18), 0 2px 0 #040F24, 0 6px 14px -4px rgb(11 36 82 / 0.5);
+        @apply bg-linear-to-b from-[#78A8FF] via-azul to-[#2F6BE0] text-white;
+        box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.4), 0 2px 0 #1F4BA8;
     }
-    .btn-azul:active { box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12), 0 0 0 #040F24; }
+    .btn-azul:active { box-shadow: 0 0 0 #1F4BA8; }
 
     .btn-secundario {
-        @apply border-stone-300 bg-linear-to-b from-white to-[#F6F5F2] text-marca hover:border-marca-300 hover:to-marca-50;
-        box-shadow: inset 0 1px 0 #FFFFFF, 0 2px 0 #D9D7D1;
+        @apply border-white/10 bg-linear-to-b from-[#26272D] to-[#1A1B20] text-texto hover:border-oro/40 hover:text-oro-claro;
+        box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08), 0 2px 0 rgb(0 0 0 / 0.6), 0 8px 18px -10px rgb(0 0 0 / 0.9);
     }
-    .btn-secundario:active { box-shadow: inset 0 1px 0 #FFFFFF, 0 0 0 #D9D7D1; }
+    .btn-secundario:active { box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.05), 0 0 0 rgb(0 0 0 / 0.6); }
 
     .btn-terciario {
-        @apply px-3 text-marca hover:bg-seleccion active:translate-y-0;
+        @apply px-3 text-oro-claro hover:bg-seleccion active:translate-y-0;
     }
 
     .btn-peligro {
-        @apply border-red-200 bg-linear-to-b from-white to-red-50 text-red-600 hover:bg-red-50;
-        box-shadow: inset 0 1px 0 #FFFFFF, 0 2px 0 var(--color-red-200);
+        @apply border-red-200 bg-linear-to-b from-[#2A1A1C] to-red-50 text-red-600 hover:to-red-100;
+        box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06), 0 2px 0 rgb(0 0 0 / 0.6);
     }
-    .btn-peligro:active { box-shadow: 0 0 0 var(--color-red-200); }
+    .btn-peligro:active { box-shadow: 0 0 0 rgb(0 0 0 / 0.6); }
 
     .btn-chico {
         @apply min-h-9 px-3 text-[13px] sm:min-h-8;
     }
 
     .btn-whatsapp {
-        @apply bg-linear-to-b from-[#249152] to-[#1C7C45] text-white hover:to-[#166637];
-        box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.25), 0 2px 0 #0F4D2A;
+        @apply bg-linear-to-b from-[#2DB164] to-[#1C7C45] text-white hover:to-[#166637];
+        box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.3), 0 2px 0 #0B3D21, 0 10px 20px -10px rgb(37 211 102 / 0.5);
     }
     .btn-whatsapp:active { box-shadow: 0 0 0 #0F4D2A; }
 
     /* ---------- Superficies ---------- */
-    /* Panel: tarjeta blanca con relieve suave */
+    /* Panel: tarjeta gris carbón con relieve (luz arriba, canto abajo) */
     .tarjeta, .panel {
-        @apply rounded-2xl border border-black/[0.04] bg-superficie shadow-suave;
+        @apply rounded-2xl border border-white/[0.05] bg-linear-to-b from-[#1B1C21] to-superficie shadow-suave;
     }
 
-    /* Franja tejida (huipil) en los tonos de la paleta, bajo la barra de navegación */
+    /* Línea dorada fina bajo la barra superior (reemplaza la franja tejida) */
     .textil {
-        height: 10px;
-        background:
-            repeating-linear-gradient(90deg,
-                var(--color-oro) 0 12px, var(--color-noche) 12px 18px,
-                var(--color-gris-claro) 18px 30px, var(--color-noche) 30px 36px) top / 100% 50% no-repeat,
-            repeating-linear-gradient(90deg,
-                var(--color-gris-claro) 0 12px, var(--color-noche) 12px 18px,
-                #B3B3B3 18px 30px, var(--color-noche) 30px 36px) bottom / 100% 50% no-repeat;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgb(224 176 79 / 0.55) 20%, rgb(242 209 139 / 0.9) 50%, rgb(224 176 79 / 0.55) 80%, transparent);
     }
 
     .flotante {
@@ -270,7 +271,7 @@
     }
 
     .enlace {
-        @apply font-bold text-marca-500 underline-offset-4 hover:text-marca hover:underline;
+        @apply font-bold text-oro-claro underline-offset-4 hover:text-oro hover:underline;
     }
 
     /* ---------- Texto ---------- */
@@ -322,11 +323,25 @@
 
 /* Diálogo de confirmación nativo */
 dialog.dialogo::backdrop {
-    background: rgb(10 16 26 / 0.45);
+    background: rgb(0 0 0 / 0.65);
+    backdrop-filter: blur(3px);
 }
 
 /* Relieve para pestañas, fichas y accesos: misma luz y canto que los botones, más suave.
    Es @utility para poder usarlo con variantes (p. ej. sm:relieve). */
 @utility relieve {
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.7), 0 2px 0 rgb(11 36 82 / 0.07), 0 6px 16px -6px rgb(11 36 82 / 0.16);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.07), 0 0 0 1px rgb(255 255 255 / 0.05), 0 2px 0 rgb(0 0 0 / 0.6), 0 12px 24px -12px rgb(0 0 0 / 0.85);
+}
+
+/* Ficha con bisel para íconos (accesos): fondo carbón, luz arriba y borde dorado fino */
+@utility ficha-3d {
+    background: linear-gradient(145deg, #2A2B31, #17181C);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12), inset 0 -2px 0 rgb(0 0 0 / 0.5), 0 6px 14px -6px rgb(0 0 0 / 0.9), 0 0 0 1px rgb(224 176 79 / 0.25);
+}
+
+/* Tarjeta dorada destacada (p. ej. «Nuevo pedido» en Hoy) */
+@utility tarjeta-oro {
+    background: linear-gradient(160deg, #F7DDA0 0%, #E0B04F 50%, #A97C2C 100%);
+    color: var(--color-tinta-oro);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.6), inset 0 -3px 0 rgb(90 60 15 / 0.45), 0 3px 0 #7A5A1E, 0 18px 34px -12px rgb(224 176 79 / 0.55);
 }

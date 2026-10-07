@@ -8,9 +8,9 @@
         EstadoPedido::LISTO => ['Listos para entregar', 'Nada listo por entregar', 'emerald'],
     ];
     $tonos = [
-        'sky' => ['fondo' => 'bg-sky-50/70', 'punto' => 'bg-sky-500', 'borde' => 'border-t-sky-500', 'boton' => 'bg-sky-50 text-sky-700 hover:bg-sky-100', 'pestana' => 'aria-pressed:bg-sky-500'],
-        'amber' => ['fondo' => 'bg-amber-50/70', 'punto' => 'bg-amber-500', 'borde' => 'border-t-amber-500', 'boton' => 'bg-amber-50 text-amber-700 hover:bg-amber-100', 'pestana' => 'aria-pressed:bg-amber-500'],
-        'emerald' => ['fondo' => 'bg-emerald-50/70', 'punto' => 'bg-emerald-500', 'borde' => 'border-t-emerald-500', 'boton' => 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100', 'pestana' => 'aria-pressed:bg-emerald-500'],
+        'sky' => ['fondo' => 'lg:bg-linear-to-b lg:from-[#1B1C21] lg:to-superficie lg:shadow-suave', 'punto' => 'bg-sky-500 shadow-[0_0_12px_2px_rgb(76_141_255/0.6)]', 'borde' => 'border-t-sky-500', 'boton' => 'bg-sky-50 text-sky-700 hover:bg-sky-100', 'pestana' => 'aria-pressed:bg-sky-500'],
+        'amber' => ['fondo' => 'lg:bg-linear-to-b lg:from-[#1B1C21] lg:to-superficie lg:shadow-suave', 'punto' => 'bg-amber-500 shadow-[0_0_12px_2px_rgb(224_176_79/0.55)]', 'borde' => 'border-t-amber-500', 'boton' => 'bg-amber-50 text-amber-700 hover:bg-amber-100', 'pestana' => 'aria-pressed:bg-amber-500'],
+        'emerald' => ['fondo' => 'lg:bg-linear-to-b lg:from-[#1B1C21] lg:to-superficie lg:shadow-suave', 'punto' => 'bg-emerald-500 shadow-[0_0_12px_2px_rgb(63_191_138/0.55)]', 'borde' => 'border-t-emerald-500', 'boton' => 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100', 'pestana' => 'aria-pressed:bg-emerald-500'],
     ];
     $listos = $columnas->firstWhere('estado.id_estado', EstadoPedido::LISTO)['total'];
     // En el teléfono se abre la primera pestaña que tenga pedidos.
@@ -62,16 +62,20 @@
         @endunless
     </x-bienvenida>
 
-    {{-- Accesos: íconos de dos tonos en círculos --}}
+    {{-- Accesos en mosaico (Bento): fichas con relieve; «Nuevo pedido» destaca en dorado --}}
     <nav class="mb-8 grid grid-cols-4 gap-2 sm:gap-4" aria-label="Accesos rápidos">
         @foreach ($accesos as $acceso)
-            <a href="{{ $acceso['ruta'] }}" class="group flex flex-col items-center gap-2 rounded-2xl p-1 text-center transition sm:flex-row sm:gap-3 sm:bg-superficie sm:p-4 sm:text-left sm:relieve sm:hover:-translate-y-0.5 active:translate-y-px">
-                <span class="flex size-14 shrink-0 items-center justify-center rounded-full relieve sm:size-13 {{ $acceso['tono'] }}">
-                    <x-icono-duo :nombre="$acceso['icono']" />
+            <a href="{{ $acceso['ruta'] }}" @class([
+                'group flex flex-col items-center justify-between gap-2 rounded-2xl px-1 py-3 text-center transition hover:-translate-y-0.5 active:translate-y-px sm:items-start sm:gap-5 sm:p-5 sm:text-left',
+                'tarjeta-oro' => $loop->first,
+                'relieve bg-linear-to-b from-[#1D1E23] to-[#141519]' => ! $loop->first,
+            ])>
+                <span @class(['flex size-11 shrink-0 items-center justify-center rounded-xl sm:size-12', 'bg-linear-to-br from-[#2A2116] to-[#0E0B07] shadow-[inset_0_1px_0_rgb(255_255_255/0.15),0_6px_12px_-4px_rgb(0_0_0/0.5)]' => $loop->first, 'ficha-3d' => ! $loop->first])>
+                    <x-icono-duo :nombre="$acceso['icono']" clase="size-6" />
                 </span>
                 <span class="min-w-0">
-                    <span class="block text-[13px] font-bold sm:text-base"><span class="sm:hidden">{{ $acceso['corto'] }}</span><span class="hidden sm:inline">{{ $acceso['texto'] }}</span></span>
-                    <span class="meta hidden lg:block">{{ $acceso['detalle'] }}</span>
+                    <span class="block font-display text-[12.5px] font-semibold sm:text-[17px]"><span class="sm:hidden">{{ $acceso['corto'] }}</span><span class="hidden sm:inline">{{ $acceso['texto'] }}</span></span>
+                    <span @class(['hidden text-[13px] lg:block', 'text-[#5A4419]' => $loop->first, 'text-texto-2' => ! $loop->first])>{{ $acceso['detalle'] }}</span>
                 </span>
             </a>
         @endforeach
@@ -95,7 +99,7 @@
                 @foreach ($columnas as $columna)
                     @php $id = $columna['estado']->id_estado; $tono = $tonos[$etapas[$id][2]]; @endphp
                     <button type="button" data-pestana="{{ $id }}" aria-controls="etapa-{{ $id }}" aria-pressed="{{ $id === $pestanaInicial ? 'true' : 'false' }}"
-                            class="flex min-h-10 flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-xl bg-superficie px-3 text-sm font-extrabold whitespace-nowrap text-texto-2 relieve transition active:translate-y-px aria-pressed:text-white {{ $tono['pestana'] }}">
+                            class="flex min-h-10 flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-xl bg-superficie px-3 text-sm font-extrabold whitespace-nowrap text-texto-2 relieve transition active:translate-y-px aria-pressed:text-tinta-oro {{ $tono['pestana'] }}">
                         {{ $id === EstadoPedido::LISTO ? 'Listos' : $etapas[$id][0] }}
                         <span class="tabular-nums">{{ $columna['total'] }}</span>
                     </button>
@@ -111,12 +115,12 @@
                         <header class="mb-3 hidden items-center gap-2 px-1 lg:flex">
                             <span class="size-2.5 rounded-full {{ $tono['punto'] }}" aria-hidden="true"></span>
                             <h2 id="titulo-etapa-{{ $id }}" class="text-sm font-extrabold">{{ $etapas[$id][0] }}</h2>
-                            <span class="ml-auto rounded-full px-2.5 text-xs leading-5 font-extrabold text-white tabular-nums {{ $tono['punto'] }}">{{ $columna['total'] }}</span>
+                            <span class="ml-auto rounded-full px-2.5 text-xs leading-5 font-extrabold text-tinta-oro tabular-nums {{ $tono['punto'] }}">{{ $columna['total'] }}</span>
                         </header>
 
                         <ul class="flex flex-col gap-3">
                             @forelse ($columna['pedidos'] as $pedido)
-                                <li class="overflow-hidden rounded-xl border-t-4 bg-superficie shadow-suave transition hover:-translate-y-0.5 hover:shadow-flotante {{ $tono['borde'] }}">
+                                <li class="overflow-hidden rounded-2xl border-t-2 bg-linear-to-b from-[#24252B] to-[#1A1B20] shadow-suave transition hover:-translate-y-0.5 hover:shadow-flotante {{ $tono['borde'] }}">
                                     @php $productosPedido = $pedido->detalles->pluck('producto')->filter()->unique('id_producto'); @endphp
                                     <a href="{{ route('pedidos.show', $pedido) }}" class="block px-4 pt-3 pb-2.5">
                                         <span class="flex items-center gap-3">

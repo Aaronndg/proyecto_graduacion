@@ -7,6 +7,6 @@
     </span>
     <span class="leading-none">
         <img src="{{ asset($claro ? 'img/nexo-texto-blanco.png' : 'img/nexo-texto.png') }}" alt="NEXO" class="block h-[15px] w-auto">
-        @if ($detalle)<span @class(['mt-1.5 block text-[11.5px] font-semibold', 'text-stone-300' => $claro, 'text-texto-2' => ! $claro])>{{ $detalle }}</span>@endif
+        @if ($detalle)<span @class(['mt-1.5 block text-[11.5px] font-semibold', 'text-stone-600' => $claro, 'text-texto-2' => ! $claro])>{{ $detalle }}</span>@endif
     </span>
 </span>

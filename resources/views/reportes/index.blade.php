@@ -46,7 +46,7 @@
                            @if ($actual) aria-current="page" @endif
                            @class([
                                'flex min-h-10 items-center rounded-xl px-4 text-sm font-extrabold whitespace-nowrap relieve transition active:translate-y-px',
-                               'bg-marca text-white' => $actual,
+                               'bg-marca text-tinta-oro' => $actual,
                                'bg-superficie text-texto-2 hover:text-marca' => ! $actual,
                            ])>{{ $texto }}</a>
                     </li>
@@ -143,10 +143,10 @@
                                 <div @class(['w-full max-w-8 rounded-t-[3px] transition-colors',
                                              'bg-marca/80 group-hover:bg-marca group-focus:bg-marca' => $punto['monto'] > 0])
                                      style="height: {{ $punto['monto'] > 0 ? max(2, round($punto['monto'] / $maxVenta * 100, 2)) : 0 }}%"></div>
-                                <div class="pointer-events-none absolute bottom-full left-1/2 z-10 mb-1 hidden -translate-x-1/2 rounded-lg bg-stone-900 px-2.5 py-1.5 text-xs whitespace-nowrap text-white shadow-flotante group-hover:block group-focus:block">
-                                    <span class="block text-stone-300">{{ $punto['detalle'] }}</span>
+                                <div class="pointer-events-none absolute bottom-full left-1/2 z-10 mb-1 hidden -translate-x-1/2 rounded-lg bg-[#26272D] ring-1 ring-white/10 px-2.5 py-1.5 text-xs whitespace-nowrap text-white shadow-flotante group-hover:block group-focus:block">
+                                    <span class="block text-stone-600">{{ $punto['detalle'] }}</span>
                                     <span class="font-semibold tabular-nums">Q {{ number_format($punto['monto'], 2) }}</span>
-                                    <span class="text-stone-300">· {{ $punto['ventas'] }} venta(s)</span>
+                                    <span class="text-stone-600">· {{ $punto['ventas'] }} venta(s)</span>
                                 </div>
                             </div>
                         @endforeach

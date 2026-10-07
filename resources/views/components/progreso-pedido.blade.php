@@ -28,8 +28,8 @@
                     <span @class(['h-1 flex-1 rounded-full', 'invisible' => $loop->first, 'bg-marca' => $completo && ! $cancelado, 'bg-stone-200' => ! $completo || $cancelado])></span>
                     <span @class([
                         'flex size-9 shrink-0 items-center justify-center rounded-full text-sm font-extrabold transition',
-                        'bg-oro text-stone-950 ring-4 ring-oro-suave' => $actual,
-                        'bg-marca text-white' => $completo && ! $actual && ! $cancelado,
+                        'bg-oro text-tinta-oro ring-4 ring-oro-suave' => $actual,
+                        'bg-marca text-tinta-oro' => $completo && ! $actual && ! $cancelado,
                         'bg-stone-400 text-white' => $completo && $cancelado,
                         'border-2 border-stone-300 bg-superficie text-texto-2' => ! $completo,
                     ])>

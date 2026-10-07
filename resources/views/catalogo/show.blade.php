@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <meta name="theme-color" content="#0B2452">
+    <meta name="theme-color" content="#0D0E11">
     <title>{{ $nombre }} · Catálogo</title>
     <meta name="description" content="Productos de {{ $nombre }}. Elija lo que quiere y envíe su pedido por WhatsApp.">
     @include('components.layouts.partials.fuentes')
@@ -12,7 +12,7 @@
 </head>
 {{-- Catálogo público del negocio: elegir productos y enviar el pedido por WhatsApp. --}}
 <body class="min-h-full bg-fondo font-sans text-texto antialiased">
-    <header class="banda bg-marca text-white">
+    <header class="banda bg-noche/90 border-b border-white/[0.06] backdrop-blur text-white">
         <div class="mx-auto flex h-16 max-w-5xl items-center gap-3 px-4 sm:px-6">
             <x-logo-negocio :negocio="$negocio" />
             <span class="truncate text-lg font-bold">{{ $nombre }}</span>

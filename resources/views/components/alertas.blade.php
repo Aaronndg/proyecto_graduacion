@@ -19,7 +19,7 @@
                     <a href="{{ $accion['url'] }}" target="_blank" rel="noopener" class="btn btn-whatsapp btn-chico mt-2 flex w-max" data-aviso-accion>{{ $accion['texto'] }}</a>
                 @endif
             </span>
-            <button type="button" data-cerrar-aviso class="-my-1 cursor-pointer rounded-md p-1 text-stone-300 hover:bg-white/10 hover:text-white">
+            <button type="button" data-cerrar-aviso class="-my-1 cursor-pointer rounded-md p-1 text-stone-600 hover:bg-white/10 hover:text-white">
                 <x-icono nombre="cerrar" clase="size-4" />
                 <span class="sr-only">Cerrar aviso</span>
             </button>
