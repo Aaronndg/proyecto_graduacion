@@ -8,9 +8,9 @@
         EstadoPedido::LISTO => ['Listos para entregar', 'Nada listo por entregar', 'emerald'],
     ];
     $tonos = [
-        'sky' => ['fondo' => 'lg:bg-linear-to-b lg:from-[#1B1C21] lg:to-superficie lg:shadow-suave', 'punto' => 'bg-sky-500 shadow-[0_0_12px_2px_rgb(76_141_255/0.6)]', 'borde' => 'border-t-sky-500', 'boton' => 'bg-sky-50 text-sky-700 hover:bg-sky-100', 'pestana' => 'aria-pressed:bg-sky-500'],
-        'amber' => ['fondo' => 'lg:bg-linear-to-b lg:from-[#1B1C21] lg:to-superficie lg:shadow-suave', 'punto' => 'bg-amber-500 shadow-[0_0_12px_2px_rgb(224_176_79/0.55)]', 'borde' => 'border-t-amber-500', 'boton' => 'bg-amber-50 text-amber-700 hover:bg-amber-100', 'pestana' => 'aria-pressed:bg-amber-500'],
-        'emerald' => ['fondo' => 'lg:bg-linear-to-b lg:from-[#1B1C21] lg:to-superficie lg:shadow-suave', 'punto' => 'bg-emerald-500 shadow-[0_0_12px_2px_rgb(63_191_138/0.55)]', 'borde' => 'border-t-emerald-500', 'boton' => 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100', 'pestana' => 'aria-pressed:bg-emerald-500'],
+        'sky' => ['fondo' => 'lg:cristal lg:border lg:border-white/10 lg:shadow-suave', 'punto' => 'bg-sky-500 shadow-[0_0_12px_2px_rgb(76_141_255/0.6)]', 'borde' => 'border-t-sky-500', 'boton' => 'bg-sky-50 text-sky-700 hover:bg-sky-100', 'pestana' => 'aria-pressed:bg-sky-500'],
+        'amber' => ['fondo' => 'lg:cristal lg:border lg:border-white/10 lg:shadow-suave', 'punto' => 'bg-amber-500 shadow-[0_0_12px_2px_rgb(224_176_79/0.55)]', 'borde' => 'border-t-amber-500', 'boton' => 'bg-amber-50 text-amber-700 hover:bg-amber-100', 'pestana' => 'aria-pressed:bg-amber-500'],
+        'emerald' => ['fondo' => 'lg:cristal lg:border lg:border-white/10 lg:shadow-suave', 'punto' => 'bg-emerald-500 shadow-[0_0_12px_2px_rgb(63_191_138/0.55)]', 'borde' => 'border-t-emerald-500', 'boton' => 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100', 'pestana' => 'aria-pressed:bg-emerald-500'],
     ];
     $listos = $columnas->firstWhere('estado.id_estado', EstadoPedido::LISTO)['total'];
     // En el teléfono se abre la primera pestaña que tenga pedidos.
@@ -68,7 +68,7 @@
             <a href="{{ $acceso['ruta'] }}" @class([
                 'group flex flex-col items-center justify-between gap-2 rounded-2xl px-1 py-3 text-center transition hover:-translate-y-0.5 active:translate-y-px sm:items-start sm:gap-5 sm:p-5 sm:text-left',
                 'tarjeta-oro' => $loop->first,
-                'relieve bg-linear-to-b from-[#1D1E23] to-[#141519]' => ! $loop->first,
+                'relieve cristal border border-white/10' => ! $loop->first,
             ])>
                 <span @class(['flex size-11 shrink-0 items-center justify-center rounded-xl sm:size-12', 'bg-linear-to-br from-[#2A2116] to-[#0E0B07] shadow-[inset_0_1px_0_rgb(255_255_255/0.15),0_6px_12px_-4px_rgb(0_0_0/0.5)]' => $loop->first, 'ficha-3d' => ! $loop->first])>
                     <x-icono-duo :nombre="$acceso['icono']" clase="size-6" />
@@ -120,7 +120,7 @@
 
                         <ul class="flex flex-col gap-3">
                             @forelse ($columna['pedidos'] as $pedido)
-                                <li class="overflow-hidden rounded-2xl border-t-2 bg-linear-to-b from-[#24252B] to-[#1A1B20] shadow-suave transition hover:-translate-y-0.5 hover:shadow-flotante {{ $tono['borde'] }}">
+                                <li class="overflow-hidden rounded-2xl border border-t-2 cristal-claro shadow-suave transition hover:-translate-y-0.5 hover:shadow-flotante {{ $tono['borde'] }}">
                                     @php $productosPedido = $pedido->detalles->pluck('producto')->filter()->unique('id_producto'); @endphp
                                     <a href="{{ route('pedidos.show', $pedido) }}" class="block px-4 pt-3 pb-2.5">
                                         <span class="flex items-center gap-3">
@@ -149,7 +149,7 @@
                                         @endif
                                     </a>
                                     @if ($id === EstadoPedido::LISTO && $aviso = $pedido->cliente->avisoPedidoListo($pedido, auth()->user()->negocio ?? auth()->user()->nombre))
-                                        <a href="{{ $aviso }}" target="_blank" rel="noopener" class="mx-4 mb-2 flex items-center justify-center gap-1.5 rounded-xl py-1.5 text-sm font-bold text-[#1C7C45] hover:bg-emerald-50">
+                                        <a href="{{ $aviso }}" target="_blank" rel="noopener" class="mx-4 mb-2 flex items-center justify-center gap-1.5 rounded-xl py-1.5 text-sm font-bold text-emerald-700 hover:bg-emerald-50">
                                             <x-icono nombre="whatsapp" clase="size-4" /> Avisar que está listo
                                         </a>
                                     @endif
@@ -163,7 +163,7 @@
                                     </form>
                                 </li>
                             @empty
-                                <li class="flex flex-col items-center rounded-xl border-2 border-dashed border-stone-300 px-4 py-6 text-center text-sm text-texto-2">
+                                <li class="flex flex-col items-center rounded-xl border-2 border-dashed border-white/15 px-4 py-6 text-center text-sm text-texto-2">
                                     <x-ilustracion nombre="libreta" class="mb-1 h-16 w-20" />
                                     {{ $etapas[$id][1] }}
                                 </li>

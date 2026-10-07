@@ -21,8 +21,8 @@
     --color-stone-50: #0D0E11;
     --color-stone-100: #1F2026;
     --color-stone-200: #2A2B31;
-    --color-stone-300: #3A3B42;
-    --color-stone-400: #6E6F78;
+    --color-stone-300: #4A4B54;
+    --color-stone-400: #7C7D87;
     --color-stone-500: #9A9AA3;
     --color-stone-600: #B5B5BC;
     --color-stone-700: #D0D0D5;
@@ -46,34 +46,34 @@
     --color-oro: #E0B04F;
     --color-oro-claro: #F2D18B;
     --color-oro-hover: #C4952F;
-    --color-oro-suave: #2E2617;
+    --color-oro-suave: #3A2F17;
     --color-oro-texto: #F2D18B;
     --color-champan: #EDD8BA;
     --color-azul: #4C8DFF;
     --color-tinta-oro: #14100A;   /* texto oscuro sobre dorado (10:1) */
 
     /* Estados: Nuevo azul, En proceso dorado, Listo verde, Cancelado coral */
-    --color-sky-50: #131E33;
-    --color-sky-100: #182746;
+    --color-sky-50: #17284A;
+    --color-sky-100: #1D3360;
     --color-sky-500: #4C8DFF;
     --color-sky-600: #6AA0FF;
     --color-sky-700: #8DB6FF;
-    --color-amber-50: #2A2314;
-    --color-amber-100: #3A3019;
+    --color-amber-50: #3A2F17;
+    --color-amber-100: #4A3B1C;
     --color-amber-200: #5A4720;
     --color-amber-500: #E0B04F;
     --color-amber-600: #E6BC62;
     --color-amber-700: #F2D18B;
     --color-amber-800: #F7DFA9;
-    --color-emerald-50: #10241C;
-    --color-emerald-100: #14302A;
+    --color-emerald-50: #123A2B;
+    --color-emerald-100: #174835;
     --color-emerald-200: #1C4436;
     --color-emerald-500: #3FBF8A;
     --color-emerald-600: #48C793;
     --color-emerald-700: #6FD6AB;
     --color-emerald-800: #9BE3C4;
-    --color-red-50: #2A1416;
-    --color-red-100: #3A1A1D;
+    --color-red-50: #3D1A1D;
+    --color-red-100: #4D2024;
     --color-red-200: #5A2328;
     --color-red-300: #A8473F;
     --color-red-400: #E06A5A;
@@ -84,12 +84,12 @@
 
     /* Nombres semánticos para los componentes */
     --color-fondo: #0D0E11;
-    --color-superficie: #16171B;
-    --color-superficie-2: #1C1D22;
+    --color-superficie: #1A1B20;
+    --color-superficie-2: #23242A;
     --color-texto: #F3F1EC;
-    --color-texto-2: #9A9AA3;
-    --color-borde: #26272D;
-    --color-borde-control: #3A3B42;
+    --color-texto-2: #B3B3BC;
+    --color-borde: #2F3038;
+    --color-borde-control: #4A4B54;
     --color-marca: #E0B04F;
     --color-marca-hover: #C4952F;
     --color-seleccion: #2E2617;
@@ -224,7 +224,7 @@
     /* ---------- Superficies ---------- */
     /* Panel: tarjeta gris carbón con relieve (luz arriba, canto abajo) */
     .tarjeta, .panel {
-        @apply rounded-2xl border border-white/[0.05] bg-linear-to-b from-[#1B1C21] to-superficie shadow-suave;
+        @apply rounded-2xl border border-white/10 cristal shadow-suave;
     }
 
     /* Línea dorada fina bajo la barra superior (reemplaza la franja tejida) */
@@ -344,4 +344,15 @@ dialog.dialogo::backdrop {
     background: linear-gradient(160deg, #F7DDA0 0%, #E0B04F 50%, #A97C2C 100%);
     color: var(--color-tinta-oro);
     box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.6), inset 0 -3px 0 rgb(90 60 15 / 0.45), 0 3px 0 #7A5A1E, 0 18px 34px -12px rgb(224 176 79 / 0.55);
+}
+
+/* «Brillo de cristal»: un degradado blanco muy suave en la parte alta de la tarjeta, como luz reflejada.
+   Da visibilidad a los bordes y al contenido sin perder el negro (cristal-claro: tarjetas dentro de tarjetas). */
+@utility cristal {
+    background: linear-gradient(180deg, rgb(255 255 255 / 0.085) 0%, rgb(255 255 255 / 0.025) 38%, rgb(255 255 255 / 0) 72%), #1A1B20;
+}
+
+@utility cristal-claro {
+    background: linear-gradient(180deg, rgb(255 255 255 / 0.12) 0%, rgb(255 255 255 / 0.04) 40%, rgb(255 255 255 / 0.01) 75%), #24252B;
+    border-color: rgb(255 255 255 / 0.10);
 }

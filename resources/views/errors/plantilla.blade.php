@@ -19,7 +19,7 @@
     @vite(['resources/css/app.css'])
 </head>
 <body class="flex min-h-full flex-col bg-fondo font-sans text-texto antialiased">
-    <header class="banda bg-noche/90 border-b border-white/[0.06] backdrop-blur text-white">
+    <header class="banda relative z-40 bg-noche/90 border-b border-white/[0.06] backdrop-blur text-white">
         <div class="mx-auto flex h-16 max-w-5xl items-center px-4 sm:px-6"><x-marca claro /></div>
     </header>
     <div class="textil" aria-hidden="true"></div>

@@ -12,7 +12,7 @@
 </head>
 {{-- Catálogo público del negocio: elegir productos y enviar el pedido por WhatsApp. --}}
 <body class="min-h-full bg-fondo font-sans text-texto antialiased">
-    <header class="banda bg-noche/90 border-b border-white/[0.06] backdrop-blur text-white">
+    <header class="banda relative z-40 bg-noche/90 border-b border-white/[0.06] backdrop-blur text-white">
         <div class="mx-auto flex h-16 max-w-5xl items-center gap-3 px-4 sm:px-6">
             <x-logo-negocio :negocio="$negocio" />
             <span class="truncate text-lg font-bold">{{ $nombre }}</span>

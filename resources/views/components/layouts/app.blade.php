@@ -36,7 +36,7 @@
 
     <div class="flex min-h-full flex-col">
         {{-- ===== Franja azul: marca, búsqueda, «Crear pedido», cuenta y el menú (escritorio) ===== --}}
-        <header class="banda bg-noche/90 border-b border-white/[0.06] backdrop-blur pt-[env(safe-area-inset-top)] text-white print:hidden">
+        <header class="banda relative z-40 bg-noche/90 border-b border-white/[0.06] backdrop-blur pt-[env(safe-area-inset-top)] text-white print:hidden">
             <div @class(['mx-auto px-4 sm:px-6', 'max-w-[1200px] lg:px-10' => ! $esCliente, 'max-w-3xl' => $esCliente])>
                 <div class="flex h-16 items-center gap-4">
                     <a href="{{ route('panel') }}" class="shrink-0 rounded-xl"><x-marca claro :detalle="$usuario->negocio" /></a>
