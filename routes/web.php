@@ -8,13 +8,13 @@ use App\Http\Controllers\Auth\SesionController;
 use App\Http\Controllers\CatalogoController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\MiPedidoController;
-use App\Http\Controllers\SeguimientoController;
-use App\Http\Controllers\VinculacionController;
 use App\Http\Controllers\PanelController;
 use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ReporteController;
+use App\Http\Controllers\SeguimientoController;
+use App\Http\Controllers\VinculacionController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/panel');
@@ -61,6 +61,8 @@ Route::middleware('auth')->group(function () {
         Route::get('seguimiento', SeguimientoController::class)->name('seguimiento');
         Route::get('reportes', [ReporteController::class, 'index'])->name('reportes');
         Route::get('reportes/exportar', [ReporteController::class, 'exportar'])->name('reportes.exportar');
+        Route::get('reportes/excel', [ReporteController::class, 'excel'])->name('reportes.excel');
+        Route::get('reportes/pdf', [ReporteController::class, 'pdf'])->name('reportes.pdf');
         Route::post('clientes/{cliente}/codigo', [VinculacionController::class, 'regenerar'])->name('clientes.codigo');
     });
 

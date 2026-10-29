@@ -6,6 +6,7 @@ use App\Models\Cliente;
 use App\Models\EstadoPedido;
 use App\Models\Pedido;
 use App\Models\Producto;
+use App\Models\Rol;
 use App\Models\Usuario;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
@@ -17,8 +18,11 @@ class ReportesTest extends TestCase
     use RefreshDatabase;
 
     private Usuario $emprendedor;
+
     private Cliente $cliente;
+
     private Producto $pastel;
+
     private Producto $galletas;
 
     protected function setUp(): void
@@ -186,6 +190,49 @@ class ReportesTest extends TestCase
         $this->assertStringContainsString('Entregado', $csv);
         $this->assertStringContainsString("'=HYPERLINK", $csv); // no se exporta como fórmula
         $this->assertStringNotContainsString('2026-07', $csv);
+    }
+
+    public function test_exporta_el_reporte_en_excel_con_sus_tres_hojas(): void
+    {
+        $this->datosDeEjemplo();
+        $this->cliente->update(['nombre' => '=HYPERLINK("x")']);
+
+        $respuesta = $this->actingAs($this->emprendedor)->get('/reportes/excel?desde=2026-09-01&hasta=2026-09-15');
+
+        $respuesta->assertOk()->assertDownload('reporte-pedidos_20260901_20260915.xlsx');
+        $archivo = tempnam(sys_get_temp_dir(), 'xlsx');
+        file_put_contents($archivo, $respuesta->streamedContent());
+        $zip = new \ZipArchive;
+        $this->assertTrue($zip->open($archivo) === true, 'El archivo debe ser un libro de Excel válido');
+
+        $libro = $zip->getFromName('xl/workbook.xml');
+        foreach (['Resumen', 'Pedidos', 'Productos más vendidos'] as $hoja) {
+            $this->assertStringContainsString('name="'.$hoja.'"', $libro);
+        }
+        $pedidos = $zip->getFromName('xl/worksheets/sheet2.xml');
+        $this->assertStringContainsString('=HYPERLINK', $pedidos); // el nombre se conserva como texto…
+        $this->assertStringNotContainsString('<f>', $pedidos);     // …y nunca como fórmula
+        $this->assertSame(5, substr_count($pedidos, '<row ')); // encabezado + 4 pedidos del período
+        $zip->close();
+        unlink($archivo);
+    }
+
+    public function test_exporta_el_reporte_en_pdf(): void
+    {
+        $this->datosDeEjemplo();
+
+        $respuesta = $this->actingAs($this->emprendedor)->get('/reportes/pdf?desde=2026-09-01&hasta=2026-09-15');
+
+        $respuesta->assertOk()->assertDownload('reporte-pedidos_20260901_20260915.pdf');
+        $this->assertStringStartsWith('%PDF', $respuesta->getContent());
+    }
+
+    public function test_solo_el_emprendedor_descarga_excel_y_pdf(): void
+    {
+        $cliente = Usuario::factory()->create(['id_rol' => Rol::CLIENTE]);
+
+        $this->actingAs($cliente)->get('/reportes/excel')->assertForbidden();
+        $this->actingAs($cliente)->get('/reportes/pdf')->assertForbidden();
     }
 
     public function test_compara_con_el_periodo_anterior_de_la_misma_duracion(): void

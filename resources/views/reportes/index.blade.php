@@ -22,7 +22,9 @@
     <x-slot:acciones>
         <div class="print:hidden">
             <x-menu-acciones etiqueta="Descargar o imprimir el reporte">
-                <a href="{{ route('reportes.exportar', request()->query()) }}" class="menu-opcion"><x-icono nombre="descargar" clase="size-4 text-texto-2" /> Descargar Excel (CSV)</a>
+                <a href="{{ route('reportes.excel', request()->query()) }}" class="menu-opcion"><x-icono nombre="descargar" clase="size-4 text-texto-2" /> Descargar Excel</a>
+                <a href="{{ route('reportes.pdf', request()->query()) }}" class="menu-opcion"><x-icono nombre="descargar" clase="size-4 text-texto-2" /> Descargar PDF</a>
+                <a href="{{ route('reportes.exportar', request()->query()) }}" class="menu-opcion"><x-icono nombre="descargar" clase="size-4 text-texto-2" /> Descargar CSV</a>
                 <button type="button" data-imprimir class="menu-opcion"><x-icono nombre="imprimir" clase="size-4 text-texto-2" /> Imprimir</button>
             </x-menu-acciones>
         </div>
