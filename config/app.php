@@ -123,4 +123,31 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Primer administrador (producción)
+    |--------------------------------------------------------------------------
+    |
+    | «php artisan migrate --seed» crea esta cuenta fuera del entorno local.
+    | Después de crearla, borre ADMIN_CONTRASENA del archivo .env.
+    |
+    */
+
+    'admin_inicial' => [
+        'nombre' => env('ADMIN_NOMBRE', 'Administrador'),
+        'correo' => env('ADMIN_CORREO'),
+        'contrasena' => env('ADMIN_CONTRASENA'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Respaldos de la base de datos
+    |--------------------------------------------------------------------------
+    |
+    | Cantidad de copias diarias que se conservan (las más antiguas se borran).
+    |
+    */
+
+    'respaldos_conservar' => (int) env('RESPALDOS_CONSERVAR', 14),
+
 ];

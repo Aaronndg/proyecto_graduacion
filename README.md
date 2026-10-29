@@ -41,7 +41,7 @@ Durante el desarrollo de estilos, `npm run dev` en otra terminal recarga los cam
 | Emprendedor   | emprendedor@pedidos.test  | Password123 |
 | Cliente       | cliente@pedidos.test      | Password123 |
 
-> Cambie estas contraseñas antes de publicar el sistema en producción.
+> Solo existen en el entorno local (`APP_ENV=local`). En producción no se crean (ver «Publicación en producción»).
 
 ## Pruebas automatizadas
 
@@ -98,6 +98,39 @@ Menú **Reportes** (solo emprendedor, Figura 41):
 - Ventas por día (o por mes si el período supera 62 días), incluyendo los días sin ventas; también se puede ver como tabla.
 - Pedidos por estado, productos más vendidos y detalle de pedidos (el filtro de estado aplica al detalle).
 - **Descargar Excel (CSV)** con el detalle del período, y **Imprimir** (o guardar como PDF desde el navegador).
+
+## Publicación en producción
+
+Requisitos del alojamiento: PHP 8.2 o superior (extensiones `intl`, `zip`, `gd`, `pdo_mysql`), MySQL o MariaDB,
+acceso SSH, Composer, tareas programadas (cron) y certificado SSL. El sitio debe apuntar a la carpeta `public/`.
+
+```bash
+git clone https://github.com/Aaronndg/proyecto_graduacion.git nexo && cd nexo
+composer install --no-dev --optimize-autoloader
+cp .env.produccion.example .env        # completar los valores entre <...>
+php artisan key:generate
+php artisan migrate --seed --force     # tablas, catálogos y el primer administrador (ADMIN_* del .env)
+php artisan storage:link               # fotos de producto y logos
+npm ci && npm run build                # o subir la carpeta public/build compilada en la computadora
+php artisan config:cache && php artisan route:cache && php artisan view:cache
+```
+
+Después:
+
+- Borrar `ADMIN_CONTRASENA` del `.env` y volver a ejecutar `php artisan config:cache`.
+- Crear la tarea cron (cada minuto): `cd /ruta/a/nexo && php artisan schedule:run >> /dev/null 2>&1`.
+- En la consola de Google, agregar `https://<dominio>/auth/google/callback` como URI de redireccionamiento.
+
+Fuera del entorno local **no se crean cuentas de demostración**; solo el administrador configurado.
+Para actualizar el sistema: `git pull`, `composer install --no-dev`, `php artisan migrate --force` y los tres `cache`.
+
+## Respaldos de la base de datos
+
+`php artisan respaldo:crear` guarda una copia comprimida en `storage/app/private/respaldos/respaldo_AAAA-MM-DD_HHMMSS.sql.gz`.
+En producción se ejecuta sola todos los días a las 03:00 (por la tarea cron) y se conservan las últimas 14
+(`RESPALDOS_CONSERVAR`). Para restaurar, descomprimir el archivo e importarlo en phpMyAdmin
+(o `gunzip < respaldo.sql.gz | mysql -u usuario -p base_de_datos`).
+Las fotos de producto y los logos están en `storage/app/public` y se respaldan con las copias del alojamiento.
 
 ## Datos de demostración
 

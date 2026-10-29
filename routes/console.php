@@ -1,8 +1,7 @@
 <?php
 
-use Illuminate\Foundation\Inspiring;
-use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schedule;
 
-Artisan::command('inspire', function () {
-    $this->comment(Inspiring::quote());
-})->purpose('Display an inspiring quote');
+// Copia diaria de la base de datos (se conservan las últimas RESPALDOS_CONSERVAR).
+// En el alojamiento, una tarea cron ejecuta cada minuto: php artisan schedule:run
+Schedule::command('respaldo:crear')->dailyAt('03:00');

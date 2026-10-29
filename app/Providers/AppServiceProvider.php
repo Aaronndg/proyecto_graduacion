@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 
@@ -21,6 +22,11 @@ class AppServiceProvider extends ServiceProvider
 
         // En desarrollo, detecta asignaciones de atributos no permitidos y consultas N+1.
         Model::shouldBeStrict(! $this->app->isProduction());
+
+        // En producción todos los enlaces (correos, Google, catálogo) usan HTTPS.
+        if ($this->app->isProduction()) {
+            URL::forceScheme('https');
+        }
 
         // RNF-02: regla única para todas las contraseñas (registro, perfil y administración).
         // Máximo 72 caracteres porque bcrypt ignora lo que pasa de ese límite.
