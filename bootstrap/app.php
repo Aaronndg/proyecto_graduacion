@@ -16,6 +16,12 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias(['rol' => VerificarRol::class]);
         $middleware->web(append: [VerificarCuentaActiva::class]);
         $middleware->redirectUsersTo('/panel');
+
+        // Detrás del proxy del alojamiento (p. ej. Railway): IP real del visitante para los límites de intentos.
+        // TRUSTED_PROXIES=* solo donde el sistema no es accesible sin pasar por ese proxy.
+        if ($proxies = env('TRUSTED_PROXIES')) {
+            $middleware->trustProxies(at: $proxies === '*' ? '*' : explode(',', $proxies));
+        }
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

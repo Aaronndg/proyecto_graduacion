@@ -48,6 +48,11 @@ class DatabaseSeeder extends Seeder
      */
     private function administradorInicial(): void
     {
+        // Ya hay administrador: el seeder puede correr en cada publicación y ADMIN_CONTRASENA ya no hace falta.
+        if (Usuario::where('id_rol', Rol::ADMINISTRADOR)->exists()) {
+            return;
+        }
+
         $datos = config('app.admin_inicial');
 
         $validacion = Validator::make($datos, [

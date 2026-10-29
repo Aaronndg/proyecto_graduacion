@@ -124,6 +124,17 @@ Después:
 Fuera del entorno local **no se crean cuentas de demostración**; solo el administrador configurado.
 Para actualizar el sistema: `git pull`, `composer install --no-dev`, `php artisan migrate --force` y los tres `cache`.
 
+### En Railway
+
+Railway detecta Laravel, instala dependencias, compila los estilos (`npm run build`) y al arrancar ejecuta
+las migraciones, `storage:link` y las cachés. Configuración del servicio del sistema:
+
+- **Servicio MySQL** en el mismo proyecto. Variable `DB_URL=${{MySQL.MYSQL_URL}}` y `DB_CONNECTION=mysql`.
+- **Pre-deploy command:** `php artisan migrate --force && php artisan db:seed --force` (crea catálogos y el administrador; se puede repetir).
+- **Volumen** montado en `/app/storage/app` (fotos de producto, logos y respaldos no se borran al publicar).
+- **Variables:** las de `.env.produccion.example`, más `LOG_CHANNEL=stderr` y `TRUSTED_PROXIES=*`.
+- **Networking → Generate Domain**; usar esa dirección en `APP_URL` y en la consola de Google.
+
 ## Respaldos de la base de datos
 
 `php artisan respaldo:crear` guarda una copia comprimida en `storage/app/private/respaldos/respaldo_AAAA-MM-DD_HHMMSS.sql.gz`.

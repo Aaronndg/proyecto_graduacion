@@ -34,6 +34,16 @@ class PreparacionProduccionTest extends TestCase
         $this->assertSame(0, Producto::count());
     }
 
+    public function test_si_ya_hay_administrador_se_puede_volver_a_ejecutar_sin_sus_datos(): void
+    {
+        Usuario::factory()->create(['id_rol' => Rol::ADMINISTRADOR, 'correo' => 'admin@nexo.gt']);
+        config(['app.admin_inicial' => ['nombre' => 'Administrador', 'correo' => null, 'contrasena' => null]]);
+
+        $this->seed(DatabaseSeeder::class);
+
+        $this->assertSame(1, Usuario::count());
+    }
+
     public function test_sin_datos_del_administrador_no_prepara_la_base_de_datos(): void
     {
         config(['app.admin_inicial' => ['nombre' => 'Administrador', 'correo' => null, 'contrasena' => 'corta']]);
