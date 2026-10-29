@@ -223,3 +223,28 @@ document.querySelectorAll('[data-catalogo]').forEach((catalogo) => {
 document.addEventListener('click', (evento) => {
     if (evento.target.closest('[data-imprimir]')) window.print();
 });
+
+// Botón del ojo en los campos de contraseña: muestra u oculta lo escrito sin perder el cursor.
+document.addEventListener('click', (evento) => {
+    const boton = evento.target.closest('[data-ver-contrasena]');
+    if (!boton) return;
+
+    const campo = document.getElementById(boton.dataset.verContrasena);
+    if (!campo) return;
+
+    const mostrar = campo.type === 'password';
+    campo.type = mostrar ? 'text' : 'password';
+    boton.setAttribute('aria-pressed', String(mostrar));
+    boton.setAttribute('aria-label', mostrar ? 'Ocultar contraseña' : 'Mostrar contraseña');
+    boton.title = boton.getAttribute('aria-label');
+    boton.querySelector('[data-icono-mostrar]').classList.toggle('hidden', mostrar);
+    boton.querySelector('[data-icono-ocultar]').classList.toggle('hidden', !mostrar);
+});
+
+// Al enviar, el campo vuelve a ser de contraseña para que el navegador no la guarde como texto común.
+document.addEventListener('submit', (evento) => {
+    evento.target.querySelectorAll('[data-ver-contrasena]').forEach((boton) => {
+        const campo = document.getElementById(boton.dataset.verContrasena);
+        if (campo?.type === 'text') boton.click();
+    });
+});
