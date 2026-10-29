@@ -368,3 +368,56 @@ dialog.dialogo::backdrop {
         #24252B;
     border-color: rgb(255 255 255 / 0.13);
 }
+
+/* Impresión: tema claro (texto oscuro sobre papel blanco) y los colores de gráficas y estados se imprimen. */
+@media print {
+    :root {
+        color-scheme: light;
+        --color-fondo: #FFFFFF;
+        --color-superficie: #FFFFFF;
+        --color-superficie-2: #F4F3EF;
+        --color-texto: #1C1B19;
+        --color-texto-2: #4A4740;
+        --color-borde: #D9D5CB;
+        --color-borde-control: #B9B4A8;
+        --color-stone-50: #FFFFFF;
+        --color-stone-100: #F4F3EF;
+        --color-stone-200: #E4E0D6;
+        --color-stone-300: #C9C4B8;
+        --color-stone-400: #8A867C;
+        --color-stone-500: #6B675E;
+        --color-stone-600: #55524A;
+        --color-stone-700: #3D3A34;
+        --color-stone-800: #2A2824;
+        --color-stone-900: #1C1B19;
+        --color-stone-950: #000000;
+        --color-marca: #8F6410;
+        --color-oro-texto: #8F6410;
+        --color-champan: #6E5119;
+        --color-sky-50: #E7EEFB;
+        --color-sky-700: #1F4FA8;
+        --color-amber-50: #F8EDD3;
+        --color-amber-700: #7A5410;
+        --color-emerald-50: #E1F3EA;
+        --color-emerald-700: #17643F;
+        --color-red-50: #FBE6E3;
+        --color-red-700: #9C2F22;
+    }
+
+    html, body {
+        background: #FFFFFF !important;
+        color: #1C1B19;
+    }
+
+    *, *::before, *::after {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        box-shadow: none !important;
+        text-shadow: none !important;
+    }
+
+    .cristal, .cristal-claro, .panel, .tarjeta {
+        background: #FFFFFF !important;
+        border-color: #D9D5CB !important;
+    }
+}
