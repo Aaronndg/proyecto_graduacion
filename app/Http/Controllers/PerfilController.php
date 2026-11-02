@@ -21,7 +21,9 @@ class PerfilController extends Controller
     public function update(Request $request): RedirectResponse
     {
         $usuario = $request->user();
-        $request->merge(['correo' => mb_strtolower(trim((string) $request->input('correo')))]);
+        $request->merge(['correo' => $usuario->esCuentaDemo()
+            ? $usuario->correo
+            : mb_strtolower(trim((string) $request->input('correo')))]);
 
         $datos = $request->validate([
             'nombre' => ['required', 'string', 'max:100'],
@@ -52,6 +54,10 @@ class PerfilController extends Controller
 
     public function actualizarContrasena(Request $request): RedirectResponse
     {
+        if ($request->user()->esCuentaDemo()) {
+            return back()->withErrors(['contrasena_actual' => 'Esta es una cuenta de demostración: su contraseña no se puede cambiar.'], 'contrasena');
+        }
+
         $datos = $request->validateWithBag('contrasena', [
             'contrasena_actual' => ['required', 'current_password'],
             'contrasena' => ['required', 'confirmed', Password::defaults()],

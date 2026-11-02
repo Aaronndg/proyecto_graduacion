@@ -16,6 +16,14 @@ return [
     'name' => env('APP_NAME', 'Laravel'),
 
     /*
+    | Cuentas de demostración que se comparten con los evaluadores: no pueden
+    | cambiar su correo ni su contraseña desde «Mi perfil».
+    */
+    'cuentas_demo' => array_filter(array_map('trim', explode(',', (string) env(
+        'CUENTAS_DEMO', 'emprendedor.demo@example.com,cliente.demo@example.com,admin.demo@example.com'
+    )))),
+
+    /*
     |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------

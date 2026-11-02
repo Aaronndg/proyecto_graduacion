@@ -69,7 +69,7 @@ Route::middleware('auth')->group(function () {
     // Seguimiento de pedidos por parte del cliente (RF-10) — solo lectura.
     Route::middleware('rol:cliente')->group(function () {
         Route::get('mis-pedidos/{pedido}', [MiPedidoController::class, 'show'])->name('mis-pedidos.show');
-        Route::post('vincular', [VinculacionController::class, 'store'])->name('vincular');
+        Route::post('vincular', [VinculacionController::class, 'store'])->middleware('throttle:10,1')->name('vincular');
     });
 
     // Módulo de usuarios y acceso (MOD-01) — solo administrador.

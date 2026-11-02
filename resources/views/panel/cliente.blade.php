@@ -64,16 +64,15 @@
                 </section>
             @endforeach
 
-            <details class="group" @if ($errors->has('codigo')) open @endif>
-                <summary class="inline-flex min-h-9 cursor-pointer list-none items-center gap-1.5 text-sm text-texto-2 hover:text-texto [&::-webkit-details-marker]:hidden">
-                    <x-icono nombre="flecha-derecha" clase="size-4 transition-transform group-open:rotate-90" />
-                    ¿Compró en otro negocio? Agregue su código
-                </summary>
-                <div class="panel mt-2 p-5">
-                    <p class="mb-3 text-sm text-texto-2">Escriba el código de cliente que le envió ese negocio.</p>
-                    <x-formulario-codigo class="max-w-md" />
-                </div>
-            </details>
+            {{-- Vinculación por código (RF-23): siempre visible para agregar otro negocio --}}
+            <section class="panel p-5" aria-labelledby="titulo-vincular">
+                <h2 id="titulo-vincular" class="titulo-seccion">Vincular otro negocio</h2>
+                <p class="mt-1 mb-3 text-sm text-texto-2">
+                    ¿Compró en otro negocio que usa NEXO? Escriba el código de invitación que le envió.
+                    Cada código es de un solo uso.
+                </p>
+                <x-formulario-codigo class="max-w-md" />
+            </section>
         </div>
     @endif
 </x-layouts.app>

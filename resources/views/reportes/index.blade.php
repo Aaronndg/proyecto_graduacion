@@ -20,13 +20,12 @@
 @endphp
 <x-layouts.app titulo="Reportes">
     <x-slot:acciones>
-        <div class="print:hidden">
-            <x-menu-acciones etiqueta="Descargar o imprimir el reporte">
-                <a href="{{ route('reportes.excel', request()->query()) }}" class="menu-opcion"><x-icono nombre="descargar" clase="size-4 text-texto-2" /> Descargar Excel</a>
-                <a href="{{ route('reportes.pdf', request()->query()) }}" class="menu-opcion"><x-icono nombre="descargar" clase="size-4 text-texto-2" /> Descargar PDF</a>
-                <a href="{{ route('reportes.exportar', request()->query()) }}" class="menu-opcion"><x-icono nombre="descargar" clase="size-4 text-texto-2" /> Descargar CSV</a>
-                <button type="button" data-imprimir class="menu-opcion"><x-icono nombre="imprimir" clase="size-4 text-texto-2" /> Imprimir</button>
-            </x-menu-acciones>
+        {{-- Un botón visible por formato (observación de la revisión): Excel, PDF, CSV e imprimir --}}
+        <div class="flex flex-wrap items-center justify-end gap-2 print:hidden" role="group" aria-label="Descargar o imprimir el reporte">
+            <a href="{{ route('reportes.excel', request()->query()) }}" class="btn btn-secundario btn-chico"><x-icono nombre="descargar" clase="size-4" /> Excel</a>
+            <a href="{{ route('reportes.pdf', request()->query()) }}" class="btn btn-secundario btn-chico"><x-icono nombre="descargar" clase="size-4" /> PDF</a>
+            <a href="{{ route('reportes.exportar', request()->query()) }}" class="btn btn-secundario btn-chico"><x-icono nombre="descargar" clase="size-4" /> CSV</a>
+            <button type="button" data-imprimir class="btn btn-secundario btn-chico"><x-icono nombre="imprimir" clase="size-4" /> Imprimir</button>
         </div>
     </x-slot:acciones>
 

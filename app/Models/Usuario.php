@@ -127,6 +127,12 @@ class Usuario extends Authenticatable
         return $this->id_rol === Rol::ADMINISTRADOR;
     }
 
+    /** Cuenta de demostración compartida: su correo y contraseña no se cambian desde «Mi perfil». */
+    public function esCuentaDemo(): bool
+    {
+        return in_array(mb_strtolower($this->correo), config('app.cuentas_demo'), true);
+    }
+
     public function esEmprendedor(): bool
     {
         return $this->id_rol === Rol::EMPRENDEDOR;

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EncabezadosSeguridad;
 use App\Http\Middleware\VerificarCuentaActiva;
 use App\Http\Middleware\VerificarRol;
 use Illuminate\Foundation\Application;
@@ -14,7 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias(['rol' => VerificarRol::class]);
-        $middleware->web(append: [VerificarCuentaActiva::class]);
+        $middleware->web(append: [VerificarCuentaActiva::class, EncabezadosSeguridad::class]);
         $middleware->redirectUsersTo('/panel');
 
         // Detrás del proxy del alojamiento (p. ej. Railway): IP real del visitante para los límites de intentos.

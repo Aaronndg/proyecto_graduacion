@@ -38,8 +38,16 @@
                         @error('logo')<p class="error-campo">{{ $message }}</p>@enderror
                     </div>
                 @endif
-                <x-campo nombre="correo" etiqueta="Correo electrónico" tipo="email" :valor="$usuario->correo" autocomplete="email" maxlength="150" requerido
-                         ayuda="Con este correo inicia sesión." />
+                @if ($usuario->esCuentaDemo())
+                    <div>
+                        <p class="etiqueta">Correo electrónico</p>
+                        <p class="campo bg-superficie-2/60 text-texto-2">{{ $usuario->correo }}</p>
+                        <p class="ayuda">Cuenta de demostración: el correo y la contraseña no se pueden cambiar.</p>
+                    </div>
+                @else
+                    <x-campo nombre="correo" etiqueta="Correo electrónico" tipo="email" :valor="$usuario->correo" autocomplete="email" maxlength="150" requerido
+                             ayuda="Con este correo inicia sesión." />
+                @endif
                 <div class="border-t border-borde pt-5">
                     <button type="submit" class="btn btn-primario w-full sm:w-auto">Guardar cambios</button>
                 </div>
@@ -47,6 +55,7 @@
         </section>
 
         {{-- Contraseña: se despliega solo cuando se quiere cambiar (o si hubo un error al hacerlo) --}}
+        @unless ($usuario->esCuentaDemo())
         <section class="panel p-5 sm:p-6" aria-labelledby="titulo-contrasena">
             <details class="group" @if ($errorContrasena) open @endif>
                 <summary class="flex cursor-pointer list-none flex-wrap items-center justify-between gap-3 [&::-webkit-details-marker]:hidden">
@@ -69,5 +78,6 @@
                 </form>
             </details>
         </section>
+        @endunless
     </div>
 </x-layouts.app>

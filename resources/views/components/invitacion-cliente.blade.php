@@ -9,8 +9,12 @@
     <h2 id="titulo-en-linea" class="titulo-seccion">Seguimiento en línea</h2>
 
     @if ($cliente->usuario)
+        <p class="mt-2 inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-800">
+            <x-icono nombre="ok" clase="size-3.5" /> Cuenta vinculada con su código
+        </p>
         <p class="mt-2 text-sm">{{ $primerNombre }} ve sus pedidos en línea.</p>
         <p class="meta truncate">Cuenta: {{ $cliente->usuario->correo }}</p>
+        <p class="meta mt-1">El código de invitación ya se usó y dejó de funcionar.</p>
         <form method="POST" action="{{ route('clientes.codigo', $cliente) }}" class="mt-3"
               data-confirmar-titulo="¿Desconectar la cuenta {{ $cliente->usuario->correo }}?" data-confirmar="{{ $primerNombre }} dejará de ver sus pedidos hasta que use un código nuevo."
               data-confirmar-accion="Desconectar cuenta" data-confirmar-peligro>
@@ -33,7 +37,7 @@
 
         <div class="mt-4 flex items-center justify-between gap-3 border-t border-borde pt-4">
             <div>
-                <p class="meta">O compártale su código</p>
+                <p class="meta">O compártale su código (de un solo uso)</p>
                 <p class="font-mono text-lg font-semibold tracking-[0.15em] select-all">{{ $cliente->codigoFormateado() }}</p>
             </div>
             <button type="button" class="btn btn-secundario btn-chico" data-copiar="{{ $cliente->codigoFormateado() }}">Copiar</button>
