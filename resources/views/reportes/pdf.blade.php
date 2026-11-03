@@ -19,10 +19,10 @@
     <meta charset="utf-8">
     <title>Reporte de pedidos y ventas · {{ $negocio }}</title>
     <style>
-        @page { margin: 0 0 46px; }
+        @page { margin: 30px 0 46px; }
         body { font-family: DejaVu Sans, sans-serif; font-size: 9.5px; color: #1C1B19; margin: 0; }
         .contenido { padding: 0 34px; }
-        .banda { background: #1A1B20; color: #FFFFFF; padding: 20px 34px 16px; border-bottom: 4px solid #E0B04F; }
+        .banda { margin-top: -30px; background: #1A1B20; color: #FFFFFF; padding: 20px 34px 16px; border-bottom: 4px solid #E0B04F; }
         .banda .marca { font-size: 9px; letter-spacing: 4px; color: #E0B04F; font-weight: bold; }
         .banda h1 { font-size: 19px; margin: 3px 0 4px; }
         .banda .meta { color: #D6D2C6; font-size: 10px; }
@@ -112,7 +112,7 @@
             <p class="vacio">No hay pedidos en este período.</p>
         @else
             <table>
-                <tr><th>Pedido</th><th>Fecha</th><th>Cliente</th><th>Estado</th><th class="num">Productos</th><th class="num">Total</th></tr>
+                <thead><tr><th>Pedido</th><th>Fecha</th><th>Cliente</th><th>Estado</th><th class="num">Productos</th><th class="num">Total</th></tr></thead>
                 @foreach ($filas->values() as $i => $fila)
                     @php [$fondo, $texto] = $colores[$fila['id_estado'] ?? 0] ?? ['#FFFFFF', '#1C1B19']; @endphp
                     <tr class="{{ $i % 2 ? 'par' : '' }}">
