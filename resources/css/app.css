@@ -449,8 +449,15 @@ dialog.dialogo::backdrop {
         transform: translate(-50%, 6px);
         transition: opacity 0.2s ease, transform 0.2s ease;
     }
+    .grafica-barras .burbuja { left: 50%; }
+    .grafica-barras .burbuja.al-inicio { left: 0; transform: translate(0, 6px); }
+    .grafica-barras .burbuja.al-final { left: auto; right: 0; transform: translate(0, 6px); }
     .grafica-barras .columna:hover .burbuja,
     .grafica-barras .columna:focus .burbuja { opacity: 1; transform: translate(-50%, 0); }
+    .grafica-barras .columna:hover .burbuja.al-inicio,
+    .grafica-barras .columna:focus .burbuja.al-inicio,
+    .grafica-barras .columna:hover .burbuja.al-final,
+    .grafica-barras .columna:focus .burbuja.al-final { transform: translate(0, 0); }
 
     .fila-grafica { transition: background-color 0.2s ease; border-radius: 0.75rem; }
     .fila-grafica .barra-horizontal {
