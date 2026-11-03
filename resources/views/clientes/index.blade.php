@@ -8,10 +8,22 @@
         <a href="{{ route('clientes.create') }}" class="btn btn-primario"><x-icono nombre="mas" clase="size-4" /> <span>Nuevo<span class="hidden sm:inline"> cliente</span></span></a>
     </x-slot:acciones>
 
-    <form method="GET" class="mb-4 flex gap-2" role="search">
+    <form method="GET" class="mb-3 flex gap-2" role="search">
+        @if ($invitacion)<input type="hidden" name="invitacion" value="{{ $invitacion }}">@endif
         <x-campo-busqueda :valor="$buscar" placeholder="Nombre, teléfono o correo" />
         <button type="submit" class="btn btn-secundario">Buscar</button>
     </form>
+
+    {{-- Quiénes ven sus pedidos en su celular y a quiénes falta invitar (RF-23) --}}
+    <nav class="mb-4 flex flex-wrap gap-2" aria-label="Filtrar clientes por invitación">
+        @foreach ([null => 'Todos', 'si' => 'Ven sus pedidos', 'no' => 'Sin invitar'] as $valor => $texto)
+            <a href="{{ route('clientes.index', array_filter(['buscar' => $buscar, 'invitacion' => $valor])) }}"
+               @if ($invitacion === ($valor ?: null)) aria-current="page" @endif
+               @class(['flex min-h-9 items-center rounded-xl px-3.5 text-sm font-extrabold relieve',
+                       'bg-marca text-tinta-oro' => $invitacion === ($valor ?: null),
+                       'bg-superficie text-texto-2 hover:text-marca' => $invitacion !== ($valor ?: null)])>{{ $texto }}</a>
+        @endforeach
+    </nav>
 
     @if ($clientes->isEmpty())
         <div class="panel flex flex-col items-center px-5 py-10 text-center">
@@ -42,13 +54,18 @@
                                 <x-avatar :nombre="$cliente->nombre" />
                                 <span class="min-w-0">
                                     <span class="block truncate font-medium">{{ $cliente->nombre }}</span>
-                                    <span class="meta hidden truncate md:block">
-                                        {{ collect([$cliente->correo, $cliente->id_usuario ? 'Ve sus pedidos en línea' : null])->filter()->implode(' · ') ?: ' ' }}
+                                    <span class="mt-0.5 flex min-w-0 items-center gap-2">
+                                        @if ($cliente->id_usuario)
+                                            <span class="inline-flex shrink-0 items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-bold text-emerald-700"><x-icono nombre="ok" clase="size-3" /> Ve sus pedidos</span>
+                                        @else
+                                            <span class="inline-flex shrink-0 items-center rounded-full bg-superficie-2 px-2 py-0.5 text-[11px] font-bold text-texto-2">Sin invitar</span>
+                                        @endif
+                                        <span class="meta hidden truncate md:inline">{{ $cliente->correo }}</span>
                                     </span>
                                 </span>
                             </span>
                             <span class="meta col-span-2 row-start-2 truncate pl-13 md:hidden">
-                                {{ collect([$cliente->telefono, $ultimo($cliente), $cliente->id_usuario ? 'en línea' : null])->filter()->implode(' · ') ?: 'Sin teléfono' }}
+                                {{ collect([$cliente->telefono, $ultimo($cliente)])->filter()->implode(' · ') ?: 'Sin teléfono' }}
                             </span>
                             <span class="hidden text-sm text-texto-2 tabular-nums md:block">{{ $cliente->telefono ?? '—' }}</span>
                             <span class="hidden text-sm text-texto-2 md:block">

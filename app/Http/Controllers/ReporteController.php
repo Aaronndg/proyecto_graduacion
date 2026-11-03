@@ -5,16 +5,13 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ReporteRequest;
 use App\Models\EstadoPedido;
 use App\Models\Pedido;
+use App\Servicios\LibroReporte;
 use App\Servicios\Reportes;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Response;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\LazyCollection;
 use Illuminate\View\View;
-use OpenSpout\Common\Entity\Cell;
-use OpenSpout\Common\Entity\Row;
-use OpenSpout\Common\Entity\Style\Style;
-use OpenSpout\Writer\XLSX\Writer;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /** MOD-05 / HU-05 (Figura 41): reportes de pedidos y ventas del emprendedor. */
@@ -83,68 +80,15 @@ class ReporteController extends Controller
         $reportes = $request->reportes();
 
         return response()->streamDownload(function () use ($reportes) {
-            $titulo = (new Style)->setFontBold()->setFontSize(14);
-            $encabezado = (new Style)->setFontBold()->setFontColor('FFFFFF')->setBackgroundColor('1A1B20');
-            $moneda = (new Style)->setFormat('"Q"#,##0.00');
-            $fecha = (new Style)->setFormat('dd/mm/yyyy hh:mm');
-
-            $libro = new Writer;
-            $libro->openToFile('php://output');
-
-            // Hoja 1: resumen del período
-            $hoja = $libro->getCurrentSheet();
-            $hoja->setName('Resumen');
-            $hoja->setColumnWidth(32, 1);
-            $hoja->setColumnWidth(18, 2);
-            $resumen = $reportes->resumen();
-            $libro->addRow(Row::fromValues(['Reporte de pedidos y ventas'], $titulo));
-            $libro->addRow(new Row([Cell::fromValue('Negocio'), new Cell\StringCell(auth()->user()->nombreNegocio(), null)]));
-            $libro->addRow(Row::fromValues(['Período', $this->periodo($reportes)]));
-            $libro->addRow(Row::fromValues(['Generado el', now()->format('d/m/Y H:i')]));
-            $libro->addRow(Row::fromValues([]));
-            $libro->addRow(Row::fromValues(['Indicador', 'Valor'], $encabezado));
-            $libro->addRow(Row::fromValues(['Pedidos del período', $resumen['pedidos']]));
-            $libro->addRow(Row::fromValues(['Ventas (pedidos entregados)', $resumen['ventas']]));
-            $libro->addRow(Row::fromValues(['Pedidos en curso', $resumen['en_curso']]));
-            $libro->addRow(Row::fromValues(['Pedidos cancelados', $resumen['cancelados']]));
-            $libro->addRow(new Row([Cell::fromValue('Monto vendido'), Cell::fromValue($resumen['monto_vendido'], $moneda)]));
-            $libro->addRow(new Row([Cell::fromValue('Venta promedio'), Cell::fromValue(round($resumen['ticket_promedio'], 2), $moneda)]));
-
-            // Hoja 2: detalle de pedidos
-            $hoja = $libro->addNewSheetAndMakeItCurrent();
-            $hoja->setName('Pedidos');
-            $hoja->setColumnWidth(10, 1);
-            $hoja->setColumnWidth(18, 2);
-            $hoja->setColumnWidth(32, 3);
-            $hoja->setColumnWidth(14, 4, 5);
-            $hoja->setColumnWidth(14, 6);
-            $libro->addRow(Row::fromValues(['Pedido', 'Fecha', 'Cliente', 'Estado', 'Productos', 'Total'], $encabezado));
-            foreach ($this->filasDetalle($reportes) as $fila) {
-                $libro->addRow(new Row([
-                    Cell::fromValue($fila['pedido']),
-                    Cell::fromValue($fila['fecha']->toDateTimeImmutable(), $fecha),
-                    new Cell\StringCell($fila['cliente'], null), // nunca como fórmula
-                    Cell::fromValue($fila['estado']),
-                    Cell::fromValue($fila['unidades']),
-                    Cell::fromValue($fila['total'], $moneda),
-                ]));
-            }
-
-            // Hoja 3: productos más vendidos
-            $hoja = $libro->addNewSheetAndMakeItCurrent();
-            $hoja->setName('Productos más vendidos');
-            $hoja->setColumnWidth(32, 1);
-            $hoja->setColumnWidth(14, 2, 3);
-            $libro->addRow(Row::fromValues(['Producto', 'Unidades', 'Monto'], $encabezado));
-            foreach ($reportes->productosMasVendidos(20) as $producto) {
-                $libro->addRow(new Row([
-                    new Cell\StringCell($producto['nombre'], null),
-                    Cell::fromValue($producto['unidades']),
-                    Cell::fromValue($producto['monto'], $moneda),
-                ]));
-            }
-
-            $libro->close();
+            (new LibroReporte)->escribir(
+                'php://output',
+                auth()->user()->nombreNegocio(),
+                $this->periodo($reportes),
+                $reportes->resumen(),
+                $reportes->porEstado(),
+                $reportes->productosMasVendidos(20),
+                $this->filasDetalle($reportes),
+            );
         }, $this->nombreArchivo($reportes, 'xlsx'), ['Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']);
     }
 
@@ -168,7 +112,7 @@ class ReporteController extends Controller
     /**
      * Pedidos del período (con el filtro de estado) en orden cronológico, listos para exportar.
      *
-     * @return LazyCollection<int, array{pedido: string, fecha: Carbon, cliente: string, estado: string, unidades: int, total: float}>
+     * @return LazyCollection<int, array{pedido: string, fecha: Carbon, cliente: string, estado: string, id_estado: int, unidades: int, total: float}>
      */
     private function filasDetalle(Reportes $reportes): LazyCollection
     {
@@ -183,6 +127,7 @@ class ReporteController extends Controller
                 'fecha' => $pedido->fecha,
                 'cliente' => $pedido->cliente->nombre,
                 'estado' => $pedido->estado->nombre,
+                'id_estado' => $pedido->id_estado,
                 'unidades' => (int) $pedido->unidades,
                 'total' => (float) $pedido->total,
             ]);

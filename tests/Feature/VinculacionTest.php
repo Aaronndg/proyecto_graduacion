@@ -91,7 +91,7 @@ class VinculacionTest extends TestCase
         $this->assertNull($this->cliente->id_usuario);
         $this->assertNotNull($this->cliente->codigo_vinculacion);
 
-        $this->actingAs($this->cuenta)->get('/panel')->assertSee('Conecte su cuenta con el negocio');
+        $this->actingAs($this->cuenta)->get('/panel')->assertSee('Escriba su código de invitación');
     }
 
     public function test_solo_los_roles_correctos_usan_la_vinculacion(): void

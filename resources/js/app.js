@@ -248,3 +248,44 @@ document.addEventListener('submit', (evento) => {
         if (campo?.type === 'text') boton.click();
     });
 });
+
+// Avisos que se pueden descartar («Ahora no»).
+document.addEventListener('click', (evento) => {
+    const boton = evento.target.closest('[data-cerrar-aviso]');
+    if (boton) boton.closest('[data-aviso]')?.remove();
+});
+
+// Reportes: las barras crecen cuando la gráfica aparece en pantalla y el monto vendido cuenta hacia arriba.
+(() => {
+    const quieto = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const graficas = document.querySelectorAll('.animar-graficas');
+    if (!graficas.length) return;
+
+    const mostrar = (g) => {
+        g.classList.remove('esperando');
+        setTimeout(() => g.classList.add('listo'), 1200);
+    };
+    if (quieto || !('IntersectionObserver' in window)) {
+        graficas.forEach(mostrar);
+    } else {
+        graficas.forEach((g) => g.classList.add('esperando'));
+        const observador = new IntersectionObserver((entradas) => entradas.forEach((e) => {
+            if (e.isIntersecting) { requestAnimationFrame(() => mostrar(e.target)); observador.unobserve(e.target); }
+        }), { threshold: 0.2 });
+        graficas.forEach((g) => observador.observe(g));
+    }
+
+    if (quieto) return;
+    document.querySelectorAll('[data-contar]').forEach((el) => {
+        const final = parseFloat(el.dataset.contar);
+        if (!(final > 0)) return;
+        const formato = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const inicio = performance.now();
+        const paso = (t) => {
+            const p = Math.min(1, (t - inicio) / 900);
+            el.textContent = 'Q ' + formato.format(final * (1 - Math.pow(1 - p, 3)));
+            if (p < 1) requestAnimationFrame(paso);
+        };
+        requestAnimationFrame(paso);
+    });
+})();

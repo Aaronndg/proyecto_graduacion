@@ -25,6 +25,10 @@
         </x-slot:acciones>
     @endif
 
+    @if (session('ofrecer_invitacion') && ! $cliente->id_usuario && $cliente->codigo_vinculacion)
+        <x-invitacion-aviso :cliente="$cliente" />
+    @endif
+
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_23rem] lg:items-start">
 
         {{-- ===== Estado: lo primero en el teléfono, a la derecha en escritorio ===== --}}
@@ -135,18 +139,22 @@
                     <a href="{{ route('clientes.show', $cliente) }}" class="btn btn-secundario btn-chico">Ver cliente</a>
                 </div>
 
-                {{-- Invitación compacta: la versión completa (código, código nuevo) está en la ficha del cliente --}}
-                @unless ($cliente->id_usuario)
-                    @php $whatsapp = $cliente->enlaceWhatsApp(auth()->user()->negocio ?? auth()->user()->nombre); @endphp
+                {{-- Invitación compacta: la versión completa (pasos, código, código nuevo) está en la ficha del cliente --}}
+                @if ($cliente->id_usuario)
+                    <p class="mt-4 inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-700">
+                        <x-icono nombre="ok" clase="size-3.5" /> Ve sus pedidos en su celular
+                    </p>
+                @else
+                    @php $whatsapp = $cliente->enlaceWhatsApp(auth()->user()->nombreNegocio()); @endphp
                     <div class="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-borde pt-4 text-sm">
-                        <span class="text-texto-2">{{ strtok($cliente->nombre, ' ') }} aún no ve sus pedidos en línea.</span>
+                        <span class="text-texto-2">{{ strtok($cliente->nombre, ' ') }} todavía no ve sus pedidos en su celular.</span>
                         @if ($whatsapp)
-                            <a href="{{ $whatsapp }}" target="_blank" rel="noopener" class="btn btn-terciario btn-chico">Enviar invitación por WhatsApp</a>
+                            <a href="{{ $whatsapp }}" target="_blank" rel="noopener" class="btn btn-whatsapp btn-chico"><x-icono nombre="whatsapp" clase="size-4" /> Invitar a ver sus pedidos</a>
                         @else
-                            <a href="{{ route('clientes.show', $cliente) }}" class="enlace">Ver cómo invitarle</a>
+                            <a href="{{ route('clientes.show', $cliente) }}#invitacion" class="btn btn-secundario btn-chico">Invitar a ver sus pedidos</a>
                         @endif
                     </div>
-                @endunless
+                @endif
             </section>
 
             <section class="lg:hidden" aria-labelledby="titulo-historial-movil">

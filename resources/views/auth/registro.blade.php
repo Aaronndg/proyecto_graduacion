@@ -47,7 +47,7 @@
 
         @unless ($invitacion)
             <div data-solo-tipo="cliente">
-                <x-campo nombre="codigo" etiqueta="Código de cliente (opcional)" autocomplete="off" placeholder="XXXX-XXXX" maxlength="9"
+                <x-campo nombre="codigo" etiqueta="Código de invitación (opcional)" autocomplete="off" placeholder="XXXX-XXXX" maxlength="9"
                          class="font-mono tracking-widest uppercase" data-codigo :valor="request('codigo')"
                          ayuda="Se lo envía el negocio donde hizo su pedido. Si no lo tiene, puede agregarlo después." />
             </div>
@@ -60,7 +60,7 @@
         @if ($invitacion)
             <p>
                 ¿Ya tiene cuenta? <a href="{{ route('login') }}" class="enlace">Inicie sesión</a>
-                y escriba este código en «Mis pedidos»:
+                y escriba este código de invitación en «Mis pedidos»:
             </p>
             <p class="mt-2 font-mono text-base font-semibold tracking-widest text-texto select-all">{{ $invitacion->codigoFormateado() }}</p>
         @else

@@ -30,7 +30,7 @@
         </div>
 
         <div data-solo-tipo="cliente">
-            <x-campo nombre="codigo" etiqueta="Código de cliente (opcional)" autocomplete="off" placeholder="XXXX-XXXX" maxlength="9"
+            <x-campo nombre="codigo" etiqueta="Código de invitación (opcional)" autocomplete="off" placeholder="XXXX-XXXX" maxlength="9"
                      class="font-mono tracking-widest uppercase" data-codigo :valor="$codigo ? substr($codigo, 0, 4).'-'.substr($codigo, 4) : null"
                      ayuda="Se lo envía el negocio donde hizo su pedido. Si no lo tiene, puede agregarlo después." />
         </div>

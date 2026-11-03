@@ -80,7 +80,7 @@
         <h2 id="titulo-resumen" class="meta mb-1">{{ $periodo }}<span class="hidden print:inline"> · Generado el {{ now()->format('d/m/Y H:i') }}</span></h2>
         @if ($resumen['ventas'])
             <p class="text-xl font-semibold tracking-tight text-balance sm:text-2xl">
-                Vendió <x-moneda :valor="$resumen['monto_vendido']" /> en {{ $plural($resumen['ventas'], 'entrega', 'entregas') }}
+                Vendió <x-moneda :valor="$resumen['monto_vendido']" data-contar="{{ $resumen['monto_vendido'] }}" /> en {{ $plural($resumen['ventas'], 'entrega', 'entregas') }}
             </p>
         @else
             <p class="text-xl font-semibold tracking-tight sm:text-2xl">Sin ventas en este período</p>
@@ -127,7 +127,7 @@
         {{-- Ventas por período (una sola serie: monto vendido) --}}
         <section class="panel p-5 break-inside-avoid" aria-labelledby="titulo-ventas">
             <h2 id="titulo-ventas" class="titulo-seccion">Ventas por {{ $porMes ? 'mes' : 'día' }}</h2>
-            <p class="meta">Monto de los pedidos entregados. Toque una barra para ver el detalle.</p>
+            <p class="meta">Monto de los pedidos entregados. Pase el cursor o toque una barra para ver el detalle.</p>
 
             @if ($resumen['ventas'] === 0)
                 <p class="mt-6 rounded-lg bg-superficie-2 px-4 py-6 text-center text-sm text-texto-2">Cuando marque pedidos como entregados, aparecerán aquí.</p>
@@ -136,15 +136,15 @@
                     <div class="flex h-48 flex-col justify-between text-right text-[11px] text-texto-2 tabular-nums" aria-hidden="true">
                         <span>Q {{ number_format($maxVenta, 0) }}</span><span>Q 0</span>
                     </div>
-                    <div class="relative flex h-48 min-w-0 flex-1 items-end gap-[2px] border-b border-borde" role="list" aria-label="Ventas por período">
+                    <div class="grafica-barras animar-graficas relative flex h-48 min-w-0 flex-1 items-end gap-[2px] border-b border-borde" role="list" aria-label="Ventas por período">
                         <div class="pointer-events-none absolute inset-x-0 top-0 border-t border-dashed border-borde"></div>
                         @foreach ($ventas as $punto)
-                            <div class="group relative flex h-full flex-1 items-end justify-center focus:outline-none" role="listitem" tabindex="0"
+                            <div class="columna group relative flex h-full flex-1 cursor-pointer items-end justify-center focus:outline-none" role="listitem" tabindex="0" style="--i: {{ $loop->index }}"
                                  aria-label="{{ $punto['detalle'] }}: Q {{ number_format($punto['monto'], 2) }}, {{ $punto['ventas'] }} venta(s)">
-                                <div @class(['w-full max-w-8 rounded-t-[3px] transition-colors',
+                                <div @class(['barra-venta w-full max-w-8 rounded-t-[3px]',
                                              'bg-marca/80 group-hover:bg-marca group-focus:bg-marca' => $punto['monto'] > 0])
                                      style="height: {{ $punto['monto'] > 0 ? max(2, round($punto['monto'] / $maxVenta * 100, 2)) : 0 }}%"></div>
-                                <div class="pointer-events-none absolute bottom-full left-1/2 z-10 mb-1 hidden -translate-x-1/2 rounded-lg bg-[#26272D] ring-1 ring-white/10 px-2.5 py-1.5 text-xs whitespace-nowrap text-white shadow-flotante group-hover:block group-focus:block">
+                                <div class="burbuja pointer-events-none absolute bottom-full left-1/2 z-10 mb-1 rounded-lg bg-[#26272D] ring-1 ring-white/10 px-2.5 py-1.5 text-xs whitespace-nowrap text-white shadow-flotante print:hidden">
                                     <span class="block text-stone-600">{{ $punto['detalle'] }}</span>
                                     <span class="font-semibold tabular-nums">Q {{ number_format($punto['monto'], 2) }}</span>
                                     <span class="text-stone-600">· {{ $punto['ventas'] }} venta(s)</span>
@@ -182,9 +182,9 @@
         <section class="panel p-5 break-inside-avoid" aria-labelledby="titulo-estados">
             <h2 id="titulo-estados" class="titulo-seccion">Pedidos por estado</h2>
             <p class="meta">Todos los pedidos del período.</p>
-            <ul class="mt-5 space-y-4">
+            <ul class="lista-grafica animar-graficas mt-5 space-y-2">
                 @foreach ($porEstado as $fila)
-                    <li>
+                    <li class="fila-grafica -mx-2 px-2 py-1.5">
                         <div class="mb-1.5 flex items-center justify-between text-sm">
                             <span>{{ $fila['estado']->nombre }}</span>
                             <span class="tabular-nums">
@@ -192,8 +192,8 @@
                                 @if ($resumen['pedidos'])<span class="text-texto-2">· {{ round($fila['cantidad'] / $resumen['pedidos'] * 100) }} %</span>@endif
                             </span>
                         </div>
-                        <div class="h-2 rounded-full bg-superficie-2">
-                            <x-estado-pedido :estado="$fila['estado']" barra style="width: {{ round($fila['cantidad'] / $maxEstado * 100, 2) }}%" />
+                        <div class="pista h-2 rounded-full bg-superficie-2">
+                            <x-estado-pedido :estado="$fila['estado']" barra class="barra-horizontal" style="--i: {{ $loop->index }}; width: {{ round($fila['cantidad'] / $maxEstado * 100, 2) }}%" />
                         </div>
                     </li>
                 @endforeach
@@ -210,19 +210,20 @@
         @if ($productos->isEmpty())
             <p class="border-t border-borde px-5 py-4 text-sm text-texto-2">Aún no hay productos vendidos en este período.</p>
         @else
-            <ul class="border-t border-borde">
+            <ul class="lista-grafica animar-graficas border-t border-borde">
                 @foreach ($productos as $producto)
                     @php $parte = $resumen['monto_vendido'] > 0 ? $producto['monto'] / $resumen['monto_vendido'] * 100 : 0; @endphp
-                    <li class="border-b border-borde px-5 py-3 last:border-b-0">
+                    <li class="fila-grafica rounded-none border-b border-borde px-5 py-3 last:border-b-0">
                         <div class="flex items-baseline justify-between gap-4">
                             <span class="min-w-0">
+                                <span class="mr-1.5 inline-grid size-5 place-items-center rounded-full bg-superficie-2 text-[11px] font-extrabold text-marca tabular-nums">{{ $loop->iteration }}</span>
                                 <span class="font-medium">{{ $producto['nombre'] }}</span>
                                 <span class="meta block sm:inline"><span class="hidden sm:inline">· </span>{{ $plural((int) $producto['unidades'], 'unidad', 'unidades') }}</span>
                             </span>
                             <x-moneda :valor="$producto['monto']" class="font-medium" />
                         </div>
                         <div class="mt-2 flex items-center gap-3">
-                            <div class="h-1.5 flex-1 rounded-full bg-superficie-2"><div class="h-full rounded-full bg-marca/80" style="width: {{ round($parte, 2) }}%"></div></div>
+                            <div class="pista h-1.5 flex-1 rounded-full bg-superficie-2"><div class="barra-horizontal h-full rounded-full bg-linear-to-r from-marca-700 to-marca" style="--i: {{ $loop->index }}; width: {{ round($parte, 2) }}%"></div></div>
                             <span class="w-10 text-right text-[13px] text-texto-2 tabular-nums">{{ round($parte) }} %</span>
                         </div>
                     </li>

@@ -2,7 +2,7 @@
 {{-- Campo para ingresar el código de cliente que envía el negocio (RN-06). --}}
 <form method="POST" action="{{ route('vincular') }}" novalidate data-envio-unico {{ $attributes }}>
     @csrf
-    <label for="codigo" class="etiqueta">Código de cliente</label>
+    <label for="codigo" class="etiqueta">Código de invitación</label>
     <div @class(['flex gap-2', 'flex-col sm:flex-row' => $grande])>
         <input id="codigo" name="codigo" value="{{ old('codigo') }}" placeholder="XXXX-XXXX" autocomplete="off" maxlength="9"
                autocapitalize="characters" spellcheck="false" data-codigo

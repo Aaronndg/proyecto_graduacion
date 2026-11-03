@@ -93,24 +93,38 @@ class Cliente extends Model
 
         if ($this->id_usuario) {
             $mensaje .= ' Puede verlo aquí: '.route('mis-pedidos.show', $pedido);
+        } elseif ($this->codigo_vinculacion) {
+            // Aún no ve sus pedidos en línea: el mismo aviso le deja la invitación.
+            $mensaje .= ' Si quiere ver sus pedidos desde su celular, cree su cuenta aquí: '.$this->enlaceInvitacion();
         }
 
         return 'https://wa.me/'.$numero.'?text='.rawurlencode($mensaje.' ¡Gracias por su compra!');
     }
 
-    public function enlaceWhatsApp(string $negocio): ?string
+    /** Enlace para crear la cuenta con el código de invitación ya escrito (RF-23). */
+    public function enlaceInvitacion(): ?string
     {
-        $digitos = $this->numeroWhatsApp();
+        return $this->codigo_vinculacion ? route('registro', ['codigo' => $this->codigoFormateado()]) : null;
+    }
 
-        if (! $this->codigo_vinculacion || ! $digitos) {
+    /** Texto de la invitación, para WhatsApp o para copiarlo y enviarlo por otro medio. */
+    public function mensajeInvitacion(string $negocio): ?string
+    {
+        if (! $this->codigo_vinculacion) {
             return null;
         }
 
-        $mensaje = "Hola {$this->nombre}, en {$negocio} ya puede consultar el estado de sus pedidos en línea. "
-            ."Cree su cuenta aquí: ".route('registro', ['codigo' => $this->codigoFormateado()])
-            ." (su código es {$this->codigoFormateado()}).";
+        return 'Hola '.strtok($this->nombre, ' ').", le saluda {$negocio}. Ahora puede ver desde su celular cómo va cada uno de sus pedidos. "
+            .'Cree su cuenta aquí: '.$this->enlaceInvitacion()
+            ." (su código de invitación es {$this->codigoFormateado()}).";
+    }
 
-        return 'https://wa.me/'.$digitos.'?text='.rawurlencode($mensaje);
+    public function enlaceWhatsApp(string $negocio): ?string
+    {
+        $digitos = $this->numeroWhatsApp();
+        $mensaje = $this->mensajeInvitacion($negocio);
+
+        return $digitos && $mensaje ? 'https://wa.me/'.$digitos.'?text='.rawurlencode($mensaje) : null;
     }
 
     public function usuario(): BelongsTo

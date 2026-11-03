@@ -20,6 +20,10 @@
     {{-- Teléfono: la acción principal a todo el ancho, al alcance del pulgar --}}
     <a href="{{ route('pedidos.create', ['cliente' => $cliente->id_cliente]) }}" class="btn btn-primario mb-6 w-full sm:hidden"><x-icono nombre="mas" clase="size-4" /> Nuevo pedido</a>
 
+    @if (session('ofrecer_invitacion') && ! $cliente->id_usuario && $cliente->codigo_vinculacion)
+        <x-invitacion-aviso :cliente="$cliente" contexto="cliente" />
+    @endif
+
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_21rem] lg:items-start">
         {{-- Sus pedidos: lo más consultado --}}
         <section class="panel overflow-hidden" aria-labelledby="titulo-pedidos">
@@ -53,6 +57,8 @@
         </section>
 
         <div class="space-y-6">
+            <x-invitacion-cliente :cliente="$cliente" />
+
             <section class="panel p-5" aria-labelledby="titulo-contacto">
                 <h2 id="titulo-contacto" class="titulo-seccion">Contacto</h2>
                 <dl class="mt-3 space-y-3 text-sm">
@@ -64,8 +70,6 @@
                     @endforeach
                 </dl>
             </section>
-
-            <x-invitacion-cliente :cliente="$cliente" />
         </div>
     </div>
 </x-layouts.app>

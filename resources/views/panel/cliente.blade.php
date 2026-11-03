@@ -6,7 +6,7 @@
 <x-layouts.app titulo="Mis pedidos" :encabezado="false">
     <x-bienvenida :titulo="'¡Hola, '.strtok(auth()->user()->nombre, ' ').'!'" antetitulo="Mis pedidos">
         @if ($pedidos->isEmpty())
-            Conecte su cuenta con el código del negocio y aquí verá cómo van sus pedidos.
+            Escriba el código de invitación del negocio y aquí verá cómo van sus pedidos.
         @elseif ($enCurso)
             Tiene <b class="text-white">{{ $enCurso }} {{ $enCurso === 1 ? 'pedido en curso' : 'pedidos en curso' }}</b>. Toque uno para ver en qué etapa va.
         @else
@@ -18,13 +18,13 @@
         {{-- Primera vez: una sola tarea, conectar la cuenta con el código del negocio. --}}
         <section class="panel p-5 sm:p-8" aria-labelledby="titulo-conectar">
             <x-ilustracion nombre="caja" class="mb-3" />
-            <h2 id="titulo-conectar" class="titulo-seccion">Conecte su cuenta con el negocio</h2>
-            <p class="mt-1 text-texto-2">Escriba el código que le envió el negocio donde hizo su pedido.</p>
+            <h2 id="titulo-conectar" class="titulo-seccion">Escriba su código de invitación</h2>
+            <p class="mt-1 text-texto-2">El negocio donde hizo su pedido se lo envía por WhatsApp. Con él verá aquí sus pedidos y en qué etapa van.</p>
 
             <x-formulario-codigo grande class="mt-6" />
 
             <p class="ayuda mt-4">
-                Es de 8 letras y números, como <span class="font-mono whitespace-nowrap">K7QM-4XPA</span>.
+                Es de 8 letras y números, como <span class="font-mono whitespace-nowrap">K7QM-4XPA</span>, y sirve una sola vez.
                 Si no lo tiene, pídaselo al negocio.
             </p>
         </section>
@@ -66,10 +66,10 @@
 
             {{-- Vinculación por código (RF-23): siempre visible para agregar otro negocio --}}
             <section class="panel p-5" aria-labelledby="titulo-vincular">
-                <h2 id="titulo-vincular" class="titulo-seccion">Vincular otro negocio</h2>
+                <h2 id="titulo-vincular" class="titulo-seccion">¿Le invitó otro negocio?</h2>
                 <p class="mt-1 mb-3 text-sm text-texto-2">
-                    ¿Compró en otro negocio que usa NEXO? Escriba el código de invitación que le envió.
-                    Cada código es de un solo uso.
+                    Escriba el código de invitación que le envió por WhatsApp y verá también sus pedidos de ese negocio.
+                    Cada código sirve una sola vez.
                 </p>
                 <x-formulario-codigo class="max-w-md" />
             </section>

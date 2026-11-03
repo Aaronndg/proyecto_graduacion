@@ -243,6 +243,12 @@
         @apply rounded-xl border border-borde bg-superficie shadow-flotante;
     }
 
+    /* Panel destacado con borde dorado: avisos que piden una acción (invitar al cliente) */
+    .panel-destacado {
+        @apply rounded-2xl border border-marca-600/60 cristal shadow-suave;
+        background-image: linear-gradient(135deg, rgb(224 176 79 / 0.12), transparent 60%);
+    }
+
     /* ---------- Tablas y listas ---------- */
     /* relative: los textos sr-only de las celdas quedan dentro del contenedor desplazable
        y no ensanchan la página en el teléfono (RNF-05). */
@@ -420,4 +426,56 @@ dialog.dialogo::backdrop {
         background: #FFFFFF !important;
         border-color: #D9D5CB !important;
     }
+}
+
+/* ---------- Reportes: gráficas con movimiento ----------
+   Las barras crecen al aparecer en pantalla y reaccionan al pasar el cursor: la barra señalada
+   se ilumina y se eleva, y las demás se atenúan para comparar. Sin movimiento si el sistema
+   lo pide (prefers-reduced-motion) ni al imprimir. */
+@layer components {
+    .grafica-barras .barra-venta {
+        transform-origin: bottom;
+        transition: transform 0.25s ease, filter 0.25s ease, opacity 0.25s ease, background-color 0.25s ease;
+    }
+    .grafica-barras:hover .barra-venta { opacity: 0.45; }
+    .grafica-barras .columna:hover .barra-venta,
+    .grafica-barras .columna:focus .barra-venta {
+        opacity: 1;
+        transform: scaleX(1.25);
+        filter: brightness(1.2) drop-shadow(0 0 10px rgb(242 209 139 / 0.55));
+    }
+    .grafica-barras .burbuja {
+        opacity: 0;
+        transform: translate(-50%, 6px);
+        transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .grafica-barras .columna:hover .burbuja,
+    .grafica-barras .columna:focus .burbuja { opacity: 1; transform: translate(-50%, 0); }
+
+    .fila-grafica { transition: background-color 0.2s ease; border-radius: 0.75rem; }
+    .fila-grafica .barra-horizontal {
+        transform-origin: left;
+        transition: transform 0.3s ease, filter 0.3s ease, height 0.2s ease;
+    }
+    .lista-grafica:hover .fila-grafica { opacity: 0.6; transition: opacity 0.2s ease, background-color 0.2s ease; }
+    .lista-grafica .fila-grafica:hover { opacity: 1; background-color: rgb(255 255 255 / 0.04); }
+    .fila-grafica:hover .barra-horizontal {
+        filter: brightness(1.25) drop-shadow(0 0 8px rgb(242 209 139 / 0.45));
+    }
+    .fila-grafica:hover .pista { height: 0.65rem; }
+    .fila-grafica .pista { transition: height 0.2s ease; }
+
+    /* Entrada: crecen al verse en pantalla (la clase la quita app.js) */
+    .animar-graficas.esperando .barra-venta { transform: scaleY(0); }
+    .animar-graficas.esperando .barra-horizontal { transform: scaleX(0); }
+    .animar-graficas .barra-venta { transition-delay: calc(var(--i, 0) * 18ms); }
+    .animar-graficas .barra-horizontal { transition-delay: calc(var(--i, 0) * 60ms); }
+    .animar-graficas.listo .barra-venta, .animar-graficas.listo .barra-horizontal { transition-delay: 0ms; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .grafica-barras .barra-venta, .fila-grafica .barra-horizontal, .grafica-barras .burbuja { transition: none !important; }
+    .animar-graficas.esperando .barra-venta, .animar-graficas.esperando .barra-horizontal { transform: none; }
+}
+@media print {
+    .animar-graficas.esperando .barra-venta, .animar-graficas.esperando .barra-horizontal { transform: none; }
 }

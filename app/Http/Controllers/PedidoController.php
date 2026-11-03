@@ -90,7 +90,7 @@ class PedidoController extends Controller
     {
         $pedido = $this->gestor->registrar($request->validated(), $request->user());
 
-        return redirect()->route('pedidos.show', $pedido)->with('exito', "Pedido #{$pedido->numero()} registrado correctamente.");
+        return redirect()->route('pedidos.show', $pedido)->with(['exito' => "Pedido #{$pedido->numero()} registrado correctamente.", 'ofrecer_invitacion' => true]);
     }
 
     public function show(Pedido $pedido): View

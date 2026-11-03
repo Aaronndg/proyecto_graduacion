@@ -14,6 +14,7 @@ class ClienteController extends Controller
     public function index(Request $request): View
     {
         $buscar = trim((string) $request->query('buscar'));
+        $invitacion = in_array($request->query('invitacion'), ['si', 'no'], true) ? $request->query('invitacion') : null;
 
         $clientes = Cliente::withCount('pedidos')
             ->withMax('pedidos as ultimo_pedido', 'fecha')
@@ -21,11 +22,13 @@ class ClienteController extends Controller
                 ->where('nombre', 'like', "%{$buscar}%")
                 ->orWhere('telefono', 'like', "%{$buscar}%")
                 ->orWhere('correo', 'like', "%{$buscar}%")))
+            ->when($invitacion === 'si', fn ($q) => $q->whereNotNull('id_usuario'))
+            ->when($invitacion === 'no', fn ($q) => $q->whereNull('id_usuario'))
             ->orderBy('nombre')
             ->paginate(10)
             ->withQueryString();
 
-        return view('clientes.index', compact('clientes', 'buscar'));
+        return view('clientes.index', compact('clientes', 'buscar', 'invitacion'));
     }
 
     public function create(): View
@@ -37,7 +40,7 @@ class ClienteController extends Controller
     {
         $cliente = Cliente::create($request->validated());
 
-        return redirect()->route('clientes.show', $cliente)->with('exito', 'Cliente registrado correctamente.');
+        return redirect()->route('clientes.show', $cliente)->with(['exito' => 'Cliente registrado correctamente.', 'ofrecer_invitacion' => true]);
     }
 
     public function show(Cliente $cliente): View

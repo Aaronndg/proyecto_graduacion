@@ -212,7 +212,9 @@ class ReportesTest extends TestCase
         $pedidos = $zip->getFromName('xl/worksheets/sheet2.xml');
         $this->assertStringContainsString('=HYPERLINK', $pedidos); // el nombre se conserva como texto…
         $this->assertStringNotContainsString('<f>', $pedidos);     // …y nunca como fórmula
-        $this->assertSame(5, substr_count($pedidos, '<row ')); // encabezado + 4 pedidos del período
+        $this->assertSame(8, substr_count($pedidos, '<row ')); // título, negocio, encabezado, 4 pedidos y total
+        $this->assertStringContainsString('<mergeCell ', $pedidos);  // título combinado
+        $this->assertStringContainsString('<autoFilter ', $pedidos); // filtros en los títulos
         $zip->close();
         unlink($archivo);
     }
