@@ -144,8 +144,8 @@
                                 <div @class(['barra-venta w-full max-w-8 rounded-t-[3px]',
                                              'bg-marca/80 group-hover:bg-marca group-focus:bg-marca' => $punto['monto'] > 0])
                                      style="height: {{ $punto['monto'] > 0 ? max(2, round($punto['monto'] / $maxVenta * 100, 2)) : 0 }}%"></div>
-                                @php $alto = $punto['monto'] > 0 ? max(2, round($punto['monto'] / $maxVenta * 100, 2)) : 0; $lado = $loop->index < $loop->count * 0.2 ? 'al-inicio' : ($loop->index >= $loop->count * 0.8 ? 'al-final' : ''); @endphp
-                                <div class="burbuja {{ $lado }} pointer-events-none absolute z-10 rounded-lg bg-[#26272D] ring-1 ring-white/10 px-2.5 py-1.5 text-xs whitespace-nowrap text-white shadow-flotante print:hidden" style="bottom: calc({{ $alto }}% + 10px)">
+                                @php $alto = $punto['monto'] > 0 ? max(2, round($punto['monto'] / $maxVenta * 100, 2)) : 0; $alta = $alto > 60; $lado = $alta ? ($loop->index >= $loop->count * 0.6 ? 'al-lado-izq' : 'al-lado') : ($loop->index < $loop->count * 0.2 ? 'al-inicio' : ($loop->index >= $loop->count * 0.8 ? 'al-final' : '')); @endphp
+                                <div class="burbuja {{ $lado }} pointer-events-none absolute z-10 rounded-lg bg-[#26272D] ring-1 ring-white/10 px-2.5 py-1.5 text-xs whitespace-nowrap text-white shadow-flotante print:hidden" style="bottom: {{ $alta ? "calc({$alto}% - 3.25rem)" : "calc({$alto}% + 10px)" }}">
                                     <span class="block text-stone-400">{{ $punto['detalle'] }}</span>
                                     <span class="font-semibold tabular-nums">Q {{ number_format($punto['monto'], 2) }}</span>
                                     <span class="text-stone-400">· {{ $punto['ventas'] }} venta(s)</span>

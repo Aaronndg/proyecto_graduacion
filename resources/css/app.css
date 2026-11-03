@@ -454,6 +454,13 @@ dialog.dialogo::backdrop {
     .grafica-barras .burbuja.al-final { left: auto; right: 0; transform: translate(0, 6px); }
     .grafica-barras .columna:hover .burbuja,
     .grafica-barras .columna:focus .burbuja { opacity: 1; transform: translate(-50%, 0); }
+    /* Barras altas: el detalle va al costado, para no tapar el título */
+    .grafica-barras .burbuja.al-lado { left: calc(50% + 1.1rem); transform: translate(-6px, 0); }
+    .grafica-barras .burbuja.al-lado-izq { left: auto; right: calc(50% + 1.1rem); transform: translate(6px, 0); }
+    .grafica-barras .columna:hover .burbuja.al-lado,
+    .grafica-barras .columna:focus .burbuja.al-lado,
+    .grafica-barras .columna:hover .burbuja.al-lado-izq,
+    .grafica-barras .columna:focus .burbuja.al-lado-izq,
     .grafica-barras .columna:hover .burbuja.al-inicio,
     .grafica-barras .columna:focus .burbuja.al-inicio,
     .grafica-barras .columna:hover .burbuja.al-final,
